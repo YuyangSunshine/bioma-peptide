@@ -6,7 +6,8 @@
     "title": "DESeq2 · MASH 肝组织",
     "cover": "volcano_plot.png",
     "target": "deseq2_report.pdf",
-    "scope": "143 份人体肝组织样本；使用预先准备的 R 脚本执行。"
+    "scope": "143 份人体肝组织样本；使用预先准备的 R 脚本执行。",
+    "prompt": "对一组包含 MASH 与对照的人体肝组织 RNA-seq 计数数据执行 DESeq2 差异表达分析，核验样本分组，生成火山图、结果表和 PDF 报告。"
   },
   {
     "key": "cellchat",
@@ -15,7 +16,8 @@
     "title": "CellChat · 细胞通信",
     "cover": "communication_count.png",
     "target": "cellchat_report.pdf",
-    "scope": "人皮肤示例的 600 细胞子集；计算推断的通信网络。"
+    "scope": "人皮肤示例的 600 细胞子集；计算推断的通信网络。",
+    "prompt": "对带有细胞类型注释的人皮肤单细胞表达数据执行 CellChat 细胞通信分析，生成通信网络图、结果表和 PDF 报告。"
   },
   {
     "key": "b2m",
@@ -24,7 +26,8 @@
     "title": "B2M · AlphaFold2 结构",
     "cover": "plddt.png",
     "target": "b2m.pdb",
-    "scope": "119 aa；真实本地 GPU 推理。点击打开可旋转三维结构。"
+    "scope": "119 aa；真实本地 GPU 推理。点击打开可旋转三维结构。",
+    "prompt": "获取并核验人 B2M 蛋白序列，预测或检索其三维结构，报告置信度并交付可交互查看的 PDB 结构文件。"
   },
   {
     "key": "gastric-sc",
