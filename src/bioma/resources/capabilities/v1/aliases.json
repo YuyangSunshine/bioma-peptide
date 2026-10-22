@@ -1,0 +1,266 @@
+{
+  "aliases": [
+    {
+      "classification": "BYTE_IDENTICAL_DUPLICATE",
+      "legacy_path": "skills/scientific-skills/timesfm-forecasting/SKILL.md",
+      "legacy_skill_id": "scientific-skills/timesfm-forecasting",
+      "physical_files_preserved": true,
+      "policy": "METADATA_ONLY_NO_COLLAPSE",
+      "provenance_refs": [
+        "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/normalized_skill_inventory.jsonl#sk.05a19172bb821b70"
+      ],
+      "provider_superiority": "NOT_ASSERTED",
+      "source_stable_skill_id": "sk.05a19172bb821b70",
+      "target_stable_skill_id": "sk.c00ddb485a083194"
+    },
+    {
+      "classification": "BYTE_IDENTICAL_DUPLICATE",
+      "legacy_path": "skills/scientific-skills/pptx-posters/SKILL.md",
+      "legacy_skill_id": "scientific-skills/pptx-posters",
+      "physical_files_preserved": true,
+      "policy": "METADATA_ONLY_NO_COLLAPSE",
+      "provenance_refs": [
+        "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/normalized_skill_inventory.jsonl#sk.099d25cc1397624f"
+      ],
+      "provider_superiority": "NOT_ASSERTED",
+      "source_stable_skill_id": "sk.099d25cc1397624f",
+      "target_stable_skill_id": "sk.c39ed13fff79e06b"
+    },
+    {
+      "classification": "BYTE_IDENTICAL_DUPLICATE",
+      "legacy_path": "skills/scientific-skills/infographics/SKILL.md",
+      "legacy_skill_id": "scientific-skills/infographics",
+      "physical_files_preserved": true,
+      "policy": "METADATA_ONLY_NO_COLLAPSE",
+      "provenance_refs": [
+        "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/normalized_skill_inventory.jsonl#sk.4aa80b3d7562192b"
+      ],
+      "provider_superiority": "NOT_ASSERTED",
+      "source_stable_skill_id": "sk.4aa80b3d7562192b",
+      "target_stable_skill_id": "sk.af941e058512227a"
+    },
+    {
+      "classification": "BYTE_IDENTICAL_DUPLICATE",
+      "legacy_path": "skills/openclaw/spatial-agent/SKILL.md",
+      "legacy_skill_id": "openclaw/spatial-agent",
+      "physical_files_preserved": true,
+      "policy": "METADATA_ONLY_NO_COLLAPSE",
+      "provenance_refs": [
+        "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/normalized_skill_inventory.jsonl#sk.5d1b3fb5dc88c5d3"
+      ],
+      "provider_superiority": "NOT_ASSERTED",
+      "source_stable_skill_id": "sk.5d1b3fb5dc88c5d3",
+      "target_stable_skill_id": "sk.6851a7f8807575fd"
+    },
+    {
+      "classification": "BYTE_IDENTICAL_DUPLICATE",
+      "legacy_path": "skills/scientific-skills/zarr-python/SKILL.md",
+      "legacy_skill_id": "scientific-skills/zarr-python",
+      "physical_files_preserved": true,
+      "policy": "METADATA_ONLY_NO_COLLAPSE",
+      "provenance_refs": [
+        "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/normalized_skill_inventory.jsonl#sk.5f13ce354ad4d939"
+      ],
+      "provider_superiority": "NOT_ASSERTED",
+      "source_stable_skill_id": "sk.5f13ce354ad4d939",
+      "target_stable_skill_id": "sk.c9afea19e13086a6"
+    },
+    {
+      "classification": "BYTE_IDENTICAL_DUPLICATE",
+      "legacy_path": "skills/scientific-skills/polars/SKILL.md",
+      "legacy_skill_id": "scientific-skills/polars",
+      "physical_files_preserved": true,
+      "policy": "METADATA_ONLY_NO_COLLAPSE",
+      "provenance_refs": [
+        "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/normalized_skill_inventory.jsonl#sk.8da055876229f10f"
+      ],
+      "provider_superiority": "NOT_ASSERTED",
+      "source_stable_skill_id": "sk.8da055876229f10f",
+      "target_stable_skill_id": "sk.19ee9b8a76efc729"
+    },
+    {
+      "classification": "BYTE_IDENTICAL_DUPLICATE",
+      "legacy_path": "skills/scientific-skills/pytorch-lightning/SKILL.md",
+      "legacy_skill_id": "scientific-skills/pytorch-lightning",
+      "physical_files_preserved": true,
+      "policy": "METADATA_ONLY_NO_COLLAPSE",
+      "provenance_refs": [
+        "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/normalized_skill_inventory.jsonl#sk.9079e4cacdff56b1"
+      ],
+      "provider_superiority": "NOT_ASSERTED",
+      "source_stable_skill_id": "sk.9079e4cacdff56b1",
+      "target_stable_skill_id": "sk.01e8f2ce2e0f177f"
+    },
+    {
+      "classification": "BYTE_IDENTICAL_DUPLICATE",
+      "legacy_path": "skills/scientific-skills/dask/SKILL.md",
+      "legacy_skill_id": "scientific-skills/dask",
+      "physical_files_preserved": true,
+      "policy": "METADATA_ONLY_NO_COLLAPSE",
+      "provenance_refs": [
+        "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/normalized_skill_inventory.jsonl#sk.99fc585e42cdd9e0"
+      ],
+      "provider_superiority": "NOT_ASSERTED",
+      "source_stable_skill_id": "sk.99fc585e42cdd9e0",
+      "target_stable_skill_id": "sk.9273f4c5f3fd66c9"
+    },
+    {
+      "classification": "BYTE_IDENTICAL_DUPLICATE",
+      "legacy_path": "skills/scientific-skills/vaex/SKILL.md",
+      "legacy_skill_id": "scientific-skills/vaex",
+      "physical_files_preserved": true,
+      "policy": "METADATA_ONLY_NO_COLLAPSE",
+      "provenance_refs": [
+        "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/normalized_skill_inventory.jsonl#sk.d5e5e14aff17fa5e"
+      ],
+      "provider_superiority": "NOT_ASSERTED",
+      "source_stable_skill_id": "sk.d5e5e14aff17fa5e",
+      "target_stable_skill_id": "sk.a7ea1d2c20f17a94"
+    },
+    {
+      "classification": "BYTE_IDENTICAL_DUPLICATE",
+      "legacy_path": "skills/scientific-skills/seaborn/SKILL.md",
+      "legacy_skill_id": "scientific-skills/seaborn",
+      "physical_files_preserved": true,
+      "policy": "METADATA_ONLY_NO_COLLAPSE",
+      "provenance_refs": [
+        "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/normalized_skill_inventory.jsonl#sk.d92f80579f7b66ba"
+      ],
+      "provider_superiority": "NOT_ASSERTED",
+      "source_stable_skill_id": "sk.d92f80579f7b66ba",
+      "target_stable_skill_id": "sk.9c48cb28a5b765b4"
+    },
+    {
+      "classification": "BYTE_IDENTICAL_DUPLICATE",
+      "legacy_path": "skills/scientific-skills/pyzotero/SKILL.md",
+      "legacy_skill_id": "scientific-skills/pyzotero",
+      "physical_files_preserved": true,
+      "policy": "METADATA_ONLY_NO_COLLAPSE",
+      "provenance_refs": [
+        "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/normalized_skill_inventory.jsonl#sk.e145aedcc4f56b6b"
+      ],
+      "provider_superiority": "NOT_ASSERTED",
+      "source_stable_skill_id": "sk.e145aedcc4f56b6b",
+      "target_stable_skill_id": "sk.396bee549725f715"
+    },
+    {
+      "classification": "BYTE_IDENTICAL_DUPLICATE",
+      "legacy_path": "skills/openclaw/varcadd-pathogenicity/SKILL.md",
+      "legacy_skill_id": "openclaw/varcadd-pathogenicity",
+      "physical_files_preserved": true,
+      "policy": "METADATA_ONLY_NO_COLLAPSE",
+      "provenance_refs": [
+        "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/normalized_skill_inventory.jsonl#sk.f8f66e1a5c0abc57"
+      ],
+      "provider_superiority": "NOT_ASSERTED",
+      "source_stable_skill_id": "sk.f8f66e1a5c0abc57",
+      "target_stable_skill_id": "sk.95236782d732cfae"
+    }
+  ],
+  "schema_version": "1.0.0",
+  "source": {
+    "bundle": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2",
+    "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+    "files": [
+      {
+        "blob_sha256": "375a83fcc161c47fde4b23ac549ca5674c3613cf405a805aa4c3d0f6bc471334",
+        "checkout_sha256": "375a83fcc161c47fde4b23ac549ca5674c3613cf405a805aa4c3d0f6bc471334",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/REPORT.md",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "0bc7b79663b25a3c994f271bf7b636a8841b81e43c98ed00f6fa4c5e0c9a4fb4",
+        "checkout_sha256": "0bc7b79663b25a3c994f271bf7b636a8841b81e43c98ed00f6fa4c5e0c9a4fb4",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/canonical_capabilities.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "0b6e3160e50a0eb101719664afc63fc2c9c2aa485ef8bf97e1787e1ce2ac63ef",
+        "checkout_sha256": "0b6e3160e50a0eb101719664afc63fc2c9c2aa485ef8bf97e1787e1ce2ac63ef",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/normalized_skill_inventory.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "428f1d83629b8a046967c4d23d38a7b19341a5e659118b0d38ad248a3c4501f3",
+        "checkout_sha256": "428f1d83629b8a046967c4d23d38a7b19341a5e659118b0d38ad248a3c4501f3",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/skill_capability_edges.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "1c410e11790f0b93170bcdc2ffec2ebe268c076dd016581d5f7a1ee4a8d3d537",
+        "checkout_sha256": "1c410e11790f0b93170bcdc2ffec2ebe268c076dd016581d5f7a1ee4a8d3d537",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/tool_backends.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "0ca7d341ca9d1629dad3418c8432918011900d96eb689c3605c42423f2eb8226",
+        "checkout_sha256": "0ca7d341ca9d1629dad3418c8432918011900d96eb689c3605c42423f2eb8226",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/model_backends.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "0620cffa033f505977906273991e10c7e2888a535b809aa27467021dfe728071",
+        "checkout_sha256": "0620cffa033f505977906273991e10c7e2888a535b809aa27467021dfe728071",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/data_sources.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "2f03abdeb9829043930fb09cdc96411868ca21c7a8b512a572c67c2008953880",
+        "checkout_sha256": "2f03abdeb9829043930fb09cdc96411868ca21c7a8b512a572c67c2008953880",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/external_services.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "410a98b8811f9a685b5afc25401be9c4f158af691abc6f0039208defce1ea2bc",
+        "checkout_sha256": "410a98b8811f9a685b5afc25401be9c4f158af691abc6f0039208defce1ea2bc",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/workflows.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "1716b768ab156a6509bce287971a18d77fc79bb3cbbcbc2dd713ae5defedc7b2",
+        "checkout_sha256": "1716b768ab156a6509bce287971a18d77fc79bb3cbbcbc2dd713ae5defedc7b2",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/scientific_guidance.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "9083cef90ef03d677cb362c145bedb65c43df1a5f02c1e7c0d5de059e21b33ec",
+        "checkout_sha256": "9083cef90ef03d677cb362c145bedb65c43df1a5f02c1e7c0d5de059e21b33ec",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/BACKWARD_COMPATIBILITY_MAP.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "ddc8dbe9ba5e7b1deb707c04c07d216b0f6ea7dd8f6272933febf5bba5a8952c",
+        "checkout_sha256": "ddc8dbe9ba5e7b1deb707c04c07d216b0f6ea7dd8f6272933febf5bba5a8952c",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/TAXONOMY_MIGRATION_PLAN.md",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "69a299dcb6a7109db77e531bd6c856d0c1cfc4c597bbfb9a8f3a3e20b62cfc73",
+        "checkout_sha256": "69a299dcb6a7109db77e531bd6c856d0c1cfc4c597bbfb9a8f3a3e20b62cfc73",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/implementations.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "6b2c464beafed4ec4a3f4475965d10d658a198e89281b02edfc4f51e0836c87f",
+        "checkout_sha256": "6b2c464beafed4ec4a3f4475965d10d658a198e89281b02edfc4f51e0836c87f",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/device_backends.jsonl",
+        "read_status": "READ_OK"
+      }
+    ],
+    "kind": "COMMITTED_S1_N_V2"
+  }
+}

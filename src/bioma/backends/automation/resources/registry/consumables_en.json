@@ -1,0 +1,262 @@
+[
+  {
+    "resourceId": 10023,
+    "materialName": "Cs,Tips,1070 μL,non-sterile,480tips",
+    "name": "96 Tips/1070 μL/Non-Sterile",
+    "supplier": "Beckman Coulter",
+    "type": "Pipette Tips",
+    "statusCode": "available",
+    "description": "* ( 、 ), . * 500 μL .",
+    "pairedDevices": "48: Biomek i5 Automated Liquid Handling Workstation"
+  },
+  {
+    "resourceId": 10024,
+    "materialName": "Cs, Tips, 230 μL, Non-Sterile, 960 tips",
+    "name": "96 Tips/230 μL/Non-Sterile",
+    "supplier": "Beckman Coulter",
+    "type": "Pipette Tips",
+    "statusCode": "available",
+    "description": "* ( 、 ), . * 90~920 μL, .",
+    "pairedDevices": "48: Biomek i5 Automated Liquid Handling Workstation 59: Biomek i7 Automated Liquid Handling Workstation"
+  },
+  {
+    "resourceId": 10025,
+    "materialName": "Cs, Tips, 90 uL, Non-Sterile, 960 tips",
+    "name": "96 Tips/90 μL/Non-Sterile",
+    "supplier": "Beckman Coulter",
+    "type": "Pipette Tips",
+    "statusCode": "available",
+    "description": "* ( 、 ), . * 90 μL, 360 μL .",
+    "pairedDevices": "48: Biomek i5 Automated Liquid Handling Workstation 59: Biomek i7 Automated Liquid Handling Workstation"
+  },
+  {
+    "resourceId": 10026,
+    "materialName": "Cs, Tips, 230 uL, Sterile, 960 tips",
+    "name": "96 Tips/230 μL/Sterile",
+    "supplier": "Beckman Coulter",
+    "type": "Pipette Tips",
+    "statusCode": "available",
+    "description": "* ( 、 ), DNA /RNA . * 90~920 μL, .",
+    "pairedDevices": "48: Biomek i5 Automated Liquid Handling Workstation 59: Biomek i7 Automated Liquid Handling Workstation"
+  },
+  {
+    "resourceId": 10027,
+    "materialName": "HalfReservoir,75mL,Qty 24;75mL PP Reagent Reservoir",
+    "name": "HalfReservoir/75 mL/PP Reagent Reservoir",
+    "supplier": "Beckman Coulter",
+    "type": "Reagent Reservoir",
+    "statusCode": "available",
+    "description": "* ( 96-well ), . * -well 60 mL.",
+    "pairedDevices": "59: Biomek i7 Automated Liquid Handling Workstation Span"
+  },
+  {
+    "resourceId": 10028,
+    "materialName": "Quarter Reservoir,40mL,Qty48;40mL PP Reagent Reservoir",
+    "name": "Quarter Reservoir/40 mL/PP Reagent Reservoir",
+    "supplier": "Beckman Coulter",
+    "type": "Reagent Reservoir",
+    "statusCode": "available",
+    "description": "* ( ELISA ), . * -well 32 mL.",
+    "pairedDevices": "59: Biomek i7 Automated Liquid Handling Workstation Span"
+  },
+  {
+    "resourceId": 10029,
+    "materialName": "384LDV Plus, Carboxyl EQ 384-wellLDVShallow Well Plate",
+    "name": "384 -well LDV Shallow Well Plate",
+    "supplier": "LABCYTE",
+    "type": "Echo Source Plate",
+    "statusCode": "available",
+    "description": "* / ( ELISA、 ), . * / , Echo Source . * -well 4.5~14 μL.",
+    "pairedDevices": "58: Echo525"
+  },
+  {
+    "resourceId": 10030,
+    "materialName": "384PPL, CS100, CLR, RDF 384-wellPPShallow Well Plate",
+    "name": "384 -well PPShallow Well Plate",
+    "supplier": "LABCYTE",
+    "type": "Echo Source Plate",
+    "statusCode": "available",
+    "description": "* ( 、 ), PP . * / , Echo Source . * -well 15~65 μL.",
+    "pairedDevices": "58: Echo525"
+  },
+  {
+    "resourceId": 10031,
+    "materialName": "384PPL, CS100, CLR, RDF 384-wellPPShallow Well Plate",
+    "name": "384 -well PP Shallow Well Plate",
+    "supplier": "LABCYTE",
+    "type": "Echo Source Plate",
+    "statusCode": "available",
+    "description": "* ( 、 ), . * / , Echo Source . * -well 20~65 μL.",
+    "pairedDevices": "58: Echo525"
+  },
+  {
+    "resourceId": 10032,
+    "materialName": "RESERVOIR, EQ 6-well",
+    "name": "RESERVOIR/EQ 6 -well",
+    "supplier": "LABCYTE",
+    "type": "Echo Source Plate",
+    "statusCode": "available",
+    "description": "* ( PCR ), 6 . * / , Echo Source , . * -well 2.5 mL.",
+    "pairedDevices": "58: Echo525"
+  },
+  {
+    "resourceId": 10033,
+    "materialName": "8ml 12-channel Reservoir, , Low Skirt",
+    "name": "8 mL/12 -channel Reservoir/ /Low Skirt",
+    "supplier": "A-gen",
+    "type": "Reagent Reservoir",
+    "statusCode": "available",
+    "description": "* 96 -well ( -well ), Low Skirt . * ( ), . * -well 4.8 mL.",
+    "pairedDevices": "59: Biomek i7 Automated Liquid Handling Workstation Span"
+  },
+  {
+    "resourceId": 10034,
+    "materialName": "75mL 4-channel Reservoir, , High Skirt",
+    "name": "75 mL/4 -channel Reservoir/ /High Skirt",
+    "supplier": "A-gen",
+    "type": "Reagent Reservoir",
+    "statusCode": "available",
+    "description": "* ( ), High Skirt . * ( ), . * -well 60 mL.",
+    "pairedDevices": "59: Biomek i7 Automated Liquid Handling Workstation Span"
+  },
+  {
+    "resourceId": 10035,
+    "materialName": "96-channel Reservoir, , High Skirt, 290ml",
+    "name": "290 mL/96 -channel Reservoir/ /High Skirt",
+    "supplier": "A-gen",
+    "type": "Reagent Reservoir",
+    "statusCode": "available",
+    "description": "* ( ), 290 mL . * ( ), . * -well 232 mL.",
+    "pairedDevices": "48: Biomek i5 Automated Liquid Handling Workstation 59: Biomek i7 Automated Liquid Handling Workstation"
+  },
+  {
+    "resourceId": 10036,
+    "materialName": "200μL, 96-wellPCR , Full Skirt",
+    "name": "200 μL/96 -well PCR",
+    "supplier": "A-gen",
+    "type": "Shallow Well Plate",
+    "statusCode": "available",
+    "description": "* PCR , ATC , / , Labchip . * -well 100 μL.",
+    "pairedDevices": "56: LightCycler480 II qPCR Instrument"
+  },
+  {
+    "resourceId": 10037,
+    "materialName": "96 Deep Well Plate, UBottom, -well1.1ml",
+    "name": "1.1 mL/ /UBottom/Deep Well Plate",
+    "supplier": "A-gen",
+    "type": "Deep Well Plate",
+    "statusCode": "available",
+    "description": "* ( ), UBottom . * / /1 mL . * -well 800 μL",
+    "pairedDevices": "48: Biomek i5 Automated Liquid Handling Workstation 59: Biomek i7 Automated Liquid Handling Workstation"
+  },
+  {
+    "resourceId": 10038,
+    "materialName": "2.2Square WellUBottom /2.2mlDeep Well Plate",
+    "name": "2.2 mL/ /UBottom/Deep Well Plate",
+    "supplier": "A-gen",
+    "type": "Deep Well Plate",
+    "statusCode": "available",
+    "description": "* ( ), -well . * / / . * -well 1800 μL.",
+    "pairedDevices": "48: Biomek i5 Automated Liquid Handling Workstation 59: Biomek i7 Automated Liquid Handling Workstation"
+  },
+  {
+    "resourceId": 10039,
+    "materialName": "96-wellWhite Assay Plate",
+    "name": "96 -wellWhite Assay Plate",
+    "supplier": "GeneOn Biotech",
+    "type": "Shallow Well Plate",
+    "statusCode": "available",
+    "description": "* ( ), . * 、 . * -well 200 μL.",
+    "pairedDevices": "55: SpectraMax i3x Multimode Microplate Reader"
+  },
+  {
+    "resourceId": 10040,
+    "materialName": "96-wellBlack Assay Plate",
+    "name": "96 -wellBlack Assay Plate",
+    "supplier": "GeneOn Biotech",
+    "type": "Shallow Well Plate",
+    "statusCode": "available",
+    "description": "* ( ), -well . * . * -well 200 μL.",
+    "pairedDevices": "55: SpectraMax i3x Multimode Microplate Reader"
+  },
+  {
+    "resourceId": 10041,
+    "materialName": "96-wellClear Flat-Bottom Polystyrene Microplate",
+    "name": "96 -wellClear Flat-Bottom Polystyrene Microplate",
+    "supplier": "Corning",
+    "type": "Shallow Well Plate",
+    "statusCode": "available",
+    "description": "* - ( MTT ), . * . * -well 300 μL.",
+    "pairedDevices": "55: SpectraMax i3x Multimode Microplate Reader"
+  },
+  {
+    "resourceId": 10042,
+    "materialName": "",
+    "name": "Consumable-10042",
+    "supplier": "NEST",
+    "type": "Shallow Well Plate",
+    "statusCode": "available",
+    "description": "* 、 . * -well 300 μL.",
+    "pairedDevices": ""
+  },
+  {
+    "resourceId": 10043,
+    "materialName": "LightCycler 480 Multiwell Plate 96",
+    "name": "96-wells LightCycler 480 Multiwell Plate",
+    "supplier": "Roche",
+    "type": "Shallow Well Plate",
+    "statusCode": "available",
+    "description": "* qPCR ( ). * -well 10-100 μL.",
+    "pairedDevices": "56: LightCycler480 II qPCR Instrument"
+  },
+  {
+    "resourceId": 10044,
+    "materialName": "LightCycler 480 Multiwell Plate 384, white",
+    "name": "384-wells LightCycler 480 Multiwell Plate",
+    "supplier": "Roche",
+    "type": "Shallow Well Plate",
+    "statusCode": "available",
+    "description": "* qPCR ( ). * -well 2-20 μL.",
+    "pairedDevices": "56: LightCycler480 II qPCR Instrument"
+  },
+  {
+    "resourceId": 10051,
+    "materialName": "Nunc square plate, 8 well",
+    "name": "Nunc square plate, 8 well",
+    "supplier": "Nunc",
+    "type": "Shallow Well Plate",
+    "statusCode": "available",
+    "description": "*",
+    "pairedDevices": ""
+  },
+  {
+    "resourceId": 10052,
+    "materialName": "1-wellPS",
+    "name": "1-wellPS",
+    "supplier": "SPL Life Sciences",
+    "type": "Shallow Well Plate",
+    "statusCode": "available",
+    "description": "*",
+    "pairedDevices": ""
+  },
+  {
+    "resourceId": 10053,
+    "materialName": "96Round WellDeep Well Plate1.0ml",
+    "name": "96Round WellDeep Well Plate1.0ml",
+    "supplier": "A-gen",
+    "type": "Deep Well Plate",
+    "statusCode": "available",
+    "description": "* / /1 mL * -well 800 μL",
+    "pairedDevices": ""
+  },
+  {
+    "resourceId": 10054,
+    "materialName": "Full Skirt96-well / DNA/RNA",
+    "name": "Full Skirt96-well / DNA/RNA",
+    "supplier": "",
+    "type": "General Consumable",
+    "statusCode": "available",
+    "description": "Consumable 10054 for automated workflows.",
+    "pairedDevices": ""
+  }
+]

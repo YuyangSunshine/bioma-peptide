@@ -1,0 +1,137 @@
+{
+  "alias_policy": "METADATA_ONLY_NO_COLLAPSE",
+  "counts": {
+    "alias_proposals": 12,
+    "capability_nodes": 444,
+    "eligible_skills": 1105,
+    "mapping_edges": 1974,
+    "proposed_operation_families": 120,
+    "provisional_nodes": 324
+  },
+  "normalization_authority": "S1_N_PROPOSALS_NOT_VALIDATED_SCIENTIFIC_FACTS",
+  "runtime_integration": "NONE",
+  "schema_version": "1.0.0",
+  "source": {
+    "bundle": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2",
+    "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+    "files": [
+      {
+        "blob_sha256": "375a83fcc161c47fde4b23ac549ca5674c3613cf405a805aa4c3d0f6bc471334",
+        "checkout_sha256": "375a83fcc161c47fde4b23ac549ca5674c3613cf405a805aa4c3d0f6bc471334",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/REPORT.md",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "0bc7b79663b25a3c994f271bf7b636a8841b81e43c98ed00f6fa4c5e0c9a4fb4",
+        "checkout_sha256": "0bc7b79663b25a3c994f271bf7b636a8841b81e43c98ed00f6fa4c5e0c9a4fb4",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/canonical_capabilities.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "0b6e3160e50a0eb101719664afc63fc2c9c2aa485ef8bf97e1787e1ce2ac63ef",
+        "checkout_sha256": "0b6e3160e50a0eb101719664afc63fc2c9c2aa485ef8bf97e1787e1ce2ac63ef",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/normalized_skill_inventory.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "428f1d83629b8a046967c4d23d38a7b19341a5e659118b0d38ad248a3c4501f3",
+        "checkout_sha256": "428f1d83629b8a046967c4d23d38a7b19341a5e659118b0d38ad248a3c4501f3",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/skill_capability_edges.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "1c410e11790f0b93170bcdc2ffec2ebe268c076dd016581d5f7a1ee4a8d3d537",
+        "checkout_sha256": "1c410e11790f0b93170bcdc2ffec2ebe268c076dd016581d5f7a1ee4a8d3d537",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/tool_backends.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "0ca7d341ca9d1629dad3418c8432918011900d96eb689c3605c42423f2eb8226",
+        "checkout_sha256": "0ca7d341ca9d1629dad3418c8432918011900d96eb689c3605c42423f2eb8226",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/model_backends.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "0620cffa033f505977906273991e10c7e2888a535b809aa27467021dfe728071",
+        "checkout_sha256": "0620cffa033f505977906273991e10c7e2888a535b809aa27467021dfe728071",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/data_sources.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "2f03abdeb9829043930fb09cdc96411868ca21c7a8b512a572c67c2008953880",
+        "checkout_sha256": "2f03abdeb9829043930fb09cdc96411868ca21c7a8b512a572c67c2008953880",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/external_services.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "410a98b8811f9a685b5afc25401be9c4f158af691abc6f0039208defce1ea2bc",
+        "checkout_sha256": "410a98b8811f9a685b5afc25401be9c4f158af691abc6f0039208defce1ea2bc",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/workflows.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "1716b768ab156a6509bce287971a18d77fc79bb3cbbcbc2dd713ae5defedc7b2",
+        "checkout_sha256": "1716b768ab156a6509bce287971a18d77fc79bb3cbbcbc2dd713ae5defedc7b2",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/scientific_guidance.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "9083cef90ef03d677cb362c145bedb65c43df1a5f02c1e7c0d5de059e21b33ec",
+        "checkout_sha256": "9083cef90ef03d677cb362c145bedb65c43df1a5f02c1e7c0d5de059e21b33ec",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/BACKWARD_COMPATIBILITY_MAP.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "ddc8dbe9ba5e7b1deb707c04c07d216b0f6ea7dd8f6272933febf5bba5a8952c",
+        "checkout_sha256": "ddc8dbe9ba5e7b1deb707c04c07d216b0f6ea7dd8f6272933febf5bba5a8952c",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/TAXONOMY_MIGRATION_PLAN.md",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "69a299dcb6a7109db77e531bd6c856d0c1cfc4c597bbfb9a8f3a3e20b62cfc73",
+        "checkout_sha256": "69a299dcb6a7109db77e531bd6c856d0c1cfc4c597bbfb9a8f3a3e20b62cfc73",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/implementations.jsonl",
+        "read_status": "READ_OK"
+      },
+      {
+        "blob_sha256": "6b2c464beafed4ec4a3f4475965d10d658a198e89281b02edfc4f51e0836c87f",
+        "checkout_sha256": "6b2c464beafed4ec4a3f4475965d10d658a198e89281b02edfc4f51e0836c87f",
+        "commit": "4210383bcd2f9cf9c772c8b397001b402b66a620",
+        "path": "git:pre-scientific-control-v3-20261005:results/s1_skill_normalization/s1n_20261002_3b7ed645_v2/device_backends.jsonl",
+        "read_status": "READ_OK"
+      }
+    ],
+    "kind": "COMMITTED_S1_N_V2"
+  },
+  "validation_dimensions": [
+    "structural",
+    "binding",
+    "load",
+    "execution",
+    "output",
+    "scientific",
+    "benchmark",
+    "deployment"
+  ],
+  "validation_states": [
+    "BLOCKED",
+    "FAIL",
+    "NOT_APPLICABLE",
+    "NOT_RUN",
+    "PASS",
+    "UNKNOWN"
+  ]
+}

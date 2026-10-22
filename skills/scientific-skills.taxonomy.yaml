@@ -1,0 +1,667 @@
+- skill: adaptyv
+  taxonomy:
+    - lab-automation/biofoundry/protein-engineering
+    - biology/synthetic-biology/design-build-test
+  path: skills/external_services/scientific-skills/sk.cf6c949daaae2e20/adaptyv
+- skill: aeon
+  taxonomy:
+    - data-science/time-series/analysis
+    - ai-ml/classical-ml/time-series
+  path: skills/computational_methods/scientific-skills/sk.9b852dbf25cb6194/aeon
+- skill: anndata
+  taxonomy:
+    - biology/single-cell/data-structures
+    - data-science/data-storage/annotated-matrices
+  path: skills/workflows/scientific-skills/sk.985219c338b12583/anndata
+- skill: arboreto
+  taxonomy:
+    - biology/systems-biology/gene-regulatory-networks
+    - ai-ml/classical-ml/feature-importance
+  path: skills/unresolved/scientific-skills/sk.38e75d6ab3ce2664/arboreto
+- skill: astropy
+  taxonomy:
+    - physics-math/astronomy/data-analysis
+  path: skills/unresolved/scientific-skills/sk.de1df0ab948b1c42/astropy
+- skill: benchling-integration
+  taxonomy:
+    - lab-automation/lab-informatics/eln
+    - integration/scientific-platforms/benchling
+  path: skills/workflows/scientific-skills/sk.2d85609cdc7b33ec/benchling-integration
+- skill: bgpt-paper-search
+  taxonomy:
+    - literature-research/search/papers
+    - ai-ml/language-models/scientific-literature
+  path: skills/scientific_guidance/scientific-skills/sk.e7c70caa315f3375/bgpt-paper-search
+- skill: biopython
+  taxonomy:
+    - biology/bioinformatics/sequence-analysis
+    - biology/bioinformatics/file-formats
+  path: skills/workflows/scientific-skills/sk.5d94e2a842d5ac32/biopython
+- skill: bioservices
+  taxonomy:
+    - biology/bioinformatics/database-access
+    - integration/scientific-databases/web-services
+  path: skills/workflows/scientific-skills/sk.c64c4c9a149ce66c/bioservices
+- skill: cellxgene-census
+  taxonomy:
+    - biology/single-cell/public-atlas
+    - biology/bioinformatics/database-access
+  path: skills/tool_capabilities/scientific-skills/sk.07d3621cea6e662d/cellxgene-census
+- skill: cirq
+  taxonomy:
+    - physics-math/quantum-computing/circuits
+  path: skills/unresolved/scientific-skills/sk.37323aa47bf955c6/cirq
+- skill: citation-management
+  taxonomy:
+    - literature-research/citation-management/bibliography
+    - writing/scientific-writing/references
+  path: skills/data_sources/scientific-skills/sk.2cdfb831de665d76/citation-management
+- skill: clinical-decision-support
+  taxonomy:
+    - medicine/clinical-care/decision-support
+    - medicine/healthcare-ai/risk-assessment
+  path: skills/scientific_guidance/scientific-skills/sk.2b7db945a12492fc/clinical-decision-support
+- skill: clinical-reports
+  taxonomy:
+    - medicine/clinical-documentation/reports
+    - writing/scientific-writing/medical
+  path: skills/scientific_guidance/scientific-skills/sk.8769661ed7ea0b22/clinical-reports
+- skill: cobrapy
+  taxonomy:
+    - biology/systems-biology/metabolic-modeling
+    - simulation/biological-systems/constraint-based-models
+  path: skills/computational_methods/scientific-skills/sk.cf272d74ac0b7c22/cobrapy
+- skill: consciousness-council
+  taxonomy:
+    - reasoning/scientific-reasoning/multi-perspective
+    - research-workflow/ideation/hypothesis-exploration
+  path: skills/tool_capabilities/scientific-skills/sk.b8090e5b8ca5bba1/consciousness-council
+- skill: dask
+  taxonomy:
+    - data-science/distributed-computing/dataframes
+    - infrastructure/compute/parallel-processing
+  path: skills/workflows/scientific-skills/sk.99fc585e42cdd9e0/dask
+- skill: database-lookup
+  taxonomy:
+    - lookup/databases/general
+    - integration/scientific-databases/query
+  path: skills/workflows/scientific-skills/sk.244068c1a698116f/database-lookup
+- skill: datamol
+  taxonomy:
+    - chemistry/cheminformatics/molecular-data
+    - chemistry/drug-discovery/data-processing
+  path: skills/tool_capabilities/scientific-skills/sk.cea74d7e8dab4507/datamol
+- skill: deepchem
+  taxonomy:
+    - chemistry/drug-discovery/deep-learning
+    - ai-ml/deep-learning/molecular-modeling
+  path: skills/workflows/scientific-skills/sk.c8bc8f6e6df84a15/deepchem
+- skill: deeptools
+  taxonomy:
+    - biology/genomics/sequencing-analysis
+    - biology/bioinformatics/epigenomics
+  path: skills/computational_methods/scientific-skills/sk.db80b2a51b4b49b4/deeptools
+- skill: depmap
+  taxonomy:
+    - medicine/oncology/cancer-dependency
+    - biology/functional-genomics/screening
+  path: skills/unresolved/scientific-skills/sk.a80299c4f2d1788d/depmap
+- skill: dhdna-profiler
+  taxonomy:
+    - biology/genomics/dna-profiling
+    - medicine/forensics/genetic-profiling
+  path: skills/scientific_guidance/scientific-skills/sk.4ad61853285ee8c5/dhdna-profiler
+- skill: diffdock
+  taxonomy:
+    - chemistry/drug-discovery/molecular-docking
+    - ai-ml/deep-learning/structure-based-design
+  path: skills/unresolved/scientific-skills/sk.54c3f8e70d43857a/diffdock
+- skill: dnanexus-integration
+  taxonomy:
+    - integration/scientific-platforms/dnanexus
+    - biology/bioinformatics/cloud-workflows
+  path: skills/workflows/scientific-skills/sk.b6300a6f6a25a8ae/dnanexus-integration
+- skill: docx
+  taxonomy:
+    - document-processing/word/docx
+    - writing/scientific-writing/documents
+  path: skills/tool_capabilities/scientific-skills/sk.3779d2102e97fc24/docx
+- skill: esm
+  taxonomy:
+    - biology/protein/protein-language-models
+    - ai-ml/language-models/protein-sequences
+  path: skills/model_capabilities/scientific-skills/sk.1baf748b09a5654b/esm
+- skill: etetoolkit
+  taxonomy:
+    - biology/evolution/phylogenetics
+    - visualization/scientific-visualization/trees
+  path: skills/unresolved/scientific-skills/sk.06644e1e51e42c3f/etetoolkit
+- skill: exploratory-data-analysis
+  taxonomy:
+    - data-science/data-analysis/exploratory-analysis
+    - statistics/applied-statistics/data-profiling
+  path: skills/unresolved/scientific-skills/sk.232689152dc72019/exploratory-data-analysis
+- skill: flowio
+  taxonomy:
+    - biology/omics/flow-cytometry
+    - biology/bioinformatics/file-formats
+  path: skills/tool_capabilities/scientific-skills/sk.23d71763083c8dfd/flowio
+- skill: fluidsim
+  taxonomy:
+    - physics-math/fluid-dynamics/simulation
+    - simulation/physical-systems/fluids
+  path: skills/unresolved/scientific-skills/sk.5d4608d3ad4aab63/fluidsim
+- skill: generate-image
+  taxonomy:
+    - visualization/image-generation/scientific
+    - document-generation/visual-assets/images
+  path: skills/visualizations/scientific-skills/sk.42ab31b46fda32d3/generate-image
+- skill: geniml
+  taxonomy:
+    - biology/genomics/machine-learning
+    - ai-ml/deep-learning/genomic-intervals
+  path: skills/computational_methods/scientific-skills/sk.43e358b0be014cec/geniml
+- skill: geomaster
+  taxonomy:
+    - geospatial/geospatial-analysis/general
+    - data-science/spatial-analysis/geodata
+  path: skills/workflows/scientific-skills/sk.9ce673f73abf932b/geomaster
+- skill: geopandas
+  taxonomy:
+    - geospatial/geospatial-analysis/vector-data
+    - data-science/spatial-analysis/geodataframes
+  path: skills/scientific_guidance/scientific-skills/sk.98036f12671f2e3c/geopandas
+- skill: get-available-resources
+  taxonomy:
+    - infrastructure/resources/discovery
+    - research-workflow/environment/resource-checking
+  path: skills/computational_methods/scientific-skills/sk.4599b85992be64bf/get-available-resources
+- skill: gget
+  taxonomy:
+    - biology/bioinformatics/database-access
+    - biology/genomics/gene-annotation
+  path: skills/workflows/scientific-skills/sk.0f6ffef054dade25/gget
+- skill: ginkgo-cloud-lab
+  taxonomy:
+    - lab-automation/cloud-lab/experiment-submission
+    - integration/scientific-platforms/ginkgo
+  path: skills/workflows/scientific-skills/sk.f7b32f0debfc0806/ginkgo-cloud-lab
+- skill: glycoengineering
+  taxonomy:
+    - biology/glycobiology/glycoengineering
+    - biology/synthetic-biology/protein-engineering
+  path: skills/unresolved/scientific-skills/sk.717a0530a8e4663f/glycoengineering
+- skill: gtars
+  taxonomy:
+    - biology/genomics/interval-analysis
+    - biology/bioinformatics/rust-genomics
+  path: skills/computational_methods/scientific-skills/sk.4a262c02f4eaece5/gtars
+- skill: histolab
+  taxonomy:
+    - medicine/pathology/digital-pathology
+    - image-analysis/biomedical-imaging/histology
+  path: skills/workflows/scientific-skills/sk.449be1d5ddc4fd03/histolab
+- skill: hypogenic
+  taxonomy:
+    - reasoning/scientific-reasoning/hypothesis-generation
+    - research-workflow/ideation/hypothesis-exploration
+  path: skills/computational_methods/scientific-skills/sk.23176eb08a6d1d31/hypogenic
+- skill: hypothesis-generation
+  taxonomy:
+    - reasoning/scientific-reasoning/hypothesis-generation
+    - research-workflow/ideation/research-hypotheses
+  path: skills/computational_methods/scientific-skills/sk.873ac7c8f3577530/hypothesis-generation
+- skill: imaging-data-commons
+  taxonomy:
+    - medicine/medical-imaging/cancer-imaging
+    - integration/scientific-databases/imaging
+  path: skills/unresolved/scientific-skills/sk.ee7868cf15b906ad/imaging-data-commons
+- skill: infographics
+  taxonomy:
+    - visualization/scientific-visualization/infographics
+    - document-generation/visual-assets/infographics
+  path: skills/scientific_guidance/scientific-skills/sk.4aa80b3d7562192b/infographics
+- skill: iso-13485-certification
+  taxonomy:
+    - medicine/regulatory/quality-management
+    - research-workflow/compliance/medical-devices
+  path: skills/unresolved/scientific-skills/sk.629ecccab376dd28/iso-13485-certification
+- skill: labarchive-integration
+  taxonomy:
+    - lab-automation/lab-informatics/eln
+    - integration/scientific-platforms/labarchives
+  path: skills/workflows/scientific-skills/sk.00e52a9e59cf1c57/labarchive-integration
+- skill: lamindb
+  taxonomy:
+    - biology/bioinformatics/data-management
+    - data-science/data-storage/biological-datasets
+  path: skills/workflows/scientific-skills/sk.0dac23f352ccf803/lamindb
+- skill: latchbio-integration
+  taxonomy:
+    - integration/scientific-platforms/latchbio
+    - biology/bioinformatics/cloud-workflows
+  path: skills/workflows/scientific-skills/sk.f4534dac0fe1cf9f/latchbio-integration
+- skill: latex-posters
+  taxonomy:
+    - document-generation/posters/latex
+    - writing/scientific-writing/conference-materials
+  path: skills/visualizations/scientific-skills/sk.948076860043f083/latex-posters
+- skill: literature-review
+  taxonomy:
+    - literature-research/review/evidence-synthesis
+    - writing/scientific-writing/review-articles
+  path: skills/scientific_guidance/scientific-skills/sk.eefcdc913444c6e2/literature-review
+- skill: markdown-mermaid-writing
+  taxonomy:
+    - document-generation/markdown/diagrams
+    - visualization/scientific-visualization/mermaid
+  path: skills/legacy_blocked/scientific-skills/markdown-mermaid-writing
+- skill: market-research-reports
+  taxonomy:
+    - business/market-research/reports
+    - writing/report-writing/market-analysis
+  path: skills/legacy_blocked/scientific-skills/market-research-reports
+- skill: markitdown
+  taxonomy:
+    - document-processing/conversion/markdown
+    - data-science/data-ingestion/documents
+  path: skills/visualizations/scientific-skills/sk.b9ef44675146a427/markitdown
+- skill: matchms
+  taxonomy:
+    - chemistry/mass-spectrometry/spectral-similarity
+    - biology/omics/metabolomics
+  path: skills/workflows/scientific-skills/sk.0acf5402a80c9738/matchms
+- skill: matlab
+  taxonomy:
+    - scientific-computing/numerical-computing/matlab
+    - engineering/modeling/matlab
+  path: skills/scientific_guidance/scientific-skills/sk.666cc5a21042cce4/matlab
+- skill: matplotlib
+  taxonomy:
+    - visualization/scientific-visualization/plotting
+    - data-science/data-visualization/python
+  path: skills/workflows/scientific-skills/sk.6847674442ae9def/matplotlib
+- skill: medchem
+  taxonomy:
+    - chemistry/medicinal-chemistry/design
+    - chemistry/drug-discovery/property-optimization
+  path: skills/unresolved/scientific-skills/sk.e923785ee07fb637/medchem
+- skill: modal
+  taxonomy:
+    - infrastructure/compute/cloud-execution
+    - ai-ml/deployment/model-execution
+  path: skills/unresolved/scientific-skills/sk.6c51daeac5f529ce/modal
+- skill: molecular-dynamics
+  taxonomy:
+    - chemistry/molecular-simulation/molecular-dynamics
+    - simulation/molecular-systems/trajectories
+  path: skills/tool_capabilities/scientific-skills/sk.2f194563456a8a7a/molecular-dynamics
+- skill: molfeat
+  taxonomy:
+    - chemistry/cheminformatics/molecular-features
+    - ai-ml/feature-engineering/molecules
+  path: skills/computational_methods/scientific-skills/sk.1257aeb8d6526713/molfeat
+- skill: networkx
+  taxonomy:
+    - data-science/graph-analysis/network-analysis
+    - visualization/scientific-visualization/graphs
+  path: skills/unresolved/scientific-skills/sk.6cb02b52f5f10a53/networkx
+- skill: neurokit2
+  taxonomy:
+    - medicine/physiology/biomedical-signals
+    - neuroscience/signal-processing/physiological-data
+  path: skills/unresolved/scientific-skills/sk.7cfb4447dcd9ff10/neurokit2
+- skill: neuropixels-analysis
+  taxonomy:
+    - neuroscience/electrophysiology/neuropixels
+    - data-science/signal-processing/neural-recordings
+  path: skills/unresolved/scientific-skills/sk.20b1e1c2744fc941/neuropixels-analysis
+- skill: omero-integration
+  taxonomy:
+    - integration/scientific-platforms/omero
+    - image-analysis/biomedical-imaging/data-management
+  path: skills/workflows/scientific-skills/sk.bce7eb4cb81aaac4/omero-integration
+- skill: open-notebook
+  taxonomy:
+    - research-workflow/notebooks/open-science
+    - document-generation/notebooks/research-records
+  path: skills/unresolved/scientific-skills/sk.061da3dc917df12e/open-notebook
+- skill: opentrons-integration
+  taxonomy:
+    - lab-automation/robotics/liquid-handling
+    - integration/scientific-platforms/opentrons
+  path: skills/scientific_guidance/scientific-skills/sk.d12248779da5d8c0/opentrons-integration
+- skill: optimize-for-gpu
+  taxonomy:
+    - infrastructure/compute/gpu-optimization
+    - ai-ml/deployment/performance
+  path: skills/workflows/scientific-skills/sk.e636342d15f4ae9f/optimize-for-gpu
+- skill: paper-lookup
+  taxonomy:
+    - literature-research/search/papers
+    - lookup/literature/publications
+  path: skills/data_sources/scientific-skills/sk.63684f6c8bf3884a/paper-lookup
+- skill: paperzilla
+  taxonomy:
+    - literature-research/search/papers
+    - literature-research/collection-management/papers
+  path: skills/unresolved/scientific-skills/sk.8f5ab4e5ab420adb/paperzilla
+- skill: parallel-web
+  taxonomy:
+    - infrastructure/web/parallel-browsing
+    - lookup/web-research/parallel-search
+  path: skills/scientific_guidance/scientific-skills/sk.673ee4693cfaf7e7/parallel-web
+- skill: pathml
+  taxonomy:
+    - medicine/pathology/digital-pathology
+    - image-analysis/biomedical-imaging/histology
+  path: skills/computational_methods/scientific-skills/sk.d5c79b135198dae4/pathml
+- skill: pdf
+  taxonomy:
+    - document-processing/pdf/extraction
+    - document-generation/pdf/reports
+  path: skills/unresolved/scientific-skills/sk.8a0ec9b82af854ba/pdf
+- skill: peer-review
+  taxonomy:
+    - literature-research/review/peer-review
+    - writing/scientific-writing/manuscript-feedback
+  path: skills/scientific_guidance/scientific-skills/sk.b13fb4bfd7ab5e0b/peer-review
+- skill: pennylane
+  taxonomy:
+    - physics-math/quantum-computing/differentiable-programming
+    - ai-ml/quantum-ml/optimization
+  path: skills/computational_methods/scientific-skills/sk.65555b1d6fa603a5/pennylane
+- skill: phylogenetics
+  taxonomy:
+    - biology/evolution/phylogenetics
+    - biology/bioinformatics/tree-analysis
+  path: skills/tool_capabilities/scientific-skills/sk.f3ab1117151d14eb/phylogenetics
+- skill: polars
+  taxonomy:
+    - data-science/dataframes/polars
+    - data-science/data-processing/tabular
+  path: skills/workflows/scientific-skills/sk.8da055876229f10f/polars
+- skill: polars-bio
+  taxonomy:
+    - biology/genomics/interval-analysis
+    - data-science/dataframes/biological-data
+  path: skills/tool_capabilities/scientific-skills/sk.c64a3cadab69e75b/polars-bio
+- skill: pptx
+  taxonomy:
+    - document-generation/presentations/pptx
+    - writing/scientific-writing/slides
+  path: skills/visualizations/scientific-skills/sk.0c448f557109e1e1/pptx
+- skill: pptx-posters
+  taxonomy:
+    - document-generation/posters/pptx
+    - writing/scientific-writing/conference-materials
+  path: skills/visualizations/scientific-skills/sk.099d25cc1397624f/pptx-posters
+- skill: primekg
+  taxonomy:
+    - medicine/knowledge-graphs/biomedical
+    - biology/systems-biology/knowledge-graphs
+  path: skills/unresolved/scientific-skills/sk.d5582e18fd00cd37/primekg
+- skill: protocolsio-integration
+  taxonomy:
+    - lab-automation/protocols/protocols-io
+    - integration/scientific-platforms/protocols-io
+  path: skills/workflows/scientific-skills/sk.3f4b180d475e34ca/protocolsio-integration
+- skill: pufferlib
+  taxonomy:
+    - ai-ml/reinforcement-learning/environments
+    - simulation/agent-based-systems/training
+  path: skills/unresolved/scientific-skills/sk.ffa06384826c0cff/pufferlib
+- skill: pydeseq2
+  taxonomy:
+    - biology/transcriptomics/differential-expression
+    - statistics/applied-statistics/count-models
+  path: skills/computational_methods/scientific-skills/sk.20963624e4ac32b8/pydeseq2
+- skill: pydicom
+  taxonomy:
+    - medicine/medical-imaging/dicom
+    - image-analysis/biomedical-imaging/file-formats
+  path: skills/workflows/scientific-skills/sk.2c1ee1e22f88886e/pydicom
+- skill: pyhealth
+  taxonomy:
+    - medicine/healthcare-ai/clinical-ml
+    - ai-ml/deep-learning/healthcare
+  path: skills/computational_methods/scientific-skills/sk.6fa30f27a55a048e/pyhealth
+- skill: pylabrobot
+  taxonomy:
+    - lab-automation/robotics/liquid-handling
+    - lab-automation/instrument-control/python
+  path: skills/workflows/scientific-skills/sk.4fd3387ba752af0e/pylabrobot
+- skill: pymatgen
+  taxonomy:
+    - materials/materials-informatics/crystal-structures
+    - chemistry/materials-chemistry/computational-materials
+  path: skills/visualizations/scientific-skills/sk.265f01d2039598ee/pymatgen
+- skill: pymc
+  taxonomy:
+    - statistics/bayesian-statistics/probabilistic-programming
+    - ai-ml/probabilistic-modeling/bayesian-inference
+  path: skills/computational_methods/scientific-skills/sk.4612155d718e5ff2/pymc
+- skill: pymoo
+  taxonomy:
+    - ai-ml/optimization/multi-objective
+    - engineering/design-optimization/pareto-search
+  path: skills/unresolved/scientific-skills/sk.961b046c55f280cc/pymoo
+- skill: pyopenms
+  taxonomy:
+    - biology/omics/proteomics
+    - chemistry/mass-spectrometry/data-analysis
+  path: skills/workflows/scientific-skills/sk.f0f6834432ad8aa5/pyopenms
+- skill: pysam
+  taxonomy:
+    - biology/genomics/sequencing-analysis
+    - biology/bioinformatics/file-formats
+  path: skills/workflows/scientific-skills/sk.e1db0a88f74e7c69/pysam
+- skill: pytdc
+  taxonomy:
+    - chemistry/drug-discovery/benchmarks
+    - ai-ml/benchmarks/therapeutics
+  path: skills/unresolved/scientific-skills/sk.edb8113131b0bee3/pytdc
+- skill: pytorch-lightning
+  taxonomy:
+    - ai-ml/deep-learning/training-frameworks
+    - infrastructure/compute/model-training
+  path: skills/workflows/scientific-skills/sk.9079e4cacdff56b1/pytorch-lightning
+- skill: pyzotero
+  taxonomy:
+    - literature-research/citation-management/zotero
+    - integration/scientific-platforms/zotero
+  path: skills/workflows/scientific-skills/sk.e145aedcc4f56b6b/pyzotero
+- skill: qiskit
+  taxonomy:
+    - physics-math/quantum-computing/circuits
+  path: skills/unresolved/scientific-skills/sk.b963a9357de0e539/qiskit
+- skill: qutip
+  taxonomy:
+    - physics-math/quantum-physics/simulation
+    - simulation/physical-systems/quantum
+  path: skills/unresolved/scientific-skills/sk.f23f6628ebb0beff/qutip
+- skill: rdkit
+  taxonomy:
+    - chemistry/cheminformatics/molecular-toolkit
+    - chemistry/drug-discovery/molecular-representation
+  path: skills/workflows/scientific-skills/sk.54374b257adfdc4b/rdkit
+- skill: research-grants
+  taxonomy:
+    - research-workflow/funding/grant-writing
+    - writing/scientific-writing/proposals
+  path: skills/scientific_guidance/scientific-skills/sk.7a424c3d4affa5a1/research-grants
+- skill: research-lookup
+  taxonomy:
+    - lookup/research/general
+    - literature-research/search/research-context
+  path: skills/unresolved/scientific-skills/sk.8609627a8f7303dd/research-lookup
+- skill: rowan
+  taxonomy:
+    - physics-math/geometry/rotations
+    - scientific-computing/numerical-computing/quaternions
+  path: skills/workflows/scientific-skills/sk.8460cda65d4a5478/rowan
+- skill: scanpy
+  taxonomy:
+    - biology/single-cell/analysis
+    - biology/transcriptomics/single-cell-rna-seq
+  path: skills/workflows/scientific-skills/sk.aeee92be6285323e/scanpy
+- skill: scholar-evaluation
+  taxonomy:
+    - literature-research/evaluation/scholarship
+    - research-workflow/assessment/research-quality
+  path: skills/scientific_guidance/scientific-skills/sk.64ac43d7c9157c71/scholar-evaluation
+- skill: scientific-brainstorming
+  taxonomy:
+    - reasoning/scientific-reasoning/brainstorming
+    - research-workflow/ideation/research-planning
+  path: skills/unresolved/scientific-skills/sk.1061e1146eb4ba95/scientific-brainstorming
+- skill: scientific-critical-thinking
+  taxonomy:
+    - reasoning/scientific-reasoning/critique
+    - research-workflow/assessment/argument-quality
+  path: skills/scientific_guidance/scientific-skills/sk.137723a67686f11c/scientific-critical-thinking
+- skill: scientific-schematics
+  taxonomy:
+    - visualization/scientific-visualization/schematics
+    - document-generation/visual-assets/diagrams
+  path: skills/scientific_guidance/scientific-skills/sk.f1a1c327c54002a6/scientific-schematics
+- skill: scientific-slides
+  taxonomy:
+    - document-generation/presentations/scientific-slides
+    - writing/scientific-writing/presentations
+  path: skills/scientific_guidance/scientific-skills/sk.4710a3c732fd9b61/scientific-slides
+- skill: scientific-visualization
+  taxonomy:
+    - visualization/scientific-visualization/general
+    - data-science/data-visualization/scientific
+  path: skills/workflows/scientific-skills/sk.ef32e474885606d3/scientific-visualization
+- skill: scientific-writing
+  taxonomy:
+    - writing/scientific-writing/general
+    - research-workflow/communication/manuscripts
+  path: skills/scientific_guidance/scientific-skills/sk.d39505be8cacdcbd/scientific-writing
+- skill: scikit-bio
+  taxonomy:
+    - biology/bioinformatics/biological-data
+    - biology/microbiome/community-analysis
+  path: skills/computational_methods/scientific-skills/sk.baa7a2b47ba722ac/scikit-bio
+- skill: scikit-learn
+  taxonomy:
+    - ai-ml/classical-ml/general
+    - data-science/modeling/predictive-modeling
+  path: skills/workflows/scientific-skills/sk.10c48fe8f1adb510/scikit-learn
+- skill: scikit-survival
+  taxonomy:
+    - medicine/clinical-statistics/survival-analysis
+    - statistics/applied-statistics/time-to-event
+  path: skills/workflows/scientific-skills/sk.4ad92f3bfe403441/scikit-survival
+- skill: scvelo
+  taxonomy:
+    - biology/single-cell/rna-velocity
+    - biology/transcriptomics/dynamics
+  path: skills/tool_capabilities/scientific-skills/sk.78da2ddcdb384105/scvelo
+- skill: scvi-tools
+  taxonomy:
+    - biology/single-cell/probabilistic-modeling
+    - ai-ml/deep-learning/biological-representation-learning
+  path: skills/workflows/scientific-skills/sk.90e8a34e56368e48/scvi-tools
+- skill: seaborn
+  taxonomy:
+    - visualization/statistical-visualization/python
+    - data-science/data-visualization/statistical-plots
+  path: skills/tool_capabilities/scientific-skills/sk.d92f80579f7b66ba/seaborn
+- skill: shap
+  taxonomy:
+    - ai-ml/explainability/feature-attribution
+    - data-science/modeling/model-interpretation
+  path: skills/scientific_guidance/scientific-skills/sk.df59d34665bbc24a/shap
+- skill: simpy
+  taxonomy:
+    - simulation/discrete-event/process-modeling
+    - engineering/systems-modeling/discrete-event
+  path: skills/unresolved/scientific-skills/sk.3b739faf803409a5/simpy
+- skill: stable-baselines3
+  taxonomy:
+    - ai-ml/reinforcement-learning/algorithms
+    - simulation/agent-based-systems/training
+  path: skills/computational_methods/scientific-skills/sk.5d0e409a2f808941/stable-baselines3
+- skill: statistical-analysis
+  taxonomy:
+    - statistics/applied-statistics/general
+    - data-science/data-analysis/statistical-analysis
+  path: skills/scientific_guidance/scientific-skills/sk.55da73aa36abbb9b/statistical-analysis
+- skill: statsmodels
+  taxonomy:
+    - statistics/applied-statistics/regression
+    - data-science/modeling/statistical-models
+  path: skills/computational_methods/scientific-skills/sk.e772cd85f40ad08f/statsmodels
+- skill: sympy
+  taxonomy:
+    - physics-math/symbolic-math/algebra
+    - scientific-computing/numerical-computing/symbolic
+  path: skills/unresolved/scientific-skills/sk.0d95fd05ed40b4c3/sympy
+- skill: tiledbvcf
+  taxonomy:
+    - biology/genomics/variant-data
+    - data-science/data-storage/genomic-arrays
+  path: skills/unresolved/scientific-skills/sk.53863e74d5a8fce3/tiledbvcf
+- skill: timesfm-forecasting
+  taxonomy:
+    - data-science/time-series/forecasting
+    - ai-ml/foundation-models/time-series
+  path: skills/computational_methods/scientific-skills/sk.05a19172bb821b70/timesfm-forecasting
+- skill: torch-geometric
+  taxonomy:
+    - ai-ml/geometric-deep-learning/graphs
+    - data-science/graph-analysis/deep-learning
+  path: skills/tool_capabilities/scientific-skills/sk.e9de79133f909780/torch-geometric
+- skill: torchdrug
+  taxonomy:
+    - chemistry/drug-discovery/deep-learning
+    - ai-ml/geometric-deep-learning/molecules
+  path: skills/scientific_guidance/scientific-skills/sk.b021c17d8f93ea2d/torchdrug
+- skill: transformers
+  taxonomy:
+    - ai-ml/language-models/transformers
+    - ai-ml/deep-learning/foundation-models
+  path: skills/computational_methods/scientific-skills/sk.6141c39f2b92af36/transformers
+- skill: treatment-plans
+  taxonomy:
+    - medicine/clinical-care/treatment-planning
+    - medicine/clinical-documentation/care-plans
+  path: skills/legacy_blocked/scientific-skills/treatment-plans
+- skill: umap-learn
+  taxonomy:
+    - data-science/dimensionality-reduction/manifold-learning
+    - visualization/scientific-visualization/embeddings
+  path: skills/unresolved/scientific-skills/sk.c613355bb10dd943/umap-learn
+- skill: usfiscaldata
+  taxonomy:
+    - business/finance/public-finance
+    - data-science/data-access/government-data
+  path: skills/unresolved/scientific-skills/sk.cdc0a18fa04400bf/usfiscaldata
+- skill: vaex
+  taxonomy:
+    - data-science/dataframes/out-of-core
+    - data-science/data-processing/large-tabular
+  path: skills/workflows/scientific-skills/sk.d5e5e14aff17fa5e/vaex
+- skill: venue-templates
+  taxonomy:
+    - writing/scientific-writing/venue-formatting
+    - document-generation/templates/publication-venues
+  path: skills/legacy_blocked/scientific-skills/venue-templates
+- skill: what-if-oracle
+  taxonomy:
+    - reasoning/scientific-reasoning/counterfactual-analysis
+    - research-workflow/ideation/scenario-analysis
+  path: skills/unresolved/scientific-skills/sk.722818d5f302ad98/what-if-oracle
+- skill: xlsx
+  taxonomy:
+    - document-processing/spreadsheets/xlsx
+    - data-science/data-analysis/spreadsheets
+  path: skills/workflows/scientific-skills/sk.3285639f2b7b2a70/xlsx
+- skill: zarr-python
+  taxonomy:
+    - data-science/data-storage/array-data
+    - biology/bioinformatics/large-scale-arrays
+  path: skills/workflows/scientific-skills/sk.5f13ce354ad4d939/zarr-python

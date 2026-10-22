@@ -1,0 +1,27 @@
+resourceId,materialName,name,supplier,type,statusCode,description,pairedDevices
+10023,"Cs,Tips,1070 μL,non-sterile,480tips",96 Tips/1070 μL/Non-Sterile,Beckman Coulter,Pipette Tips,available,"* ( 、 ), . * 500 μL .",48: Biomek i5 Automated Liquid Handling Workstation
+10024,"Cs, Tips, 230 μL, Non-Sterile, 960 tips",96 Tips/230 μL/Non-Sterile,Beckman Coulter,Pipette Tips,available,"* ( 、 ), . * 90~920 μL, .",48: Biomek i5 Automated Liquid Handling Workstation 59: Biomek i7 Automated Liquid Handling Workstation
+10025,"Cs, Tips, 90 uL, Non-Sterile, 960 tips",96 Tips/90 μL/Non-Sterile,Beckman Coulter,Pipette Tips,available,"* ( 、 ), . * 90 μL, 360 μL .",48: Biomek i5 Automated Liquid Handling Workstation 59: Biomek i7 Automated Liquid Handling Workstation
+10026,"Cs, Tips, 230 uL, Sterile, 960 tips",96 Tips/230 μL/Sterile,Beckman Coulter,Pipette Tips,available,"* ( 、 ), DNA /RNA . * 90~920 μL, .",48: Biomek i5 Automated Liquid Handling Workstation 59: Biomek i7 Automated Liquid Handling Workstation
+10027,"HalfReservoir,75mL,Qty 24;75mL PP Reagent Reservoir",HalfReservoir/75 mL/PP Reagent Reservoir,Beckman Coulter,Reagent Reservoir,available,"* ( 96-well ), . * -well 60 mL.",59: Biomek i7 Automated Liquid Handling Workstation Span
+10028,"Quarter Reservoir,40mL,Qty48;40mL PP Reagent Reservoir",Quarter Reservoir/40 mL/PP Reagent Reservoir,Beckman Coulter,Reagent Reservoir,available,"* ( ELISA ), . * -well 32 mL.",59: Biomek i7 Automated Liquid Handling Workstation Span
+10029,"384LDV Plus, Carboxyl EQ 384-wellLDVShallow Well Plate",384 -well LDV Shallow Well Plate,LABCYTE,Echo Source Plate,available,"* / ( ELISA、 ), . * / , Echo Source . * -well 4.5~14 μL.",58: Echo525
+10030,"384PPL, CS100, CLR, RDF 384-wellPPShallow Well Plate",384 -well PPShallow Well Plate,LABCYTE,Echo Source Plate,available,"* ( 、 ), PP . * / , Echo Source . * -well 15~65 μL.",58: Echo525
+10031,"384PPL, CS100, CLR, RDF 384-wellPPShallow Well Plate",384 -well PP Shallow Well Plate,LABCYTE,Echo Source Plate,available,"* ( 、 ), . * / , Echo Source . * -well 20~65 μL.",58: Echo525
+10032,"RESERVOIR, EQ 6-well",RESERVOIR/EQ 6 -well,LABCYTE,Echo Source Plate,available,"* ( PCR ), 6 . * / , Echo Source , . * -well 2.5 mL.",58: Echo525
+10033,"8ml 12-channel Reservoir, , Low Skirt",8 mL/12 -channel Reservoir/ /Low Skirt,A-gen,Reagent Reservoir,available,"* 96 -well ( -well ), Low Skirt . * ( ), . * -well 4.8 mL.",59: Biomek i7 Automated Liquid Handling Workstation Span
+10034,"75mL 4-channel Reservoir, , High Skirt",75 mL/4 -channel Reservoir/ /High Skirt,A-gen,Reagent Reservoir,available,"* ( ), High Skirt . * ( ), . * -well 60 mL.",59: Biomek i7 Automated Liquid Handling Workstation Span
+10035,"96-channel Reservoir, , High Skirt, 290ml",290 mL/96 -channel Reservoir/ /High Skirt,A-gen,Reagent Reservoir,available,"* ( ), 290 mL . * ( ), . * -well 232 mL.",48: Biomek i5 Automated Liquid Handling Workstation 59: Biomek i7 Automated Liquid Handling Workstation
+10036,"200μL, 96-wellPCR , Full Skirt",200 μL/96 -well PCR,A-gen,Shallow Well Plate,available,"* PCR , ATC , / , Labchip . * -well 100 μL.",56: LightCycler480 II qPCR Instrument
+10037,"96 Deep Well Plate, UBottom, -well1.1ml",1.1 mL/ /UBottom/Deep Well Plate,A-gen,Deep Well Plate,available,"* ( ), UBottom . * / /1 mL . * -well 800 μL",48: Biomek i5 Automated Liquid Handling Workstation 59: Biomek i7 Automated Liquid Handling Workstation
+10038,2.2Square WellUBottom /2.2mlDeep Well Plate,2.2 mL/ /UBottom/Deep Well Plate,A-gen,Deep Well Plate,available,"* ( ), -well . * / / . * -well 1800 μL.",48: Biomek i5 Automated Liquid Handling Workstation 59: Biomek i7 Automated Liquid Handling Workstation
+10039,96-wellWhite Assay Plate,96 -wellWhite Assay Plate,GeneOn Biotech,Shallow Well Plate,available,"* ( ), . * 、 . * -well 200 μL.",55: SpectraMax i3x Multimode Microplate Reader
+10040,96-wellBlack Assay Plate,96 -wellBlack Assay Plate,GeneOn Biotech,Shallow Well Plate,available,"* ( ), -well . * . * -well 200 μL.",55: SpectraMax i3x Multimode Microplate Reader
+10041,96-wellClear Flat-Bottom Polystyrene Microplate,96 -wellClear Flat-Bottom Polystyrene Microplate,Corning,Shallow Well Plate,available,"* - ( MTT ), . * . * -well 300 μL.",55: SpectraMax i3x Multimode Microplate Reader
+10042,,Consumable-10042,NEST,Shallow Well Plate,available,* 、 . * -well 300 μL.,
+10043,LightCycler 480 Multiwell Plate 96,96-wells LightCycler 480 Multiwell Plate,Roche,Shallow Well Plate,available,* qPCR ( ). * -well 10-100 μL.,56: LightCycler480 II qPCR Instrument
+10044,"LightCycler 480 Multiwell Plate 384, white",384-wells LightCycler 480 Multiwell Plate,Roche,Shallow Well Plate,available,* qPCR ( ). * -well 2-20 μL.,56: LightCycler480 II qPCR Instrument
+10051,"Nunc square plate, 8 well","Nunc square plate, 8 well",Nunc,Shallow Well Plate,available,*,
+10052,1-wellPS,1-wellPS,SPL Life Sciences,Shallow Well Plate,available,*,
+10053,96Round WellDeep Well Plate1.0ml,96Round WellDeep Well Plate1.0ml,A-gen,Deep Well Plate,available,* / /1 mL * -well 800 μL,
+10054,Full Skirt96-well / DNA/RNA,Full Skirt96-well / DNA/RNA,,General Consumable,available,Consumable 10054 for automated workflows.,

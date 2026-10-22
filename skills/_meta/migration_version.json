@@ -1,0 +1,11 @@
+{
+  "deep_consolidation": "S4-C",
+  "historical_runtime_identities": 1105,
+  "s4a_commit": "d5890f9a6871e5c87ef1f66b956213b85d3474b6",
+  "support_locations": {
+    "skills/_meta/support/clawbio/_bioma_cli.py": "skills/_meta/support/clawbio/_bioma_cli.py",
+    "skills/_meta/support/openclaw/_bioma_module.py": "skills/_meta/support/openclaw/_bioma_module.py"
+  },
+  "template_runtime": false,
+  "version": 1
+}

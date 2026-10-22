@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bioma-peptide"
+version = "0.1.0"
+description = "Evidence-grounded autonomous execution for dry-lab peptide research"
+requires-python = ">=3.10"
+dependencies = [
+  "openai>=1.0",
+  "httpx[socks]>=0.23,<1",
+  "pydantic>=2.7,<3",
+  "python-dotenv>=1.0",
+  "requests>=2.31",
+  "pyyaml>=6.0",
+  "jsonschema>=4.0",
+  "cryptography>=41",
+]
+
+[project.scripts]
+bioma-peptide-web = "bioma.web:main"
+bioma-peptide-node = "bioma.node:main"
+
+[project.optional-dependencies]
+mini-swe = [
+  "mini-swe-agent==2.4.6",
+]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.16",
+]
+prediction = [
+  "biopython>=1.85",
+  "numpy>=1.26",
+]
+automation = [
+  "langchain-core>=0.2",
+]
+analysis = [
+  "scipy>=1.11",
+  "statsmodels>=0.14.6,<0.16",
+  "ruff>=0.16",
+  "markdown>=3.6",
+  "matplotlib>=3.8",
+  "numpy>=1.26",
+  "openpyxl>=3.1",
+  "pandas>=2.2",
+  "reportlab>=4.0",
+  "xhtml2pdf>=0.2",
+  "xlrd>=2.0",
+]
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.package-data]
+"bioma" = ["static/*.html", "static/*.css", "static/*.js", "static/vendor/*.js", "resources/capabilities/v1/*.json"]
+"bioma_resources" = ["configs/*.yaml", "skills/**/*", "skills/**/.*", "skills/**/.*/**/*", "tools/**/*", "devices/*"]
+"bioma.backends.automation" = ["resources/registry/*.json", "resources/registry/*.csv"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

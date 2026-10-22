@@ -1,0 +1,13 @@
+# Instrument/consumable inventory: src/bioma/biopro/data/registry/
+# Registration and loader details: docs/operagent_registry_zh.md
+# This manifest lists execution backends, not laboratory resource IDs.
+devices:
+  - id: simulator
+    type: simulator
+    capabilities: [execute_protocol]
+    enabled: true
+  # Add production devices only after verification policies are configured.
+  # - id: device_001
+  #   type: automation
+  #   capabilities: [...]
+  #   enabled: false

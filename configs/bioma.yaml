@@ -1,0 +1,49 @@
+gateway:
+  llm:
+    backend: openai
+    model: gpt-5.4
+    max_output_parameter: max_completion_tokens
+    max_output_tokens: 16384
+    timeout_seconds: 180.0
+    api_base: https://token.chatexcel.com/v1/
+    api_key_env: CHATEXCEL_API_KEY
+  max_interpretation_attempts: 2
+
+predagent:
+  step_fusion:
+    reference_models:
+      - name: deepseek-reference-1
+        llm: {backend: openai, model: gpt-5.4, max_output_parameter: max_completion_tokens, max_output_tokens: 768, timeout_seconds: 20.0, api_base: https://token.chatexcel.com/v1/, api_key_env: CHATEXCEL_API_KEY}
+      - name: deepseek-reference-2
+        llm: {backend: openai, model: gpt-5.4, max_output_parameter: max_completion_tokens, max_output_tokens: 768, timeout_seconds: 20.0, api_base: https://token.chatexcel.com/v1/, api_key_env: CHATEXCEL_API_KEY}
+    coordinator:
+      name: coordinator
+      llm: {backend: openai, model: gpt-5.4, max_output_parameter: max_completion_tokens, max_output_tokens: 8192, timeout_seconds: 120.0, api_base: https://token.chatexcel.com/v1/, api_key_env: CHATEXCEL_API_KEY}
+    reference_timeout_seconds: 20.0
+    reference_total_seconds: 30.0
+    reference_max_calls: 4
+    reference_max_output_tokens: 3072
+    coordinator_reserve_seconds: 45.0
+    reference_interval_steps: 4
+    max_reference_workers: 8
+  max_steps: 18
+  max_tool_calls: 20
+  skill_roots: [skills]
+  taxonomy_path: skills/bio-skills-curated.taxonomy.yaml
+  tool_roots: [tools/our_tools, tools/stella, tools/community]
+
+proagent:
+  llm: {backend: openai, model: gpt-5.4, max_output_parameter: max_completion_tokens, max_output_tokens: 8192, timeout_seconds: 120.0, api_base: https://token.chatexcel.com/v1/, api_key_env: CHATEXCEL_API_KEY}
+  max_rectifications: 3
+
+operagent:
+  llm: {backend: openai, model: gpt-5.4, max_output_parameter: max_completion_tokens, max_output_tokens: 8192, timeout_seconds: 120.0, api_base: https://token.chatexcel.com/v1/, api_key_env: CHATEXCEL_API_KEY}
+  max_rectifications: 3
+
+comagent:
+  harness_mode: governed
+  llm: {backend: openai, model: gpt-5.4, max_output_parameter: max_completion_tokens, max_output_tokens: 16384, timeout_seconds: 120.0, api_base: https://token.chatexcel.com/v1/, api_key_env: CHATEXCEL_API_KEY}
+  delivery_review_llm: {backend: openai, model: gpt-5.4, max_output_parameter: max_completion_tokens, max_output_tokens: 4096, timeout_seconds: 90.0, api_base: https://token.chatexcel.com/v1/, api_key_env: CHATEXCEL_API_KEY}
+  max_llm_calls: 24
+  max_tool_calls: 32
+  max_retry_per_step: 2

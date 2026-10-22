@@ -1,0 +1,59 @@
+[
+  {
+    "key": "deseq2",
+    "run_id": "3061c566-661c-45e5-986a-0b52d40dde52",
+    "session_id": "7830d352-d1ca-4395-a09b-6b292e1e7a40",
+    "title": "DESeq2 · MASH 肝组织",
+    "cover": "volcano_plot.png",
+    "target": "deseq2_report.pdf",
+    "scope": "143 份人体肝组织样本；使用预先准备的 R 脚本执行。"
+  },
+  {
+    "key": "cellchat",
+    "run_id": "fd03c862-1c59-40b8-9672-c7dbea5b50f7",
+    "session_id": "f8e6bd5f-680d-4fcf-97ef-f81db54b247c",
+    "title": "CellChat · 细胞通信",
+    "cover": "communication_count.png",
+    "target": "cellchat_report.pdf",
+    "scope": "人皮肤示例的 600 细胞子集；计算推断的通信网络。"
+  },
+  {
+    "key": "b2m",
+    "run_id": "5baed9e0-2f9d-4114-81ee-bc80224bd13e",
+    "session_id": "a3d1036f-64ba-45e0-9a33-2c4b6dcf31fa",
+    "title": "B2M · AlphaFold2 结构",
+    "cover": "plddt.png",
+    "target": "b2m.pdb",
+    "scope": "119 aa；真实本地 GPU 推理。点击打开可旋转三维结构。"
+  },
+  {
+    "key": "gastric-sc",
+    "run_id": "5c82c062-e294-4c65-aba2-0a9eab0bcafc",
+    "session_id": "8c208cdd-3f3b-43a7-99a4-cc8ee2e87650",
+    "title": "胃癌单细胞数据 · GSE206785",
+    "cover": "metadata_category_chart.png",
+    "target": "dataset_overview.md",
+    "scope": "2022 年公开数据；24 位患者、111,140 条细胞元数据记录；仅展示来源与元数据概览。",
+    "prompt": "请查找并核验一个近年的胃癌单细胞数据集，给出公开来源、队列和细胞注释概览，并生成可查看的预览与分布图。"
+  },
+  {
+    "key": "gbm-grn",
+    "run_id": "59960390-0f6e-4989-931d-8864dae977b8",
+    "session_id": "f06c7369-5914-4d5a-a618-098782404012",
+    "title": "胶质母细胞瘤 · GRN 与 TF 活性",
+    "cover": "grn_network.png",
+    "target": "gbm_grn_report.pdf",
+    "scope": "GSE214966；4 位患者、800 个分层抽样细胞；CollecTRI 先验约束的探索性推断。",
+    "prompt": "从胶质母细胞瘤单细胞 RNA-seq 数据集中推断基因调控网络和转录因子活性，并生成包含全部图表的 PDF 报告。"
+  },
+  {
+    "key": "lv-t2d-coexpression",
+    "run_id": "aed1c652-aa3f-424c-afe0-7f4806723c02",
+    "session_id": "77285678-7dac-4a86-8553-c0ad9329cfbc",
+    "title": "人左心室 T2D · 共表达网络",
+    "cover": "module_trait_heatmap.png",
+    "target": "lv_t2d_coexpression_report.pdf",
+    "scope": "GSE236191；30 个非糖尿病与 10 个 T2D 心肌活检；探索性模块和枢纽基因。",
+    "prompt": "为人类左心室加 2 型糖尿病 RNA-seq 数据构建共表达网络，识别基因模块与枢纽基因，并生成包含全部图表的 PDF 报告。"
+  }
+]

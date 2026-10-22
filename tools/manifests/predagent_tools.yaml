@@ -1,0 +1,499 @@
+# PredAgent tool manifest — approved tools for governance tracking
+name: predagent
+version: "1.0.0"
+description: "Core protein, DNA, small molecule, and document analysis tools"
+
+tools:
+  - name: fetch_sequence_by_uniprot_id
+    category: database
+    version: "1.0.0"
+    description: "Fetch protein sequence from UniProt"
+    status: approved
+    risk_level: low
+
+  - name: normalize_sequence
+    category: analysis
+    version: "1.0.0"
+    description: "Normalize protein sequence"
+    status: approved
+    risk_level: low
+
+  - name: apply_mutations_to_sequence
+    category: analysis
+    version: "1.0.0"
+    description: "Apply point mutations to protein sequence"
+    status: approved
+    risk_level: low
+
+  - name: evaluate_mutations_with_esm2
+    category: analysis
+    version: "1.0.0"
+    description: "ESM-2 mutation scoring"
+    status: approved
+    risk_level: low
+    requires_model: esm2
+
+  - name: evaluate_mutation_matrix_with_esm2
+    category: analysis
+    version: "1.0.0"
+    description: "Batch ESM-2 masked-marginal scoring for mutation matrices"
+    status: approved
+    risk_level: low
+    requires_model: esm2
+
+  - name: generate_r7_candidate_combinations
+    category: analysis
+    version: "1.0.0"
+    description: "Generate R7 step 3.1 candidate mutation-combination CSV from options YAML"
+    status: approved
+    risk_level: low
+
+  - name: write_r7_top5_artifacts
+    category: analysis
+    version: "1.0.0"
+    description: "Write R7 Top 5 artifacts from selected candidate IDs"
+    status: approved
+    risk_level: low
+
+  - name: predict_protein_contacts_with_esm2
+    category: analysis
+    version: "1.0.0"
+    description: "ESM-2 contact prediction"
+    status: approved
+    risk_level: low
+
+  - name: extract_protein_embeddings_with_esm2
+    category: analysis
+    version: "1.0.0"
+    description: "ESM-2 t33 sequence embedding extraction"
+    status: approved
+    risk_level: low
+    requires_model: esm2
+
+  - name: get_amino_acid_properties
+    category: analysis
+    version: "1.0.0"
+    description: "Amino acid physicochemical properties"
+    status: approved
+    risk_level: low
+
+  - name: fetch_pdb_structure
+    category: database
+    version: "1.0.0"
+    description: "Download PDB structure from RCSB"
+    status: approved
+    risk_level: low
+
+  - name: fetch_pdb_by_id
+    category: database
+    version: "1.0.0"
+    description: "Fetch raw PDB content from RCSB by PDB ID"
+    status: approved
+    risk_level: low
+
+  - name: fetch_alphafold_structures
+    category: database
+    version: "1.0.0"
+    description: "Retrieve AlphaFold DB metadata and optional PDB/mmCIF files"
+    status: approved
+    risk_level: low
+
+  - name: parse_pdb_chains
+    category: analysis
+    version: "1.0.0"
+    description: "Parse PDB chains and sequences"
+    status: approved
+    risk_level: low
+
+  - name: identify_binding_sites
+    category: analysis
+    version: "1.0.0"
+    description: "Identify protein binding sites"
+    status: approved
+    risk_level: low
+
+  - name: detect_binding_pockets
+    category: analysis
+    version: "1.0.0"
+    description: "Detect apo-protein pockets with fpocket or P2Rank"
+    status: approved
+    risk_level: low
+
+  - name: get_sequence_from_pdb_with_biopython
+    category: analysis
+    version: "1.0.0"
+    description: "Extract sequence from PDB content using Biopython"
+    status: approved
+    risk_level: low
+
+  - name: find_binding_site_residues_with_biopython
+    category: analysis
+    version: "1.0.0"
+    description: "Find residues near a center residue in PDB content using Biopython"
+    status: approved
+    risk_level: low
+
+  - name: predict_structure_esmfold
+    category: analysis
+    version: "1.0.0"
+    description: "ESMFold structure prediction"
+    status: approved
+    risk_level: low
+
+  - name: esmf_predict_protein_structure
+    category: analysis
+    version: "1.0.0"
+    description: "Configured ESMFold API structure prediction"
+    status: approved
+    risk_level: low
+
+  - name: omegafold_predict_structure
+    category: analysis
+    version: "1.0.0"
+    description: "Configured OmegaFold API structure prediction"
+    status: approved
+    risk_level: low
+
+  - name: predict_cyclic_peptide_structure
+    category: analysis
+    version: "1.0.0"
+    description: "Boltz cyclic-peptide and protein-peptide structure prediction"
+    status: approved
+    risk_level: low
+
+  - name: mmseqs2_generate_msa
+    category: analysis
+    version: "1.0.0"
+    description: "Configured MMseqs2 API MSA generation"
+    status: approved
+    risk_level: low
+
+  - name: relax_structure_amber
+    category: analysis
+    version: "1.0.0"
+    description: "AMBER energy minimization"
+    status: approved
+    risk_level: low
+
+  - name: amber_relax_structure
+    category: analysis
+    version: "1.0.0"
+    description: "Configured AMBER Relaxation API"
+    status: approved
+    risk_level: low
+
+  - name: compute_structure_energy
+    category: analysis
+    version: "1.0.0"
+    description: "AMBER potential energy calculation"
+    status: approved
+    risk_level: low
+
+  - name: evoef2_calculate_energy
+    category: analysis
+    version: "1.0.0"
+    description: "Configured EvoEF2 stability and binding energy calculation"
+    status: approved
+    risk_level: low
+
+  - name: saprot_predict_function
+    category: analysis
+    version: "1.0.0"
+    description: "Configured SaProt structure-aware property prediction"
+    status: approved
+    risk_level: low
+
+  - name: deeptp_predict_protein_properties
+    category: analysis
+    version: "1.0.0"
+    description: "DeepTP thermophilic protein prediction"
+    status: approved
+    risk_level: low
+
+  - name: ephod_predict_optimal_ph
+    category: analysis
+    version: "1.0.0"
+    description: "EpHod optimal pH prediction"
+    status: approved
+    risk_level: low
+
+  - name: netsolp_predict_solubility
+    category: analysis
+    version: "1.0.0"
+    description: "NetSolP solubility and usability prediction"
+    status: approved
+    risk_level: low
+
+  - name: pptstab_predict_tm
+    category: analysis
+    version: "1.0.0"
+    description: "PPTStab protein Tm prediction"
+    status: approved
+    risk_level: low
+
+  - name: predict_cyclic_peptide_permeability
+    category: analysis
+    version: "1.0.0"
+    description: "CPMP PAMPA, Caco-2, RRCK, and MDCK prediction"
+    status: approved
+    risk_level: low
+
+  - name: evaluate_mutation_matrix_with_developability_tools
+    category: analysis
+    version: "1.0.0"
+    description: "Batch candidate-matrix scoring with PPTStab, NetSolP, DeepTP, and EpHod"
+    status: approved
+    risk_level: low
+
+  - name: fold_mutation_matrix_structures
+    category: analysis
+    version: "1.0.0"
+    description: "Prepare local PDB structure artifacts and reusable structure URLs for R7 candidate matrices"
+    status: approved
+    risk_level: low
+
+  - name: score_folded_mutation_matrix_structures
+    category: analysis
+    version: "1.0.0"
+    description: "Score folded R7 candidate structures with local PDB pLDDT and optional EvoEF2 energy"
+    status: approved
+    risk_level: low
+
+  - name: filter_r7_candidate_matrix
+    category: analysis
+    version: "1.0.0"
+    description: "Rank and shortlist R7 candidate matrices at each funnel stage"
+    status: approved
+    risk_level: low
+
+  - name: write_r7_top5_auto_artifacts
+    category: analysis
+    version: "1.0.0"
+    description: "Automatically write final R7 Top 5 artifacts from a ranked matrix"
+    status: approved
+    risk_level: low
+
+  - name: compute_molecular_properties
+    category: analysis
+    version: "1.0.0"
+    description: "RDKit molecular properties"
+    status: approved
+    risk_level: low
+
+  - name: compute_molecular_similarity
+    category: analysis
+    version: "1.0.0"
+    description: "Tanimoto similarity"
+    status: approved
+    risk_level: low
+
+  - name: search_substructure
+    category: analysis
+    version: "1.0.0"
+    description: "SMARTS substructure search"
+    status: approved
+    risk_level: low
+
+  - name: generate_3d_conformation
+    category: analysis
+    version: "1.0.0"
+    description: "3D conformation generation"
+    status: approved
+    risk_level: low
+
+  - name: calculate_basic_mol_properties_with_rdkit
+    category: analysis
+    version: "1.0.0"
+    description: "RDKit basic molecular property calculation"
+    status: approved
+    risk_level: low
+
+  - name: find_similar_molecules_with_rdkit
+    category: analysis
+    version: "1.0.0"
+    description: "RDKit Morgan-fingerprint similarity search"
+    status: approved
+    risk_level: low
+
+  - name: perform_substructure_search_with_rdkit
+    category: analysis
+    version: "1.0.0"
+    description: "RDKit SMARTS substructure search"
+    status: approved
+    risk_level: low
+
+  - name: generate_3d_conformation_with_rdkit
+    category: analysis
+    version: "1.0.0"
+    description: "RDKit 3D conformer generation"
+    status: approved
+    risk_level: low
+
+  - name: build_crosslinked_peptide_topology
+    category: analysis
+    version: "1.1.0"
+    description: "Build and validate a chemically specified crosslinked peptide topology"
+    status: approved
+    risk_level: low
+
+  - name: generate_rdkit_conformer_ensemble
+    category: analysis
+    version: "1.2.0"
+    description: "Generate a multi-seed RDKit conformer ensemble from a validated topology"
+    status: approved
+    risk_level: low
+
+  - name: generate_boltz_conformer_ensemble
+    category: analysis
+    version: "1.0.0"
+    description: "Generate Boltz custom-CCD coordinate proposals for a validated crosslinked peptide and project them onto the RDKit master graph"
+    status: approved
+    risk_level: medium
+    requires_model: boltz2
+
+  - name: optimize_conformer_ensemble_with_xtb
+    category: analysis
+    version: "1.1.0"
+    description: "Optimize conformer ensembles with resource-aware parallel xTB calculations"
+    status: approved
+    risk_level: medium
+
+  - name: validate_cluster_select_conformers
+    category: analysis
+    version: "1.2.0"
+    description: "Validate, cluster, rank, and select conformers for a workflow stage"
+    status: approved
+    risk_level: low
+
+  - name: export_structure_ensemble
+    category: file
+    version: "1.1.0"
+    description: "Export a validated conformer ensemble as complete PDB, SDF, CSV, and JSON artifacts"
+    status: approved
+    risk_level: low
+
+  - name: compute_gc_content
+    category: analysis
+    version: "1.0.0"
+    description: "DNA GC content calculation"
+    status: approved
+    risk_level: low
+
+  - name: reverse_complement
+    category: analysis
+    version: "1.0.0"
+    description: "DNA reverse complement"
+    status: approved
+    risk_level: low
+
+  - name: find_open_reading_frames
+    category: analysis
+    version: "1.0.0"
+    description: "ORF detection"
+    status: approved
+    risk_level: low
+
+  - name: translate_dna_to_protein
+    category: analysis
+    version: "1.0.0"
+    description: "DNA to protein translation"
+    status: approved
+    risk_level: low
+
+  - name: analyze_codon_usage
+    category: analysis
+    version: "1.0.0"
+    description: "Codon usage analysis"
+    status: approved
+    risk_level: low
+
+  - name: extract_sequence_from_fasta
+    category: analysis
+    version: "1.0.0"
+    description: "Extract clean sequence from FASTA content"
+    status: approved
+    risk_level: low
+
+  - name: find_longest_orf
+    category: analysis
+    version: "1.0.0"
+    description: "Find the longest complete forward-strand ORF"
+    status: approved
+    risk_level: low
+
+  - name: translate_dna
+    category: analysis
+    version: "1.0.0"
+    description: "Translate DNA coding sequence"
+    status: approved
+    risk_level: low
+
+  - name: calc_translation_efficiency
+    category: analysis
+    version: "1.0.0"
+    description: "Simple codon-usage translation efficiency estimate"
+    status: approved
+    risk_level: low
+
+  - name: amino_acid_at_position
+    category: analysis
+    version: "1.0.0"
+    description: "Read amino acid at a position in a translated ORF"
+    status: approved
+    risk_level: low
+
+  - name: amino_acid_in_longest_orf
+    category: analysis
+    version: "1.0.0"
+    description: "Read amino acid at a position in the longest ORF"
+    status: approved
+    risk_level: low
+
+  - name: amino_acid_in_longest_orf_six_frame
+    category: analysis
+    version: "1.0.0"
+    description: "Read amino acid at a position in the longest six-frame ORF"
+    status: approved
+    risk_level: low
+
+  - name: restriction_digest
+    category: analysis
+    version: "1.0.0"
+    description: "Restriction digest for common enzymes"
+    status: approved
+    risk_level: low
+
+  - name: design_pcr_primers
+    category: analysis
+    version: "1.0.0"
+    description: "Simple PCR primer design"
+    status: approved
+    risk_level: low
+
+  - name: parse_fasta_file
+    category: file
+    version: "1.0.0"
+    description: "FASTA file parser"
+    status: approved
+    risk_level: low
+
+  - name: parse_pdb_file
+    category: file
+    version: "1.0.0"
+    description: "PDB file parser"
+    status: approved
+    risk_level: low
+
+  - name: parse_csv_data
+    category: file
+    version: "1.0.0"
+    description: "CSV/TSV data parser"
+    status: approved
+    risk_level: low
+
+  - name: extract_text_from_pdf
+    category: file
+    version: "1.0.0"
+    description: "PDF text extraction"
+    status: approved
+    risk_level: low
