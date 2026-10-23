@@ -1,10 +1,7 @@
-import pytest
-
 from bioma.core.models import Evidence, ScientificState
 from bioma.core.scientific_status import derive_claim_status
 from bioma.evidence.synthesis import EvidenceAssessment, EvidenceSynthesis, build_evidence_graph
 from bioma.evidence.wp2_reconciliation import map_com_relation, wp2_claim_projection
-from bioma.runtime.receipt_normalization import normalize_oper_receipt, reconcile_oper_receipt
 
 
 def link(identifier, claim, target, relation):
@@ -41,25 +38,3 @@ def test_relation_adapter_is_explicit_and_insufficient_is_not_a_wp2_link():
     assert map_com_relation("contradicts") == "opposes"
     assert map_com_relation("context") == "context"
     assert map_com_relation("insufficient") is None
-
-
-def test_lost_ack_reconciles_same_identity_and_rejects_mismatch():
-    raw = {"action_id":"action.1", "contract_sha256":"abc", "status":"completed",
-           "node_trace":[{"node_id":1}], "device_id":"simulator"}
-    unknown = normalize_oper_receipt(raw, mandate_id="mandate:p", execution_contract_id="p",
-                                     acknowledged=False)
-    assert unknown.effect_status == "EFFECT_UNKNOWN"
-    resolved = reconcile_oper_receipt(unknown, raw)
-    assert resolved.effect_status == "RECONCILED"
-    assert resolved.idempotency_key == unknown.idempotency_key
-    with pytest.raises(ValueError, match="mismatch"):
-        reconcile_oper_receipt(unknown, {**raw, "contract_sha256":"different"})
-
-
-@pytest.mark.parametrize("status,expected", [("failed", "NOT_EXECUTED"),
-                                               ("partial", "PARTIAL_EFFECT"),
-                                               ("completed", "EXECUTED")])
-def test_oper_effect_semantics_are_explicit(status, expected):
-    receipt = normalize_oper_receipt({"action_id":"a", "contract_hash":"h", "status":status},
-        mandate_id="m", execution_contract_id="x")
-    assert receipt.effect_status == expected

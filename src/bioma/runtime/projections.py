@@ -1,31 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Iterable
-
-from .ledger import LedgerEvent, replay
 from bioma.core.models import ScientificState, ScientificTask
-
-
-@dataclass(frozen=True)
-class ProjectionPolicy:
-    agent_id: str
-    readable_kinds: frozenset[str]
-    allow_own_events: bool = True
-    redact_fields: frozenset[str] = frozenset({"api_key", "token", "secret"})
-
-
-def authorized_projection(events: Iterable[LedgerEvent], policy: ProjectionPolicy) -> dict[str, Any]:
-    selected = []
-    for event in events:
-        if event.kind not in policy.readable_kinds and not (policy.allow_own_events and event.actor == policy.agent_id):
-            continue
-        payload = {key: value for key, value in event.payload.items() if key.casefold() not in policy.redact_fields}
-        selected.append(LedgerEvent(event.sequence, event.event_id, event.run_id, event.kind, event.actor, payload, event.idempotency_key, event.previous_hash, event.event_hash, event.created_at))
-    graph = replay(selected)
-    graph["agent_id"] = policy.agent_id
-    graph["source_event_count"] = len(selected)
-    return graph
 
 
 # Field classes describe access, not the scientific credibility of their contents.
