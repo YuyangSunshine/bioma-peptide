@@ -2,8 +2,7 @@
 from contextlib import closing
 import time
 from bioma.core.research import fingerprint
-from bioma.memory.models import MemoryRecord
-from bioma.memory.store import MemoryStore
+from bioma.memory.store import MemoryRecord, MemoryStore
 from bioma.memory.retrieval import MemoryRetriever
 
 

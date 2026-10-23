@@ -5,8 +5,9 @@ from __future__ import annotations
 import json
 import re
 import hashlib
+from collections.abc import Mapping
 from copy import deepcopy
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 from bioma.harness.policy import (
     delivery_revision_pending,
@@ -15,13 +16,97 @@ from bioma.harness.policy import (
 )
 from bioma.llm import ModelTransportError, ModelOutputBudgetError, provider_for
 from bioma.runtime.deadline import ExecutionTimeout
-from bioma.runtime.progress import ProgressGuard
 from bioma.runtime.telemetry import emit
 
 if TYPE_CHECKING:
     from bioma.harness.budget import HarnessBudget
     from bioma.harness.types import HarnessContext, HarnessTool
     from bioma.config import ScientificInvestigationConfig
+
+
+_DIAGNOSTIC_FIELDS = {
+    "summary", "warnings", "timestamp", "created_at", "updated_at",
+    "elapsed_seconds", "duration_seconds", "stage_log", "messages",
+    "harness_observations", "harness_telemetry", "harness_workflow_recommendation",
+    "next_recommendation", "workflow_recommendation", "error_code", "error_detail",
+}
+
+
+def _progress_content(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        return {str(key): _progress_content(item) for key, item in value.items()
+                if key not in _DIAGNOSTIC_FIELDS}
+    if isinstance(value, (list, tuple)):
+        return [_progress_content(item) for item in value]
+    return value
+
+
+def _progress_fingerprint(value: Any) -> str:
+    raw = json.dumps(value, sort_keys=True, ensure_ascii=False, default=str)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _observation_failed(observation: Any) -> bool:
+    return isinstance(observation, Mapping) and (
+        observation.get("success") is False
+        or bool(observation.get("error"))
+        or observation.get("status") in ("error", "failed", "blocked")
+    )
+
+
+class ProgressGuard:
+    """Bound consecutive loop rounds without new successful results or state."""
+
+    def __init__(self, max_stalled_steps: int = 3, *, state: Any = None) -> None:
+        if max_stalled_steps < 1:
+            raise ValueError("max_stalled_steps must be positive")
+        self.limit = max_stalled_steps
+        self.stalled_steps = 0
+        self._seen_results: set[str] = set()
+        self._seen_state: set[str] = set()
+        self._record_state(state)
+        self._advanced = False
+        self.last_tool: str | None = None
+        self.last_status: str | None = None
+
+    def _record_state(self, state: Any) -> bool:
+        values = _progress_content(state or {})
+        novel = False
+        for key, value in values.items():
+            token = _progress_fingerprint([key, value])
+            novel |= token not in self._seen_state
+            self._seen_state.add(token)
+        return novel
+
+    def observe(self, name: str, arguments: Any, observation: Any, *, state: Any = None) -> None:
+        self.last_tool = name
+        failed = _observation_failed(observation)
+        self.last_status = "failed" if failed else "ok"
+        if failed:
+            return
+        token = _progress_fingerprint([name, arguments, _progress_content(observation)])
+        new_result = token not in self._seen_results
+        self._seen_results.add(token)
+        new_state = self._record_state(state)
+        self._advanced |= new_result or new_state
+
+    def finish_step(self, *, count_stall: bool = True) -> bool:
+        self.stalled_steps = 0 if self._advanced else self.stalled_steps + int(count_stall)
+        self._advanced = False
+        return self.stalled_steps >= self.limit
+
+    def diagnostic(self) -> dict[str, Any]:
+        return {"reason": "no_progress", "stalled_steps": self.stalled_steps,
+                "limit": self.limit, "last_tool": self.last_tool,
+                "last_status": self.last_status}
+
+    def feedback(self) -> str:
+        return (
+            f"No effective progress for {self.stalled_steps}/{self.limit} rounds. "
+            "Repeated results and failed calls do not advance the task. "
+            "Resolve the reported prerequisite or change the approach; "
+            "otherwise stop and explain the blocker without claiming completion."
+        )
 
 
 _HARNESS_TEMPLATE = """\

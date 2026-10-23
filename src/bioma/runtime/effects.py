@@ -78,24 +78,6 @@ class EffectManager:
 
     def authorize_tool(self, tool, run_id, arguments=None, *, action_instance_id=None):
         arguments = arguments or {}
-        if tool.category == 'paid-remote-compute':
-            ceiling = arguments.get('max_credits')
-            estimate = arguments.get('estimated_credits')
-            if not all(isinstance(value, (int, float)) and not isinstance(value, bool)
-                       and value > 0 for value in (ceiling, estimate)):
-                raise PermissionError('Paid remote compute requires credit limits')
-            prior = {}
-            for event in self.ledger.events(run_id):
-                if event.kind != 'EffectStarted':
-                    continue
-                contract = event.payload.get('contract') or {}
-                prior_args = contract.get('arguments') or {}
-                prior_id = contract.get('action_instance_id')
-                if (contract.get('tool', '').startswith('neurosnap_submit_')
-                        and prior_id and prior_id != action_instance_id):
-                    prior.setdefault(prior_id, float(prior_args.get('estimated_credits') or 0))
-            if sum(prior.values()) + float(estimate) > float(ceiling):
-                raise PermissionError('NeuroSnap run credit ceiling would be exceeded')
         if self.trust is None or tool.replay_safe:
             return
         self.trust.require(self.principal, 'effect.execute', run_id=run_id)

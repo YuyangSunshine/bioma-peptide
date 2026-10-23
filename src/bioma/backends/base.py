@@ -95,17 +95,7 @@ class ScientificBackend:
                 if self.family == 'scientific.evidence_assessment':
                     raise ValueError('Evidence assessment methods have no executable tools')
                 retrieval = self.family == 'scientific.research' and tool.replay_safe and tool.result_kind == 'retrieved_fact'
-                paid_compute = (self.family == 'scientific.compute'
-                    and tool.category == 'paid-remote-compute'
-                    and tool.external_effect and not tool.replay_safe
-                    and tool.result_kind == 'remote_compute_job'
-                    and tool.requires_network
-                    and {'provider:neurosnap', 'credits:neurosnap'} <= set(tool.resources)
-                    and 'neurosnap-exact-service' in tool.tags
-                    and sum(tag.startswith('service:') for tag in tool.tags) == 1
-                    and tool.result_validator is not None
-                    and tool.reconcile_effect is not None)
-                if self.family != 'scientific.execution' and tool.external_effect and not (retrieval or paid_compute):
+                if self.family != 'scientific.execution' and tool.external_effect and not retrieval:
                     raise ValueError('Only execution methods can expose external effects')
                 if self.family == 'scientific.study_design' and tool.result_kind not in {'source', 'source_set', 'retrieved_fact'}:
                     raise ValueError('Study design accepts reference tools only')
