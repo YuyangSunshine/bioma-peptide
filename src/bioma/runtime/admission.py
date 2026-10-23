@@ -8,7 +8,6 @@ from contextvars import ContextVar
 from functools import lru_cache
 
 from bioma.core.action_contracts import check_predicates, prospective_state
-from bioma.core.protocol_policy import active_policy
 from bioma.core.research import fingerprint
 from bioma.core.transitions import ExecutionPermit, ExecutionResult, TransitionProposal, check_read_set
 
@@ -127,7 +126,6 @@ class TransitionAdmission:
         if any(c.__module__ in {'bioma.agents.queryagent', 'bioma.agents.predagent', 'bioma.agents.comagent', 'bioma.agents.proagent', 'bioma.agents.operagent'} for c in type(agent).__mro__):
             raise ExecutionAuthorizationError('Legacy role execution is retired; use a direct MethodBinding')
         from bioma.core.methods import validate_method_binding, validate_method_result
-        policy = active_policy()
         validate_method_binding(agent, message)
         if self.provider_check:
             self.provider_check(message)
@@ -160,22 +158,17 @@ class TransitionAdmission:
         resources = proposal.contract.resources
         rule_refs = ['transition-proposal-v1', 'scientific-action-v1']
         try:
-            if policy.admission:
-                if capability is not None:
-                    from bioma.capabilities.registry import RISK_ORDER
-                    if RISK_ORDER[proposal.risk] > RISK_ORDER[capability.max_risk_level]:
-                        raise ValueError('Risk ceiling exceeded: proposed ' + proposal.risk +
-                                         ' exceeds capability ceiling ' + capability.max_risk_level)
-                check_predicates(proposal.contract.preconditions, symbolic, 'precondition_failed')
-                check_predicates(proposal.contract.invariants, {**symbolic, 'after': symbolic['state']}, 'initial_invariant')
-                if resources and (self.available_resources is None or not set(resources) <= set(self.available_resources)):
-                    raise ValueError('Resource unavailable: an explicit authoritative inventory is required')
-                if resources and self.ledger is None:
-                    raise ValueError('Resource actions require durable execution authority')
-            else:
-                # Experimental ablation: the mandate is still issued, so commit
-                # remains possible, but no admission rule was enforced.
-                rule_refs.append('ablation:admission')
+            if capability is not None:
+                from bioma.capabilities.registry import RISK_ORDER
+                if RISK_ORDER[proposal.risk] > RISK_ORDER[capability.max_risk_level]:
+                    raise ValueError('Risk ceiling exceeded: proposed ' + proposal.risk +
+                                     ' exceeds capability ceiling ' + capability.max_risk_level)
+            check_predicates(proposal.contract.preconditions, symbolic, 'precondition_failed')
+            check_predicates(proposal.contract.invariants, {**symbolic, 'after': symbolic['state']}, 'initial_invariant')
+            if resources and (self.available_resources is None or not set(resources) <= set(self.available_resources)):
+                raise ValueError('Resource unavailable: an explicit authoritative inventory is required')
+            if resources and self.ledger is None:
+                raise ValueError('Resource actions require durable execution authority')
             # Admission issues the execution mandate. The mandate carries the
             # authority ceiling and the effects the executor may produce (I3/I5).
             permitted = sorted(set(proposal.write_set) & set(proposal.contract.writable_fields))
@@ -236,7 +229,7 @@ class TransitionAdmission:
                     delta = agent.handle(state.model_copy(deep=True), message.model_copy(deep=True))
                 if delta.transition is not None:
                     raise ValueError('Agent cannot supply its own admission proof')
-                if policy.evidence_gate and set(delta.updates) - set(proposal.write_set):
+                if set(delta.updates) - set(proposal.write_set):
                     raise ValueError('Actual effects exceed proposed write set')
                 if delta.status != 'proposed':
                     raise ValueError('Agent cannot self-verify a transition')
@@ -249,12 +242,11 @@ class TransitionAdmission:
                 from bioma.runtime.boundaries import normalize_work_result
                 delta = normalize_work_result(state, proposal, raw_delta)
                 after = prospective_state(state, delta)
-                if policy.evidence_gate:
-                    check_predicates(proposal.contract.invariants,
-                        {**symbolic, 'result': delta.model_dump(mode='json'), 'after': after}, 'invariant_failed')
-                    if delta.outcome not in {'failed', 'blocked'}:
-                        check_predicates(proposal.contract.expected_effects,
-                            {**symbolic, 'result': delta.model_dump(mode='json'), 'after': after}, 'effect_failed')
+                check_predicates(proposal.contract.invariants,
+                    {**symbolic, 'result': delta.model_dump(mode='json'), 'after': after}, 'invariant_failed')
+                if delta.outcome not in {'failed', 'blocked'}:
+                    check_predicates(proposal.contract.expected_effects,
+                        {**symbolic, 'result': delta.model_dump(mode='json'), 'after': after}, 'effect_failed')
                 result = ExecutionResult(proposal_id=proposal.identity,
                     delta_hash=fingerprint(delta.model_dump(mode='json')), work_outcome=delta.outcome,
                     evidence_ids=[e.id for e in delta.evidence], artifact_ids=[a.id for a in delta.artifacts],

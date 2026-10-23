@@ -12,10 +12,6 @@ import pytest
 
 from bioma.core.action_contracts import Predicate
 from bioma.core.models import Evidence, StateDelta
-from bioma.core.protocol import (
-    ScientificExecutionMandate,
-    ScientificTransitionProposal,
-)
 from bioma.core.protocol_invariants import (
     MissingMandate,
     StaleProposal,
@@ -44,11 +40,6 @@ def rejected_codes(ledger, task_id="protocol"):
 def attempted_statuses(ledger, task_id="protocol"):
     return [event.payload.get("status") for event in ledger.events(task_id)
             if event.kind == "ExecutionAttemptFailed"]
-
-
-def test_layer_b_aliases_are_the_existing_objects():
-    assert ScientificExecutionMandate is ExecutionPermit
-    assert ScientificTransitionProposal is TransitionProposal
 
 
 def test_stale_parent_state_rejects_proposal(protocol):

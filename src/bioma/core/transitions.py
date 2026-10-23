@@ -255,12 +255,6 @@ def verify_transition_proof(state, delta, message):
         elif actual != value:
             raise ValueError('Owner state effects changed: ' + key)
     check_read_set(proposal, state, message)
-    from bioma.core.protocol_policy import active_policy
-    if not active_policy().evidence_gate:
-        # Experimental ablation: identity, assignment, read-set and authority
-        # confinement are all still enforced above; only the contract's
-        # evidence/effect gate is lifted, so the ablation isolates that gate.
-        return
     context = {'state':state.model_dump(mode='json'), 'message':message.model_dump(mode='json'),
                'result':owner.model_dump(mode='json'), 'after':prospective_state(state, owner)}
     check_predicates(proposal.contract.preconditions, context, 'commit_precondition')

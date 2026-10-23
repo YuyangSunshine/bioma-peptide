@@ -15,7 +15,6 @@ from collections.abc import Iterable
 
 from bioma.core.models import Evidence, ScientificState
 from bioma.core.protocol_invariants import ProtocolViolation
-from bioma.core.protocol_policy import wp2_ablation_active
 from bioma.core.scientific_views import (
     SCIENTIFIC_CLAIM_KIND,
     claim_scope,
@@ -93,24 +92,8 @@ def assert_contradictions_preserved(
 
 
 def preserved_claims(evidence: Iterable[Evidence]) -> list[Evidence]:
-    """The claims that take part in derivation.
-
-    Production preserves every claim, including one that contradicts another.
-    The experimental ``contradiction_preservation`` ablation keeps only the
-    first claim per statement — exactly the collapse the E4b invariant exists
-    to forbid — so the difference is observable rather than merely declared.
-    """
-    claims = [item for item in evidence if item.kind == SCIENTIFIC_CLAIM_KIND]
-    if not wp2_ablation_active("contradiction_preservation"):
-        return claims
-    seen: set[str] = set()
-    kept: list[Evidence] = []
-    for claim in claims:
-        if claim.claim in seen:
-            continue
-        seen.add(claim.claim)
-        kept.append(claim)
-    return kept
+    """Return every committed claim, including contradictory claims."""
+    return [item for item in evidence if item.kind == SCIENTIFIC_CLAIM_KIND]
 
 
 def audit_structural_invariants(state: ScientificState) -> None:

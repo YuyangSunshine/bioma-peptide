@@ -78,27 +78,8 @@ def _pending_deliverables(deliverables: list[dict[str, Any]], state: ScientificS
 
 
 def _recovery_action(exc: Exception, attempt: int) -> str:
-    """Recovery policy for one failed attempt.
-
-    Under the experimental failure-resilience ablation nothing is retried or
-    repaired: every failure is an immediate terminal outcome. The returned
-    sentinel is neither `retry`/`repair` nor `blocked`, so the caller re-raises.
-    """
-    from bioma.core.protocol_policy import active_policy
-    if not active_policy().failure_resilience:
-        return 'fail'
+    """Return the production recovery decision for one failed attempt."""
     return runtime_recovery_action(exc, attempt)
-
-
-def _collapse_proposal(decision):
-    """Under the experimental decentralized-proposal ablation the runtime
-    dispatches one provider directly, so no offer and no commitment exists."""
-    from bioma.core.protocol_policy import active_policy
-    if active_policy().decentralized_proposal:
-        return decision
-    from bioma.capabilities.router import RouteDecision
-    return RouteDecision(decision.request, (), (), decision.messages[:1],
-                         decision.qualification)
 
 
 class DecentralizedRuntime:
@@ -602,7 +583,6 @@ class DecentralizedRuntime:
                 provider_binding=exact.get("provider_id"),
                 method_binding=exact.get("method_id"),
                 implementation_binding=exact.get("implementation_identity"))
-            decision = _collapse_proposal(decision)
             self._emit_route(event_sink, decision, state)
             state = state.model_copy(
                 update={
@@ -814,9 +794,9 @@ class DecentralizedRuntime:
                     request = next((r for r in state.task_requests if r.id == message.task_request_id), None)
                     if not exc.execution_started and request and len(previous_reassignments) < 2 and attempt < 2:
                         self.refresh_providers()
-                        decision = _collapse_proposal(self.capability_router.route(
+                        decision = self.capability_router.route(
                             request, active_agents=active_agents,
-                            available_resources=self.available_resources, ttl=max(1,message.ttl-1)))
+                            available_resources=self.available_resources, ttl=max(1,message.ttl-1))
                         if decision.messages:
                             data = {'old_message_id':message.id, 'request_id':request.id,
                                 'messages':[m.model_dump(mode='json') for m in decision.messages],

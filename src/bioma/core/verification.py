@@ -237,13 +237,11 @@ class VerificationEngine:
             from bioma.core.acceptance import completion_status
             if not completion_status(prospective, check_files=not self.historical)['complete']:
                 reasons.append('Completion requires all declared acceptance conditions')
-        from bioma.core.protocol_policy import active_policy
-        if active_policy().evidence_gate:
-            from bioma.runtime.acceptance import validate_delivery_delta
-            try:
-                validate_delivery_delta(state, delta, source_message, check_files=not self.historical)
-            except (ValueError, TypeError) as exc:
-                reasons.append(str(exc))
+        from bioma.runtime.acceptance import validate_delivery_delta
+        try:
+            validate_delivery_delta(state, delta, source_message, check_files=not self.historical)
+        except (ValueError, TypeError) as exc:
+            reasons.append(str(exc))
 
         return VerificationResult(ok=not reasons, reasons=tuple(reasons))
 

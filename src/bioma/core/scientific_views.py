@@ -31,7 +31,6 @@ from typing import Any
 
 from bioma.core.models import Evidence
 from bioma.core.protocol_invariants import ProtocolViolation
-from bioma.core.protocol_policy import wp2_ablation_active
 from bioma.core.scientific_relations import (
     RelationVocabularyViolation,
     parse_relation,
@@ -188,11 +187,6 @@ def reserved_role_reasons(delta: Any, committed: Iterable[Evidence] = ()) -> lis
     """
     reserved = [item for item in delta.evidence if item.kind in RESERVED_KINDS]
     if not reserved:
-        return []
-    if wp2_ablation_active("epistemic_role_conflation"):
-        # Experimental gating ablation (never production): the reserved roles
-        # are treated as ordinary evidence, so the reserved-role schema is not
-        # enforced and this guard stays silent.
         return []
     by_id: dict[str, Evidence] = {item.id: item for item in committed}
     for item in delta.evidence:

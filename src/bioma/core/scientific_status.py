@@ -26,7 +26,6 @@ from dataclasses import dataclass
 
 from bioma.core.models import Evidence, ScientificState
 from bioma.core.protocol_invariants import ProtocolViolation
-from bioma.core.protocol_policy import wp2_ablation_active
 from bioma.core.scientific_history import preserved_claims
 from bioma.core.scientific_relations import (
     CONTEXT,
@@ -88,25 +87,9 @@ def _target_is_relevant(claim_scope_value: Scope, target: Evidence) -> bool:
     the link is relevant. Two claims are compared with the frozen ``covers``
     rules: an incompatible scope keeps both records but is excluded here.
     """
-    if wp2_ablation_active("scope_checking"):
-        # Experimental derivation-only ablation: scope is not checked, so an
-        # incompatible link counts exactly like a compatible one.
-        return True
     if target.kind != SCIENTIFIC_CLAIM_KIND:
         return True
     return covers(claim_scope_value, claim_scope(target))
-
-
-def _stored_status(claim: Evidence) -> str | None:
-    """A persisted status, read back only under the derived-status ablation."""
-    value = claim.value
-    if not isinstance(value, Mapping):
-        return None
-    for key in sorted(RESERVED_STATUS_KEYS):
-        stored = value.get(key)
-        if isinstance(stored, str) and stored in DERIVED_STATUSES:
-            return stored
-    return None
 
 
 def _committed_claim(evidence: Iterable[Evidence], claim_id: str) -> tuple[list[Evidence], Evidence]:
@@ -163,13 +146,7 @@ def link_tally(evidence: Iterable[Evidence], claim_id: str) -> LinkTally:
 
 def derive_claim_status(evidence: Iterable[Evidence], claim_id: str) -> str:
     """Derive one claim's epistemic status from the committed evidence."""
-    records, claim = _committed_claim(evidence, claim_id)
-    if wp2_ablation_active("derived_epistemic_status"):
-        # Experimental derivation-only ablation: the status is read back from a
-        # stored field instead of being recomputed, which is precisely what E6
-        # forbids in production.
-        stored = _stored_status(claim)
-        return stored if stored is not None else INSUFFICIENT
+    records, _ = _committed_claim(evidence, claim_id)
     tally = link_tally(records, claim_id)
     if tally.supports and tally.opposes:
         return CONFLICTED
@@ -183,9 +160,7 @@ def derive_claim_status(evidence: Iterable[Evidence], claim_id: str) -> str:
 def claim_statuses(evidence: Iterable[Evidence]) -> dict[str, str]:
     """Derive the status of every claim that takes part in derivation.
 
-    Production derives over every committed claim. The experimental
-    ``contradiction_preservation`` ablation derives over a collapsed set, so a
-    contradicting claim disappears from the derived map.
+    Production derives over every committed claim.
     """
     records = list(evidence)
     return {
@@ -200,10 +175,6 @@ def assert_status_is_derived(state: ScientificState) -> None:
     Only the reserved status keys are rejected, so ordinary tool payloads that
     legitimately carry their own ``status`` field are untouched.
     """
-    if wp2_ablation_active("derived_epistemic_status"):
-        # Experimental ablation: a stored status is permitted, so E6 is not
-        # enforced here. Production never reaches this branch.
-        return
     for item in state.evidence:
         value = item.value
         if not isinstance(value, Mapping):

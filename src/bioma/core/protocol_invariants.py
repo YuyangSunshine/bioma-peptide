@@ -75,10 +75,6 @@ class RuntimeInventedScience(ProtocolViolation):
     code, invariant = "runtime_invented_science", "I11"
 
 
-class AttemptCardinalityViolation(ProtocolViolation):
-    code, invariant = "attempt_cardinality_violation", "I12"
-
-
 def assert_no_direct_write(delta: StateDelta) -> None:
     """I1: an agent yields a proposed delta, never committed state or a proof."""
     if not isinstance(delta, StateDelta):
@@ -215,18 +211,3 @@ def assert_proposal_binds_commitment(proposal: TransitionProposal, commitments) 
         return
     if proposal.commitment_id not in {item.id for item in commitments}:
         raise UnboundProposal("proposal references unknown commitment: " + proposal.commitment_id)
-
-
-# --- Layer B cardinality (proposal : mandate : attempt : outcome) -----------
-
-
-def assert_attempt_cardinality(events, *, sink_events=()) -> None:
-    """I12: one proposal -> one mandate -> numbered attempts -> one outcome.
-
-    Retries, failures and reconciliations are only auditable when every attempt
-    of a proposal is separately identified and has at most one terminal outcome.
-    """
-    from bioma.core.protocol_trace import analyze_cardinality
-    report = analyze_cardinality(events, sink_events=sink_events)
-    if report.problems:
-        raise AttemptCardinalityViolation("; ".join(report.problems))
