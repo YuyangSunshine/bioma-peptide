@@ -250,3 +250,11 @@ def test_written_report_can_be_reviewed_without_forcing_a_file():
         validate_written_delivery({'current_user_request':'生成 PDF 报告'},[], 'Text is not a PDF')
     with pytest.raises(ValueError,match='PDF'):
         validate_written_delivery({'desired_deliverables':['report.pdf']},['report.md'], 'Text is not the requested file')
+
+
+def test_review_time_reserve_is_explicit_and_bounded(monkeypatch):
+    from bioma.harness.loop import _review_time_reserved
+    from bioma.runtime import deadline
+    for left, reserve, expected in [(None, 120, False), (90, 0, False), (121, 120, False), (120, 120, True), (30, 120, True)]:
+        monkeypatch.setattr(deadline, 'remaining', lambda left=left:left)
+        assert _review_time_reserved(reserve) is expected

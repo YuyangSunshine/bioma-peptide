@@ -223,6 +223,7 @@ class DataAnalysisLoop:
         llm = self.provider_factory(self.config.llm)
         review_llm = self.provider_factory(self.config.delivery_review_llm) if self.config.delivery_review_llm else llm
         from bioma.harness.checkpoint import DeliveryCheckpoint
+        context.state['review_history_mode'] = self.config.review_history_mode
         checkpoint = DeliveryCheckpoint(context, self.config)
         context.investigation_budget = budget
         context.investigation_checkpoint = checkpoint
@@ -368,7 +369,8 @@ class DataAnalysisLoop:
                 if (context.state.get('continuous_investigation')
                         and readiness['ready_for_review']
                         and not delivery_revision_pending(context)
-                        and available_before_call <= self.config.review_reserve_calls):
+                        and (available_before_call <= self.config.review_reserve_calls
+                             or _review_time_reserved(self.config.review_reserve_seconds))):
                     # Once the execution contract is covered, exploration no
                     # longer competes with its reserved independent review.
                     decision_tools = [definition for definition in tool_defs
@@ -621,6 +623,12 @@ class DataAnalysisLoop:
                 latest = latest[:1160].rstrip() + "... [truncated]"
             return f"ComAgent Harness stopped: {exit_reason}.\n\nLatest observation:\n{latest}"
         return f"ComAgent Harness stopped: {exit_reason}."
+
+
+def _review_time_reserved(seconds):
+    from bioma.runtime.deadline import remaining
+    left = remaining()
+    return seconds > 0 and left is not None and left <= seconds
 
 
 def _active_saved_review(saved, context) -> dict:

@@ -60,6 +60,8 @@ Review all supplied textual artifacts, including extracted PDF page text. Check 
 re-execution of the algorithm or semantic validation of binary figures.
 Only selected_support_records are proposed as support for this answer; other history is
 context, never implicitly selected support. result_proposal contains unverified assumptions.
+Historical files may have identity-only coverage: their bytes were hash-checked but their
+contents were not reviewed semantically. Such entries cannot support scientific claims.
 For support_check.retrieval_only, source_support is mandatory: quote the task's obligation,
 state whether it requires computation, assess sufficiency and unresolved requirements, and
 provide sources as pairs [locator citation, supporting-content citation] into
@@ -585,7 +587,10 @@ def review_delivery(context, observation, llm, budget, *, on_request=None, revie
                     # Historical tables receive the same explicit coverage as
                     # current inputs/outputs. Preserve every file hash and full
                     # executed source; never imply row-level review of a projection.
-                    if digest in archived_by_hash:
+                    if context.state.get('review_history_mode') == 'identity':
+                        content = {'sha256': digest, 'size':len(raw),
+                            'scope':'Historical unselected file: exact identity checked; content not semantically reviewed. Not selected scientific support.'}
+                    elif digest in archived_by_hash:
                         content = {'sha256': digest, 'same_bytes_as_verified_file': archived_by_hash[digest],
                             'scope': 'Exact byte identity; consult the referenced file and its declared review coverage. No additional semantic verification.'}
                     else:
@@ -607,11 +612,16 @@ def review_delivery(context, observation, llm, budget, *, on_request=None, revie
             raw = path.read_bytes()
             if hashlib.sha256(raw).hexdigest() != record['sha256']:
                 raise ValueError('Registered tool receipt changed before review')
-            size += len(raw)
+            if context.state.get('review_history_mode') == 'identity':
+                content = {'path':str(path), 'sha256':record['sha256'], 'size':len(raw),
+                    'scope':'Historical receipt identity checked only. Full selected receipts appear in selected_support_records.'}
+            else:
+                content = load_document(raw)
+            size += len(json.dumps(content, ensure_ascii=False).encode())
             if size > _MAX_REVIEW_BYTES:
                 raise ValueError('Complete tool receipts exceed review budget; no truncated approval.')
             fingerprints[str(path)] = record['sha256']
-            tool_receipts.append(load_document(raw))
+            tool_receipts.append(content)
         payload['investigation_execution_history'] = history
         payload['registered_tool_receipts'] = tool_receipts
         from bioma.harness.action_executor import review_action_history
