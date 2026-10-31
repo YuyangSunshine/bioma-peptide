@@ -24,7 +24,7 @@ bioma-peptide-web = "bioma.web:main"
 bioma-peptide-node = "bioma.node:main"
 
 [project.optional-dependencies]
-peptide = ["rdkit>=2025.9", "numpy>=1.26"]
+peptide = ["rdkit>=2025.9", "numpy>=1.26", "biopython>=1.84"]
 mini-swe = [
   "mini-swe-agent==2.4.6",
 ]

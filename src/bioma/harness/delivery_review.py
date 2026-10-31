@@ -60,6 +60,8 @@ Review all supplied textual artifacts, including extracted PDF page text. Check 
 re-execution of the algorithm or semantic validation of binary figures.
 Only selected_support_records are proposed as support for this answer; other history is
 context, never implicitly selected support. result_proposal contains unverified assumptions.
+Historical files may have identity-only coverage: their bytes were hash-checked but their
+contents were not reviewed semantically. Such entries cannot support scientific claims.
 For support_check.retrieval_only, source_support is mandatory: quote the task's obligation,
 state whether it requires computation, assess sufficiency and unresolved requirements, and
 provide sources as pairs [locator citation, supporting-content citation] into
@@ -80,7 +82,11 @@ confirmed, suspected, suggestion, or withdrawn. Only confirmed findings can reje
 Use category format, numeric, or scientific_support. Available bounded checks are
 single_numeric_value, decimal_places (explicit numeric precision clause),
 receipt_value_equality (same named quantity in receipt summary and output), and
-collection_count_equality (the integer count field for a named source collection).
+collection_count_equality (the integer count field for a named source collection), and
+uniprot_feature_location (a CSV with type/start/end/annotation columns must not assert
+an exact endpoint for a uniquely matched non-exact Swiss-Prot feature endpoint).
+For uniprot_feature_location cite the complete original Swiss-Prot text document and
+the CSV document; the checker parses both independently, matching feature type and note.
 For collection_count_equality, cite the complete collection at its JSON pointer and
 the scalar output count; the Runtime verifies both values and their field names. Other
 scientific concerns must state the specific support_gap and remain suspected
@@ -118,7 +124,7 @@ class ReviewIssue(BaseModel):
     disposition: Literal['confirmed', 'suspected', 'suggestion', 'withdrawn'] = 'suspected'
     category: Literal['format', 'numeric', 'scientific_support'] | None = None
     check: Literal['single_numeric_value', 'decimal_places', 'receipt_value_equality',
-                   'collection_count_equality'] | None = None
+                   'collection_count_equality', 'uniprot_feature_location'] | None = None
     support_gap: str | None = None
     basis_kind: Literal['requirement', 'source', 'consistency'] | None = None
     basis: ReviewCitation | None = None
@@ -149,6 +155,18 @@ class DeliveryReview(BaseModel):
     issues: list[ReviewIssue]
     source_support: SourceSupportCheck | None = None
     method_support: dict[str, MethodContractCheck] | None = None
+
+
+def _parse_review_response(content):
+    # Some JSON-mode providers wrap the whole object in a Markdown fence.
+    # Strip only that exact envelope, never prose, partial JSON or multiple blocks.
+    text = content.strip()
+    if text.startswith('```'):
+        match = re.fullmatch(r'```(?:json)?[ \t]*\n(.*)\n```', text, re.DOTALL)
+        if match is None:
+            raise ValueError('Incomplete or ambiguous review JSON envelope')
+        text = match.group(1)
+    return DeliveryReview.model_validate(load_document(text.encode('utf-8')))
 
 
 class DeliveryReviewRejected(ValueError):
@@ -205,6 +223,12 @@ def _verified_violation(issue, payload):
     """Bounded checks only. A real citation is not proof of its interpretation."""
     basis = _citation_value(issue.basis, payload)
     observed = _citation_value(issue.observation, payload)
+    if issue.check == 'uniprot_feature_location':
+        if (issue.basis_kind != 'source' or not issue.basis.pointer.startswith('/original_inputs/')
+                or not issue.observation.pointer.startswith('/artifacts/')):
+            return None, 'feature check requires original source and output artifact'
+        from bioma.peptide.feature_validation import uncertain_feature_coordinates
+        return uncertain_feature_coordinates(basis, observed)
     if issue.category in {'format', 'numeric'} and issue.check == 'collection_count_equality':
         basis_parts = issue.basis.pointer.split('/')
         observed_parts = issue.observation.pointer.split('/')
@@ -563,7 +587,10 @@ def review_delivery(context, observation, llm, budget, *, on_request=None, revie
                     # Historical tables receive the same explicit coverage as
                     # current inputs/outputs. Preserve every file hash and full
                     # executed source; never imply row-level review of a projection.
-                    if digest in archived_by_hash:
+                    if context.state.get('review_history_mode') == 'identity':
+                        content = {'sha256': digest, 'size':len(raw),
+                            'scope':'Historical unselected file: exact identity checked; content not semantically reviewed. Not selected scientific support.'}
+                    elif digest in archived_by_hash:
                         content = {'sha256': digest, 'same_bytes_as_verified_file': archived_by_hash[digest],
                             'scope': 'Exact byte identity; consult the referenced file and its declared review coverage. No additional semantic verification.'}
                     else:
@@ -585,11 +612,16 @@ def review_delivery(context, observation, llm, budget, *, on_request=None, revie
             raw = path.read_bytes()
             if hashlib.sha256(raw).hexdigest() != record['sha256']:
                 raise ValueError('Registered tool receipt changed before review')
-            size += len(raw)
+            if context.state.get('review_history_mode') == 'identity':
+                content = {'path':str(path), 'sha256':record['sha256'], 'size':len(raw),
+                    'scope':'Historical receipt identity checked only. Full selected receipts appear in selected_support_records.'}
+            else:
+                content = load_document(raw)
+            size += len(json.dumps(content, ensure_ascii=False).encode())
             if size > _MAX_REVIEW_BYTES:
                 raise ValueError('Complete tool receipts exceed review budget; no truncated approval.')
             fingerprints[str(path)] = record['sha256']
-            tool_receipts.append(load_document(raw))
+            tool_receipts.append(content)
         payload['investigation_execution_history'] = history
         payload['registered_tool_receipts'] = tool_receipts
         from bioma.harness.action_executor import review_action_history
@@ -622,6 +654,7 @@ def review_delivery(context, observation, llm, budget, *, on_request=None, revie
         'selected_kinds':observation.metrics.get('selected_support_kinds', []),
         'execution_requirements':context.state.get('execution_requirements', {})}
     payload['research_intake'] = context.state.get('research_intake', {})
+    payload['user_request_history'] = context.state.get('user_request_history', [])
     from bioma.backends.analysis.services.statistical_checks import validate_statistical_delivery
     # The bounded acceptance may omit a method named by the executed program.
     # A program's method claim triggers verification; it is never proof that the
@@ -629,6 +662,8 @@ def review_delivery(context, observation, llm, budget, *, on_request=None, revie
     # study request: they can legitimately prescribe a different correction.
     method_claims = payload['request'] + '\n' + '\n'.join(programs.values())
     deterministic_checks = validate_statistical_delivery(method_claims, artifacts)
+    from bioma.peptide.feature_validation import validate_feature_delivery
+    deterministic_checks.extend(validate_feature_delivery(inputs, artifacts))
     payload['deterministic_checks'] = deterministic_checks
     review_version={'policy_sha256':review_policy_sha256(),
                     'material_sha256':hashlib.sha256(json.dumps(payload,sort_keys=True,ensure_ascii=False).encode()).hexdigest(),
@@ -668,7 +703,7 @@ def review_delivery(context, observation, llm, budget, *, on_request=None, revie
         'review_version': review_version, 'finish_reason': response.finish_reason,
         'sha256': fingerprints, 'native_receipt_hashes':native_hashes, 'assessment_status': 'UNVALIDATED'},
         ensure_ascii=False, indent=2), encoding='utf-8')
-    review = DeliveryReview.model_validate(load_document(response.content.encode('utf-8')))
+    review = _parse_review_response(response.content)
     active, dismissed, unresolved = _classify_findings(review, payload)
     # Every selected native return needs an explicit, grounded parent-obligation
     # assessment. A successful child WP1 return alone is not parent acceptance.

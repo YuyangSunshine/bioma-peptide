@@ -33,6 +33,7 @@ class DataAnalysisRunner:
 
     def tools_for_state(self, state: dict[str, Any]) -> list:
         required_tools = set((state.get('execution_requirements') or {}).get('required_tools') or [])
+        required_tools.update(self.config.direct_tool_names)
         tools = list(self.tools)
         tools += [tool for tool in self.external_tools
                   if tool.name in required_tools and tool.name not in {item.name for item in tools}]

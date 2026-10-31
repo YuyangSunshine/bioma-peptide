@@ -22,67 +22,11 @@ class UniProtQueryInput(ToolInput):
     query: str = Field(description="UniProt accession ID (e.g. P04637) or gene name (e.g. TP53_HUMAN)")
 
 
-@bioma_tool(
-    name="query_uniprot",
-    description="Query UniProt for protein function, domains, PTMs, and disease associations.",
-    category="database",
-    version="1.0.0",
-    author="STELLA Team",
-    args_schema=UniProtQueryInput,
-    requires_network=True,
-)
-def query_uniprot(query: str) -> str:
-    """Fetch protein annotation from UniProt REST API."""
-    # Try accession first, then gene name search
-    url = f"https://rest.uniprot.org/uniprotkb/{query}.json"
-    try:
-        resp = requests.get(url, timeout=15)
-        if resp.status_code == 200:
-            data = resp.json()
-        else:
-            # Search by gene name
-            search_url = (
-                f"https://rest.uniprot.org/uniprotkb/search?query={query}+AND+reviewed:true"
-                f"&fields=accession,protein_name,organism_name,function,subcellular_location"
-                f"&format=json&size=1"
-            )
-            resp = requests.get(search_url, timeout=15)
-            resp.raise_for_status()
-            results = resp.json().get("results", [])
-            if not results:
-                return f"No UniProt entry found for: {query}"
-            data = results[0]
+from bioma.peptide.target_research import discover, validate_discovery
 
-        # Extract key fields
-        protein_name = (
-            data.get("proteinDescription", {})
-            .get("recommendedName", {})
-            .get("fullName", {})
-            .get("value", "Unknown")
-        )
-        organism = data.get("organism", {}).get("scientificName", "Unknown")
-        accession = data.get("primaryAccession", query)
-
-        # Function comment
-        comments = data.get("comments", [])
-        function_text = ""
-        for comment in comments:
-            if comment.get("commentType") == "FUNCTION":
-                texts = comment.get("texts", [])
-                if texts:
-                    function_text = texts[0].get("value", "")[:500]
-                    break
-
-        result = {
-            "accession": accession,
-            "protein_name": protein_name,
-            "organism": organism,
-            "function": function_text,
-        }
-        return json.dumps(result, indent=2, ensure_ascii=False)
-
-    except requests.exceptions.RequestException as exc:
-        raise requests_tool_error(exc, backend="UniProt") from exc
+@bioma_tool(name="query_uniprot", description="Search UniProt by protein/target name, gene, accession or UniProt query syntax; include organism_id when known. Returns up to ten candidates with sequence, organism and PDB cross-references including chain coverage/method/resolution. Do not silently select a different species or first hit.", category="database",version="2.0.0",author="BioMA",args_schema=UniProtQueryInput,requires_network=True,result_kind="retrieved_fact",result_validator=validate_discovery,replay_safe=True)
+def query_uniprot(query: str):
+    return discover(query)
 
 
 # ──────────────────────────────────────────────────────────────────────

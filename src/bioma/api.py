@@ -230,6 +230,10 @@ class BioMA:
         self.runtime.refresh_providers()
         self.available_agents = sorted(self.runtime.agents)
         inputs = _query_inputs(files)
+        from bioma.gateway import user_request_history
+        history = user_request_history(session_context or [])
+        if history:
+            inputs["_user_request_history"] = history
         operational = tuple(dict.fromkeys(
             Path(str(name)).name for name in operational_deliverables
         ))

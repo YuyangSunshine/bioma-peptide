@@ -391,6 +391,12 @@ class DeliveryCheckpoint:
                 if pending and not prior_identity:
                     prior_identity = _review_candidate_identity(prior_observation, self.context)
                 if pending and prior_identity == candidate_identity:
+                    if (self.context.state.get('investigate_review_gaps')
+                            and budget.remaining_llm_calls > 1 and budget.remaining_tool_calls > 0):
+                        raise DeliveryReviewIncomplete(
+                            'UNCHANGED_REVIEW_MATERIAL: unchanged submission is not reviewed again. '
+                            'Inspect the retained leads and obtain new evidence or independently justified corrections; '
+                            'do not repeat the same computation or treat a suspected finding as a fact.')
                     raise ComputedPendingReview(
                         self.path,
                         'UNCHANGED_REVIEW_MATERIAL: the same result, sources and checks remain '
@@ -447,6 +453,16 @@ class DeliveryCheckpoint:
                           'not a verified scientific fact, code-edit instruction, execution grant, or approval.'),
             }
             self._save(observation, budget)
+            if (self.context.state.get('investigate_review_gaps')
+                    and budget.remaining_llm_calls > 1 and budget.remaining_tool_calls > 0):
+                self.context.merge_patch({'delivery_review_incomplete': observation.patch['delivery_review_incomplete']})
+                raise DeliveryReviewIncomplete(
+                    'Independent review is incomplete; computation and checkpoint are retained. '
+                    'Use these hash-bound observations as investigation leads, not facts or mandatory code edits. '
+                    'Choose targeted evidence gathering or independently justified answer/analysis revision; '
+                    'do not rerun unchanged computation or resubmit unchanged material. Findings: '
+                    + json.dumps(observation.patch['delivery_review_incomplete']['unresolved_findings'], ensure_ascii=False)
+                ) from exc
             raise ComputedPendingReview(self.path, str(exc)) from exc
         except DeliveryReviewRejected as exc:
             digest = hashlib.sha256(json.dumps(

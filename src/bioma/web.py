@@ -88,7 +88,12 @@ class WebRun:
     live_phase: dict[str, Any] | None = None
     created_at: str = field(default_factory=lambda: utc_now().isoformat())
 
+    preview_artifacts: dict[str, dict[str, Any]] = field(default_factory=dict)
+
     def receive(self, event: dict[str, Any]) -> None:
+        if event.get("type") == "artifacts.available":
+            for artifact in event.get("artifacts", []):
+                self.preview_artifacts[artifact["uri"]] = artifact
         if event.get("type") == "gateway.interpretation.started":
             # A pre-runtime phase: retain it for the live UI without changing the
             # durable runtime event sequence or its protocol ordering.
@@ -168,6 +173,11 @@ class WebRun:
         self.error = _public_failure_message(exc)
 
     def payload(self, backend: str) -> dict[str, Any]:
+        display_state = dict(self.state or {})
+        committed = display_state.get("artifacts") or []
+        committed_paths = {a["uri"] for a in committed}
+        display_state["artifacts"] = [*committed, *[
+            a for uri, a in self.preview_artifacts.items() if uri not in committed_paths]]
         predictions = (self.state or {}).get("predictions") or []
         evidence = (self.state or {}).get("evidence") or []
         return {
@@ -180,7 +190,7 @@ class WebRun:
             "status": self.status,
             "active_agent": self.active_agent,
             "message": self.message,
-            "state": self.state,
+            "state": display_state,
             "events": self.events,
             "prediction": predictions[-1].get("design") if predictions else None,
             "conclusion": evidence[-1].get("claim") if evidence else None,
@@ -609,6 +619,21 @@ class QueryHandler(BaseHTTPRequestHandler):
         if not target.is_file():
             self.send_error(404)
             return
+        limit = 32 * 1024**2
+        if target.stat().st_size > limit:
+            self.send_error(413, "Use the registered external reference for large artifacts")
+            return
+        with target.open("rb") as source:
+            content = source.read(limit + 1)
+        if len(content) > limit:
+            self.send_error(413, "Artifact exceeds preview limit")
+            return
+        digest = (artifact.get("metadata") or {}).get("sha256")
+        if digest:
+            import hashlib
+            if hashlib.sha256(content).hexdigest() != digest:
+                self.send_error(409, "Artifact identity changed")
+                return
         content_type = (
             mimetypes.guess_type(target.name)[0] or "application/octet-stream"
         )
@@ -618,7 +643,7 @@ class QueryHandler(BaseHTTPRequestHandler):
             content_type = "chemical/x-pdb"
         elif target.suffix.casefold() in {".cif", ".mmcif"}:
             content_type = "chemical/x-cif"
-        self._send(200, target.read_bytes(), content_type)
+        self._send(200, content, content_type)
 
     def _send(self, status: int, content: bytes, content_type: str) -> None:
         self.send_response(status)
@@ -646,8 +671,17 @@ def create_server(
 
 def _run_response(state: dict[str, Any] | None) -> str:
     state = state or {}
+    reason = state.get("status_reason") or {}
+    if reason.get("code") == "clarification_required" and reason.get("question"):
+        return ("继续研究前需要明确：\n\n" + str(reason["question"])
+                + "\n\n请在当前会话中补充。已登记的中间产物可供查看；"
+                  "这不表示研究已完成或已通过最终交付审核。")
     if state.get("status") in {"blocked", "failed"}:
         reason = state.get("status_reason") or {}
+        if reason.get("error_type") == "ModelOutputBudgetError":
+            return ("模型在输出限额内未返回完整答复，本轮已停止；残缺工具指令未执行。"
+                    "已登记的中间产物仍可查看，但不代表已通过独立交付审核。"
+                    "请检查模型推理模式与输出预算，再从已保存的任务证据继续。")
         return "执行已停止：" + (json.dumps(reason, ensure_ascii=False) if reason else state["status"])
     predictions = state.get("predictions") or []
     evidence = state.get("evidence") or []
@@ -664,6 +698,21 @@ def _run_response(state: dict[str, Any] | None) -> str:
     if predictions:
         return str(predictions[-1].get("design") or "")
     observations = [o for o in state.get("observations", []) if o.get("kind") == "work_result"]
+    for observation in reversed(observations):
+        value = observation.get("value") or {}
+        payload = value.get("payload") or {}
+        review = payload.get("delivery_review") or {}
+        candidate = payload.get("accepted_answer_candidate") or {}
+        answer = payload.get("final_answer")
+        if (state.get("status") == "completed"
+                and isinstance(answer, str) and answer.strip()
+                and candidate.get("sha256")
+                and (review.get("sha256") or {}).get(candidate.get("path")) == candidate["sha256"]
+                and review.get("issues") == []):
+            qualification = "已通过独立交付审核；结论仅适用于报告所述方法和验证范围，工作结果不等同于已核验的科学证据。"
+            suggestions = [str(item["message"]) for item in review.get("dismissed_non_issues", [])
+                           if isinstance(item, dict) and item.get("disposition") == "suggestion" and item.get("message")]
+            return qualification + "\n\n" + answer + ("\n\n独立审核提示：\n\n" + "\n\n".join(suggestions) if suggestions else "")
     if observations:
         kinds = list(dict.fromkeys(o.get("value", {}).get("kind", "work_result") for o in observations))
         return ("已记录工作结果：" + "、".join(kinds) + "。可在中间产物和科学状态中查看；"
@@ -719,6 +768,9 @@ def _validated_input_files(root: Path, values: list[str]) -> list[str]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the local BioMA web interface.")
+    parser.add_argument("--peptide-registry", type=Path, help="Host-maintained scientific profile/input registry")
+    parser.add_argument("--peptide-job-root", type=Path, help="Persistent host-owned job directory")
+    parser.add_argument("--control-policy", choices=["legacy", "adaptive_v3", "egvoi"], default="legacy", help="Research decision policy; independent of scientific method order")
     parser.add_argument("--toy", action="store_true", help="use deterministic backends")
     parser.add_argument("--host", default="127.0.0.1", help="listen address; use 0.0.0.0 for LAN access")
     parser.add_argument("--config", type=Path, help="BioMA YAML configuration path")
@@ -741,13 +793,18 @@ def main() -> None:
         parser.error("deadlines must be positive finite seconds")
     if args.env_file:
         os.environ["BIOMA_ENV_FILE"] = str(args.env_file.expanduser().resolve())
+    if bool(args.peptide_registry) != bool(args.peptide_job_root):
+        parser.error("--peptide-registry and --peptide-job-root must be provided together")
+    if args.peptide_registry:
+        os.environ["BIOMA_PEPTIDE_REGISTRY"] = str(args.peptide_registry.resolve(strict=True))
+        os.environ["BIOMA_PEPTIDE_JOB_ROOT"] = str(args.peptide_job_root.resolve())
     backend = "toy" if args.toy else "llm"
     print(f"Initializing BioMA ({backend})...", flush=True)
     history_path = args.history_path or (
         Path.cwd() / ".bioma" / "history.sqlite3"
     )
     server = create_server(
-        BioMA(backend=backend, config_path=args.config,
+        BioMA(backend=backend, config_path=args.config, control_policy=args.control_policy,
               query_deadline_seconds=args.query_deadline_seconds,
               task_deadline_seconds=args.task_deadline_seconds),
         backend=backend,

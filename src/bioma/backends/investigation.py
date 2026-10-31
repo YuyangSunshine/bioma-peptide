@@ -29,6 +29,7 @@ class InvestigationWorkPackage(HarnessToolInput):
     workspace_scope: str
     objective: str
     original_request: str = ""
+    user_request_history: list[dict] = Field(default_factory=list)
     execution_requirements: dict = Field(default_factory=dict)
     input_manifest: dict[str, str]
     deliverables: list[str]
@@ -60,9 +61,10 @@ class WorkingNotes(HarnessToolInput):
 
 
 class ClarificationRequest(HarnessToolInput):
-    kind: Literal['semantic_choice', 'input_unavailable', 'tool_unavailable'] = 'semantic_choice'
+    kind: Literal['semantic_choice', 'design_constraint', 'input_unavailable', 'tool_unavailable'] = 'semantic_choice'
+    request_quote: str = Field(default='', description='For design_constraint, quote the actual user request verbatim; this asks for design preferences, never parameter approval or missing-resource permission.')
     alternatives: list[str] = Field(default_factory=list, description='For a material scientific choice, at least two concrete alternatives supported by observed inputs/resources. A request for an example dataset authorizes choosing a suitable public example.')
-    field: str = Field(min_length=1)
+    field: str = Field(min_length=1, description='For kind=design_constraint use candidate_source, cyclization_chemistry, stereochemistry, design_objective, compute_scope, target_identity, measurement_context or evaluation_criteria. These are field values, not kind values.')
     question: str = Field(min_length=1)
     reason: str = Field(min_length=1)
 
@@ -74,12 +76,12 @@ class Advice(HarnessToolInput):
 
 class Finish(HarnessToolInput):
     reason: str
-    receipt_refs: list[str] = Field(default_factory=list)
-    artifact_paths: list[str] = Field(default_factory=list)
+    receipt_refs: list[str] = Field(default_factory=list, description='Select exact receipt_ref values from delivery_readiness.reviewable_support. Inspection/probe receipts and unpublished intermediate executions are not final results.')
+    artifact_paths: list[str] = Field(default_factory=list, description='Optional exact output paths inside the selected delivery packages. Prefer [] to derive files from receipt_refs. Do not pass INPUT_FILES, original job paths or external artifact URIs.')
     answer_candidate_ref: str | None = None
     answer_text: str | None = None
-    assumptions: list[str] = Field(default_factory=list)
-    unresolved_requirements: list[str] = Field(default_factory=list)
+    assumptions: list[str] = Field(default_factory=list, description='Interpretation assumptions and scientific scope limits; these do not add new user obligations.')
+    unresolved_requirements: list[str] = Field(default_factory=list, description='Only unmet requirements of this request. A nonempty list blocks delivery. Out-of-scope future research and method limitations belong in answer_text/assumptions, not here.')
 
 
 class ExecutionViewQuery(HarnessToolInput):
@@ -152,10 +154,32 @@ def request_clarification(context, args):
             'Clarification requires a successful scoped input inspection first. '
             'An unobserved Query hypothesis is not a verified ambiguity.'
         )
-    if context.state.get('public_resource_discovery'):
+    design_choice = args.get('kind') == 'design_constraint'
+    if design_choice:
+        allowed = {'candidate_source', 'cyclization_chemistry', 'stereochemistry',
+                   'design_objective', 'compute_scope', 'target_identity',
+                   'measurement_context', 'evaluation_criteria'}
+        quote = args.get('request_quote', '').strip()
+        request = str(context.state.get('original_user_request') or
+                      context.state.get('current_user_request') or '')
+        if args.get('field') not in allowed:
+            raise ValueError('Unsupported design clarification field: ' + str(args.get('field'))
+                             + '. Allowed fields: ' + ', '.join(sorted(allowed)))
+        # Line wrapping is presentation, not a change to the quoted request.
+        # No punctuation, words, numbers or case are repaired or inferred.
+        import re
+        unwrapped = lambda text: re.sub(r'\s+', '', text)
+        from bioma.gateway import user_request_history
+        sources = [request] + [row['content'] for row in
+            user_request_history(context.state.get('user_request_history', []))]
+        if not quote or not any(unwrapped(quote) in unwrapped(source) for source in sources):
+            raise ValueError('request_quote does not match the user request (whitespace ignored). '
+                             'Copy a short exact phrase from original_user_request; do not paraphrase.')
+    if context.state.get('public_resource_discovery') and not design_choice:
         observations = context.state.get('harness_observations', [])
         resource_attempts = [row for row in observations if row.get('tool_name') == 'read_public_resource'
-                             or row.get('metrics', {}).get('requested_tool') == 'read_public_resource']
+                             or row.get('metrics', {}).get('requested_tool') == 'read_public_resource'
+                             or row.get('metrics', {}).get('result_kind') == 'retrieved_fact']
         resource_observed = bool(resource_attempts)
         if not resource_observed:
             raise ValueError('Inspect the requested public resource or an example-data source first with '
@@ -364,7 +388,9 @@ def finish(context, args):
     requested = args.get('artifact_paths') or [p for item in observations for p in item.artifacts]
     known = {p for item in observations for p in item.artifacts}
     if len(set(requested)) != len(requested) or set(requested)-known:
-        raise ValueError('Selected artifacts must be unique outputs of selected receipts')
+        raise ValueError('Selected artifacts must be unique outputs of selected receipts. '
+                         'Use these packaged output paths (original retrieval files remain previews): '
+                         + json.dumps(sorted(known)))
     from bioma.harness.checkpoint import selected_review_receipt
     checkpoint = getattr(context, 'investigation_checkpoint', None)
     reused_package = False
@@ -441,11 +467,8 @@ def finish(context, args):
     observation.patch['delivery_output_names'] = output_names
     if not expected <= actual:
         raise ValueError('Missing final deliverables: ' + ', '.join(sorted(expected - actual)))
-    from bioma.core.reporting import assignment_needs_report, assignment_needs_pdf
-    if assignment_needs_pdf(context.state) and not any(Path(path).suffix.lower()=='.pdf' for path in observation.artifacts):
-        raise ValueError('The original task explicitly requires a PDF; Markdown alone is incomplete.')
-    if assignment_needs_report(context.state) and not any(Path(path).suffix.lower() in {'.md', '.pdf'} for path in observation.artifacts):
-        raise ValueError('The original task requires a report; intermediate computation is incomplete.')
+    from bioma.core.reporting import validate_written_delivery
+    validate_written_delivery(context.state, observation.artifacts, args.get('answer_text'))
     # Do not allow a changed artifact to inherit the execution provenance.
     for path, digest in {**observation.metrics['sha256'], **observation.metrics.get('execution_sha256', {})}.items():
         if hashlib.sha256(Path(path).read_bytes()).hexdigest() != digest:
@@ -558,7 +581,7 @@ class ScientificInvestigationWorker(DataAnalysisRunner):
             HarnessTool('retrieve_history', 'Retrieve complete earlier tool arguments, observations and failures on demand.', handler=retrieve_history, args_schema=HistoryQuery),
             HarnessTool('save_working_notes', 'Record provisional findings, method, limitations and references; never scientific truth.', handler=save_notes, args_schema=WorkingNotes),
             HarnessTool('request_user_clarification', 'After inspecting admitted inputs, suspend only the analysis that depends on a genuinely unresolved user choice. Records the exact field, question, reason and inspected input identities; it does not discard completed work or assert that a file is missing.', handler=request_clarification, args_schema=ClarificationRequest),
-            HarnessTool('finish_investigation', 'Submit selected receipt_refs and optional artifact_paths from this work package for independent review. Omit selection only when one unambiguous eligible support record exists. answer_text, assumptions and unresolved_requirements form an unverified ResultProposal. Does not commit scientific truth.', handler=finish, args_schema=Finish),
+            HarnessTool('finish_investigation', 'Submit selected receipt_refs and answer_text for independent review. Existing validated domain-tool results can be submitted directly; additional generated code or report files are optional unless the user requested them. Omit selection only when one unambiguous eligible support record exists. answer_text, assumptions and unresolved_requirements form an unverified ResultProposal. Does not commit scientific truth.', handler=finish, args_schema=Finish),
         ])
         if self.reference_models and self.config.harness_mode == 'current':
             tools.append(HarnessTool('request_reference_advice',
@@ -570,8 +593,9 @@ class ScientificInvestigationWorker(DataAnalysisRunner):
             for metadata in build_scoped_skill_tools(self.skill_view):
                 tools.append(HarnessTool(metadata.name, metadata.description,
                     handler=lambda context, args, metadata=metadata: _skill_observation(metadata, args), args_schema=metadata.args_schema))
-        if self.config.harness_mode == 'current':
-            tools.extend(tool for tool in self.external_tools if tool.name not in {t.name for t in tools})
+        tools.extend(tool for tool in self.external_tools
+                     if (self.config.harness_mode == 'current' or tool.name in self.config.direct_tool_names)
+                     and tool.name not in {t.name for t in tools})
         return tools
 
     def run(self, state):
@@ -669,6 +693,7 @@ def investigation_backend(config, base_dir, *, provider_factory=None, skill_regi
         package = InvestigationWorkPackage(task_id=state.task_id, workspace_scope=scope,
             objective=message.payload.get('assignment_objective') or state.objective,
             original_request=state.objective,
+            user_request_history=inputs.get("_user_request_history", []),
             execution_requirements=message.payload.get('execution_requirements') or {},
             input_manifest={path: hashlib.sha256(Path(path).read_bytes()).hexdigest() for path in files},
             query_input_questions=questions,
@@ -723,6 +748,7 @@ def investigation_backend(config, base_dir, *, provider_factory=None, skill_regi
             result = runner.run({'task_id': state.task_id, 'artifact_scope_id': scope,
                 'current_user_request': message.payload.get('assignment_objective') or state.objective,
                 'original_user_request': state.objective,
+                'user_request_history': package.user_request_history,
                 'research_assignment': assignment, 'desired_deliverables': outputs,
                 'analysis_work':inputs.get('analysis_work'), 'query_input_questions':questions,
                 'research_intake':intake,

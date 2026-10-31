@@ -6,6 +6,7 @@ import hashlib
 import json
 import platform
 from uuid import uuid4
+from bioma.peptide.contracts import sha256 as file_sha256
 from pydantic import Field
 
 from bioma.harness.types import HarnessTool, ToolObservation
@@ -129,7 +130,19 @@ def shared_tools(registry):
             execution_error = None
             failure_diagnostic = None
             try:
-                result = tool.call(action_instance_id=action_id, **args)
+                from bioma.peptide.contracts import result_validator as peptide_validator
+                if tool.result_validator is peptide_validator:
+                    # Raw legacy methods cannot satisfy a validator using only Agent
+                    # arguments. Route long/scientific work through the trusted job service.
+                    result = {'status':'blocked_unregistered_scientific_context',
+                              'reason':'Use list_peptide_profiles and manage_peptide_job. A matching host profile and independent validator are required; raw arguments cannot grant scientific approval.'}
+                else:
+                    result = tool.call(action_instance_id=action_id, **args)
+                if isinstance(result, str):
+                    try:
+                        parsed = json.loads(result)
+                        if isinstance(parsed, dict): result = parsed
+                    except (ValueError, TypeError): pass
             except Exception as exc:
                 from bioma.runtime.admission import ExecutionAuthorizationError
                 from bioma.runtime.deadline import ExecutionTimeout
@@ -175,7 +188,8 @@ def shared_tools(registry):
             validation_failed = (execution_error is None and
                                  tool.result_validator is not None and not result_validated)
             failed = execution_error is not None or validation_failed or (isinstance(result, dict) and (
-                result.get("status") in {"error", "failed", "blocked"}
+                any(result.get(key) not in {None, "ok", "success", "completed", "passed"}
+                    for key in ("status", "stage_status", "execution_status"))
                 or result.get("success") is False
             ))
             receipt = context.artifact_dir("tool_receipts") / (action_id + ".json")
@@ -233,7 +247,7 @@ def shared_tools(registry):
                     for filename in selected:
                         digest = files[filename]
                         path = Path(filename).resolve()
-                        if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                        if not path.is_file() or file_sha256(path) != digest:
                             raise ValueError('Tool output file identity mismatch')
                         admitted[str(path)] = {'sha256': digest, 'receipt_path': str(receipt),
                                                'receipt_sha256': previous[-1]['sha256']}
@@ -290,7 +304,11 @@ def shared_tools(registry):
                          if execution_error else
                          "Shared scientific Tool result failed its registered validator; raw result retained."
                          if validation_failed else "Configured scientific tool returned a recorded result."),
-                metrics={"result": result, "receipt_path": str(receipt),
+                metrics={"result": result, "receipt_path": str(receipt), "result_kind": tool.result_kind,
+                         "delivery_package": {"receipt_ref": package.metrics["receipt_path"],
+                             "artifact_paths": package.artifacts,
+                             "status": "pending_independent_review"} if package else None,
+                         "preview_sha256": dict(result.get("files") or {}) if result_validated and not failed and isinstance(result, dict) else {},
                          **({"diagnostic_context": failure_diagnostic} if failure_diagnostic else {})},
                 warnings=["TOOL_EXECUTION_FAILED"] if execution_error else [],
                 execution_package=asdict(package) if package else None,

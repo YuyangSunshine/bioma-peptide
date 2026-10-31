@@ -36,3 +36,5 @@ qualified_environment_snapshot.tar.gz
 
 # Local-only scientific evidence and qualification outputs
 .local-evidence/
+# Private local project inputs and host-owned scientific registrations
+.local-data/

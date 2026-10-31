@@ -202,7 +202,7 @@ async function openWorkspaceFile(id,run=lastRunData){
   const artifact=(run?.state?.artifacts||[]).find(a=>a.id===id);if(!artifact||!$('#file-preview-pane'))return;
   fileSelected=id;const token=++filePreviewToken,pane=$('#file-preview-pane'),type=classifyArtifact(artifact),url=aurl(run,artifact);
   $$('#files-view [data-file-id]').forEach(el=>el.classList.toggle('active',el.dataset.fileId===id));
-  pane.innerHTML=`<h3>${esc(fileName(artifact.uri))}</h3><div class="file-location">${esc(artifact.uri)}</div><div class="file-preview-actions"><a href="${esc(url)}" download="${esc(fileName(artifact.uri))}">下载原文件 ↓</a><button id="file-show-graph">查看关联图谱</button></div><div id="file-preview-body" class="file-preview-body">正在读取文件…</div>`;
+  pane.innerHTML=`<h3>${esc(fileName(artifact.uri))}</h3><div class="file-location">${esc(artifact.uri)}</div>${artifact.metadata?.delivery_review==='pending'?'<p role="status">执行中间产物：文件身份已核对，尚未通过独立交付审核。</p>':''}<div class="file-preview-actions"><a href="${esc(url)}" download="${esc(fileName(artifact.uri))}">下载原文件 ↓</a><button id="file-show-graph">查看关联图谱</button></div><div id="file-preview-body" class="file-preview-body">正在读取文件…</div>`;
   $('#file-show-graph').onclick=()=>{showResultPanel('graph');selectGraphNode('artifact:'+id,buildEvidenceGraph(run),run)};
   const body=$('#file-preview-body');
   if(type==='image'){body.innerHTML=`<button class="view-btn" id="file-enlarge">放大预览 ↗</button><img src="${esc(url)}" alt="${esc(fileName(artifact.uri))}">`;$('#file-enlarge').onclick=()=>openVisualPreview(artifact,run);body.querySelector('img').onerror=()=>body.textContent='图像预览加载失败，请下载原文件。';return}

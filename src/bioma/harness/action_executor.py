@@ -143,7 +143,21 @@ def call_harness_tool(name, raw_args, tools, context, budget, llm, checkpoint):
             'line_count': len(source.splitlines()),
             'output_files': context.analysis_draft['output_files'],
             'reports': context.analysis_draft.get('reports', {}),
+            'input_indices': context.analysis_draft.get('input_indices'),
         }
+        from bioma.harness.code_analysis import resolve_analysis_inputs
+        try:
+            catalog, selected = resolve_analysis_inputs(context, context.analysis_draft)
+            indices = context.analysis_draft.get('input_indices')
+            if indices is None:
+                indices = list(range(len(catalog)))
+            draft['execution_input_map'] = [
+                {'python_index': local, 'r_index': local + 1,
+                 'catalog_index': index, 'path': selected[local]}
+                for local, index in enumerate(indices)]
+            draft['input_index_rule'] = 'INPUT_FILES uses the local selected order. For input_indices=[1], read INPUT_FILES[0] in Python (INPUT_FILES[[1]] in R). File contents retain their original schema; tool result fields need not be file fields.'
+        except ValueError as exc:
+            draft['input_selection_error'] = str(exc)
         # Small drafts remain convenient for line-edit repair. Large drafts
         # already exist in the immediately preceding native tool arguments
         # and in the durable checkpoint/trace; echoing them again doubles

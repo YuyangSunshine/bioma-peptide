@@ -71,6 +71,16 @@ class ScientificInvestigationConfig(ConfigModel):
     max_llm_calls: int = Field(default=24, ge=1)
     max_tool_calls: int = Field(default=32, ge=1)
     max_retry_per_step: int = Field(default=2, ge=0)
+    review_reserve_calls: int = Field(default=2, ge=2,
+        description="Remaining calls at which reviewable work is submitted, leaving room for review-driven revision.")
+    review_reserve_seconds: float = Field(default=0, ge=0,
+        description="Optional wall-clock reserve for submitting reviewable work before the task deadline; zero disables it.")
+    review_history_mode: Literal['full', 'identity'] = Field(default='full',
+        description="Historical unselected files: full content or verified identity only. Selected support is always reviewed in full.")
+    investigate_review_gaps: bool = Field(default=False,
+        description="Return incomplete-review leads to the same bounded Agent loop for evidence gathering; never grants approval.")
+    direct_tool_names: list[str] = Field(default_factory=list,
+        description="Expose selected already-authorized tools directly; grants no additional execution authority.")
 
 
 class ComAgentConfig(ScientificInvestigationConfig):

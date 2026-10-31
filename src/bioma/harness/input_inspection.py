@@ -278,10 +278,10 @@ def inspect_input_data(context, args):
         rows = list(csv.reader(io.StringIO(raw.decode('utf-8-sig')),
                                delimiter='\t' if path.suffix.lower() == '.tsv' else ','))
         value = {'header': rows[0] if rows else [], 'rows': rows[1:]}
-    elif path.suffix.lower() in {'.txt', '.py', '.r', '.fa', '.fasta', '.faa'}:
+    elif path.suffix.lower() in {'.txt', '.py', '.r', '.fa', '.fasta', '.faa', '.sdf', '.pdb', '.cif', '.mol', '.mol2', '.lib', '.off', '.frcmod', '.prmtop', '.inpcrd'}:
         value = raw.decode('utf-8-sig').splitlines()
     else:
-        raise ValueError('Input inspection supports JSON, CSV, TSV, FASTA, text and Python/R source (read-only)')
+        raise ValueError('Input inspection supports JSON, CSV, TSV, FASTA, SDF/PDB/mmCIF/MOL, Amber LIB/OFF/FRCMOD/PRMTOP/INPCRD text and Python/R source (read-only); structure text uses path=[] and offset/limit in lines')
     for segment in args['path']:
         if isinstance(value, dict) and segment in value:
             value = value[segment]
@@ -299,6 +299,11 @@ def inspect_input_data(context, args):
     data = {'input_index': index, 'path': args['path'], 'offset': offset,
             'total_items': len(value) if isinstance(value, (dict, list, str)) else 1,
             'sha256': hashlib.sha256(raw).hexdigest(), 'authority': 'input_preview_only'}
+    if isinstance(value, dict):
+        data['available_keys'] = list(value)[:100]
+        data['navigation'] = 'path selects a nested field; limit counts dictionary keys, not records. Append a needed key to path instead of repeating the same read.'
+    if isinstance(value, (dict, list, str)):
+        data['next_offset'] = offset + limit if offset + limit < len(value) else None
     if len(_encoded(selection)) <= MAX_PREVIEW_BYTES:
         data['content'] = selection
     else:

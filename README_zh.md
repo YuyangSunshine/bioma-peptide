@@ -59,11 +59,7 @@ flowchart TD
 
 执行层可以有先后依赖，例如 MD 需要合格拓扑与参数；**依赖关系不等于固定研究决策**。Agent 可以先核对实验材料、选择不同构象方法、放弃失败候选或返回受体准备阶段。当前决策与修订的回归测试使用受控测试案例，不应宣传为已经完成所有真实靶点的自主发现。
 
-### 为什么移除 bridge
-
-原 `bridge/` 是迁移期间避免两份 `bioma` 包冲突的独立发行包。如今相关领域代码已进入本仓库，继续保留第二套安装和假模块加载没有必要。其功能已收回 `src/bioma/peptide/`，使用同一发行包与 CLI；测试移至 `tests/peptide/`，执行协议文档移至 `docs/peptide/`。`bioma` 顶层采用惰性导入，使计算 worker 不必启动模型或完整研究运行时。后台进程隔离仍保留，因为长计算的生命周期与 Agent 会话不同；这是执行边界，不是另一层桥接产品。
-
-公开仓库的 `BioMA.run/query` 仍使用已有研究控制器。此前验证的 OpenHands 控制器属于独立私有项目，不在这里伪称已集成，也不另套一个 OpenHands 与旧循环相互驱动的双重决策环。所有新增 MD 方法的统一 Agent 暴露和完整科学 validator 仍未完成。资源的部分限制为周期采样，GPU lease 仅协调同一作业服务，不是硬 VRAM 分区或通用集群调度器。
+`BioMA.run/query` 使用 BioMA 自主研究控制器。所有新增 MD 方法的统一 Agent 暴露和完整科学 validator 仍未完成。资源的部分限制为周期采样，GPU lease 仅协调同一作业服务，不是硬 VRAM 分区或通用集群调度器。
 
 ## 可选计算阶段与方法依赖
 
@@ -135,7 +131,7 @@ bioma-peptide/
 
 ### 1. 安装单一主项目
 
-需要 Linux、Python ≥3.11、可用 `/proc`、POSIX 文件锁和本地 SQLite。主包依赖由根目录 `pyproject.toml` 管理；不再单独安装 bridge。不要在同一环境同时安装另一个提供 `bioma` 的 BioMA 仓库。
+需要 Linux、Python ≥3.11、可用 `/proc`、POSIX 文件锁和本地 SQLite。主包依赖由根目录 `pyproject.toml` 管理。不要在同一环境同时安装另一个提供 `bioma` 的 BioMA 仓库。
 
 ```bash
 git clone https://github.com/YuyangSunshine/bioma-peptide.git
@@ -210,17 +206,37 @@ PYCODE
 
 真实工具需要另行配置操作者维护的 registry、登记输入和科学环境。使用 `bioma-peptide submit --root JOB_ROOT --registry REGISTRY --request REQUEST` 提交；后续 `status/collect/cancel/resume/reattach` 使用相同 root/registry 与 `--job-id`。完整字段和预算约束见 [docs/peptide/README.md](docs/peptide/README.md)。
 
-研究入口可用 `from bioma import BioMA`，Web 入口可用 `bioma-peptide-web --help`。真实模型服务需要配置 `configs/bioma.yaml` 中的 provider/model。`BioMA(backend="llm", control_policy="adaptive_v3")` 显式启用已有的证据驱动科学控制；其模型费用与科研作业预算需分别配置。仅安装包不会自动授权生产 MD。
+Web 直接进入 BioMA 自主研究循环：输入靶点 → 按需检索 UniProt/PDB → 模型选择结构和计算工具 → 独立校验 → 根据结果继续、修订或报告阻断。`src/bioma/peptide` 提供领域合同和受控科学作业，不替代这个循环，也不规定必须按固定阶段顺序执行。
+
+
+示例研究请求：
+
+> 请评估人源 Nectin-4 胞外区作为环肽结合靶点的结构条件。从 UniProt 和 PDB 检索并核对物种、结构域覆盖和复合物成分，说明受体选择依据，交付结构预览、按链统计图和局限性报告。我尚无候选序列，本轮不做对接或 MD；请列出进入候选设计前需要我补充的约束。
+
+若已有候选，请附上序列或登记材料 ID，并说明环化方式、交联剂、立体化学、比较目标和计算预算。例如：比较已登记的三个 TBMB 双环肽候选，先核验化学身份与受体准备状态，仅对符合准入条件的候选开展已批准的计算。没有候选时，可以请求提出设计假设；不能把假设当成已验证的药物。
+
+执行中目录显示有哈希绑定的中间文件，并标记“尚未通过独立交付审核”。结构检查提供坐标预览及按链残基统计；对接分数、MD 指标和实验图表仅在实际数据存在时生成。
+
+```bash
+bioma-peptide-web --config configs/peptide_web.yaml \
+  --env-file /path/to/private/runtime.env --host 127.0.0.1 --port 8015
+```
+
+配置使用实测可用的火山中转模型与实际的 `api_base`、`api_key_env: HUOSHYAN_API_KEY` 等字段。长任务可追加 `--peptide-registry REGISTRY --peptide-job-root JOB_ROOT`，只能选择宿主登记的方法、输入和预算。导入的真实原件保存在 Git 忽略的 `.local-data/nectin4`，可通过材料检索工具按 ID 读取并校验哈希。
+
+默认使用现有 continuous investigation 自主循环及独立交付审核；`--control-policy adaptive_v3` 可显式选择既有的科学控制器。详细配置、工具权限和能力边界见 [Web 自主研究说明](docs/peptide/WEB_RESEARCH.md)。输入靶点并不意味着缺失的候选序列、参数审批和生产预算可以由 Agent 自行补造。
 
 ## 实现与验证状态
 
 | 能力 | 当前状态 |
 |---|---|
-| 原生 `bioma.peptide`、十工具合同、持久 jobs、大文件引用、基础数据语义 | 已实现；本次 35 项多肽测试及 31 项决策/修订测试通过 |
+| 原生 `bioma.peptide`、十工具合同、持久 jobs、大文件引用、基础数据语义 | 已实现；Web、领域合同、预算、报告交付和自主修订联合回归 212 项测试及 5 个子测试通过 |
+| Web 自主检索、结构检查、独立审核与修订 | 明确首轮目标的真实请求已通过：自主选择 4GJT、交付结构清单与图表，并通过独立交付审核；宽泛药物设计请求会询问设计起点，多结构综合报告仍有修订失败案例 |
+| Web 运行中产物、结构与图表 | 浏览器实测列表在运行中自动从 1 项增加至 6 项；NGL 结构和 SVG 图表可预览，中间文件标明审核待完成 |
+| 甲硫氨酸双环肽单突变初筛 | 已注册可按需调用的枚举工具；验证固定锚点、单突变身份与线性序列描述符，输出 CSV/图表；不预测双环产物亲和力或 ADMET |
 | 新增领域源码和两个核心 skills | 已迁入；来源/迁入哈希见 provenance |
 | 实际科学工具执行 | 迁入 RDKit 甘氨酸拓扑经过 broker 实跑，执行/制品/独立图验证通过；覆盖范围有限 |
 | 实际 GPU 引擎 | 两粒子合成 OpenMM CUDA 启动、checkpoint 恢复、受控子进程取消通过；不是肽体系或持久 GPU broker 验收 |
-| OpenHands 模型调用 | 历史私有适配器短任务已验证；公开主项目保留自己的自主研究控制器 |
 | 真实 Nectin-4 全链 | 未通过；审核记录冲突，三条候选中一条立体状态不匹配 |
 | 新生产 MD、GPU broker 完整资格试验 | 未完成/未准入；未启动新的生产轨迹 |
 | 全阶段科学 validator、全部新增方法的统一 Agent 暴露 | 尚不完整；当前独立图 checker 不能批准对接或 MD |

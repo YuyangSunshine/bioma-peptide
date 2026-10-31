@@ -109,7 +109,10 @@ class Jobs(unittest.TestCase):
         self.assertEqual(self.broker.cancel(job)['cancellation'],'requested')
         self.assertEqual(self.wait(job)['status'],'cancelled')
         self.assertIsNone(process_identity(state['child_pid']))
-        self.broker.resume(job);self.assertEqual(self.wait(job)['status'],'completed')
+        self.broker.resume(job)
+        resumed=self.wait(job)
+        self.assertEqual(resumed['status'],'completed',
+                         {'state':resumed,'child_log':(self.broker.directory(job)/'child.log').read_text()})
         self.assertEqual(self.broker.status(job)['attempt'],2)
 
     def test_budget_timeout(self):

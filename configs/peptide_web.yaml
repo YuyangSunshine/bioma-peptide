@@ -1,0 +1,55 @@
+gateway:
+  llm: &id002
+    backend: openai
+    model: deepseek-v4-1-flash-261017
+    api_base: https://ark.cn-beijing.volces.com/api/v3
+    api_key_env: HUOSHYAN_API_KEY
+    max_output_parameter: max_tokens
+    max_output_tokens: 6000
+    timeout_seconds: 90.0
+    thinking_mode: disabled
+compute_services:
+  worker:
+    harness_mode: governed
+    agent_engine: bioma
+    llm: &id001
+      backend: openai
+      model: deepseek-v4-1-flash-261017
+      api_base: https://ark.cn-beijing.volces.com/api/v3
+      api_key_env: HUOSHYAN_API_KEY
+      max_output_parameter: max_tokens
+      max_output_tokens: 6000
+      timeout_seconds: 180.0
+      thinking_mode: disabled
+    delivery_review_llm:
+      <<: *id001
+      thinking_mode: disabled
+      max_output_tokens: 6000
+    max_llm_calls: 24
+    max_tool_calls: 32
+    max_retry_per_step: 3
+    review_reserve_calls: 6
+    review_reserve_seconds: 120
+    review_history_mode: identity
+    investigate_review_gaps: true
+    direct_tool_names:
+    - query_uniprot
+    - assess_target_structure
+    - scan_methionine_single_mutants
+    - list_project_materials
+    - read_project_material
+    - list_peptide_profiles
+    - manage_peptide_job
+  proposal_llm: *id002
+  assessment_llm: *id002
+  reference_models: []
+  skill_roots:
+  - skills
+  tool_roots:
+  - tools/our_tools
+  - tools/stella
+proagent:
+  llm: *id002
+operagent:
+  llm: *id002
+continuous_investigation: true

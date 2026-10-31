@@ -1,0 +1,21 @@
+{
+  "source_revision": "c83d77122434abe14aaf88e95e39348fc2a236b7",
+  "python": "3.11.16",
+  "packages": {
+    "rdkit": "2026.3.1",
+    "openmm": "8.6.1",
+    "biopython": "1.84",
+    "numpy": "1.26.3",
+    "pydantic": "2.13.5",
+    "openai": "3.16.2",
+    "requests": "2.32.3",
+    "pytest": "9.1.1",
+    "ruff": "0.17.3",
+    "httpx": "0.28.1"
+  },
+  "config": "configs/peptide_web.yaml",
+  "config_sha256": "2d458ca1e0374f0314387e0143905da74e6f04b647725dcb9ef8fc3dcd3a93ae",
+  "execution_mode": "existing native scientific Python environment; no new container image",
+  "image_digest": null,
+  "scope": "Observed versions for the recorded tests, not a complete dependency lock or production-MD qualification."
+}

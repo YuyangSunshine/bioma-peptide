@@ -59,11 +59,7 @@ flowchart TD
 
 Computations have prerequisites: MD needs valid topology and applicable parameters. Such dependencies do not fix research decisions. The Agent can inspect experiments first, select a different conformer method, reject a candidate or revisit receptor preparation. Existing decision/revision regressions are controlled tests, not proof of autonomous discovery on every real target.
 
-### Removing the migration bridge
-
-The separate `bridge/` distribution originally avoided collisions between two BioMA packages during migration. The domain code now belongs to this repository, so the extra installation and synthetic `bioma` module loader have been removed. Computation lives in `src/bioma/peptide/`, tests in `tests/peptide/` and contracts in `docs/peptide/`. Lazy top-level imports let scientific workers use the native package without initializing the research runtime or models. Detached processes remain because long scientific jobs and Agent sessions have different lifetimes; they are an execution boundary, not another bridge product.
-
-Public `BioMA.run/query` retains its existing research controller. A previously tested OpenHands controller belongs to a separate private project and is not claimed as integrated here. No nested OpenHands/legacy decision loop is introduced. Uniform Agent exposure and scientific validators for all added MD methods remain incomplete. Some resource limits are sampled; the cooperative GPU lease is neither hard VRAM partitioning nor a general scheduler.
+`BioMA.run/query` uses the BioMA autonomous research controller. Uniform Agent exposure and scientific validators for all added MD methods remain incomplete. Some resource limits are sampled; the cooperative GPU lease is neither hard VRAM partitioning nor a general scheduler.
 
 ## Available computational stages and dependencies
 
@@ -137,7 +133,7 @@ bioma-peptide/
 
 ### Install the single project package
 
-Use Linux, Python ≥3.11, `/proc`, POSIX locks and local SQLite. Root `pyproject.toml` defines the project dependencies; there is no separate bridge installation. Do not install two distributions providing `bioma` in the same environment.
+Use Linux, Python ≥3.11, `/proc`, POSIX locks and local SQLite. Root `pyproject.toml` defines the project dependencies. Do not install two distributions providing `bioma` in the same environment.
 
 ```bash
 git clone https://github.com/YuyangSunshine/bioma-peptide.git
@@ -212,17 +208,35 @@ PYCODE
 
 Real methods require an operator-maintained registry, registered inputs and a scientific environment. Submit with `bioma-peptide submit --root JOB_ROOT --registry REGISTRY --request REQUEST`. Subsequent `status/collect/cancel/resume/reattach` use the same root/registry and `--job-id`. See [docs/peptide/README.md](docs/peptide/README.md) for fields and budgets.
 
-Use `from bioma import BioMA` for research and `bioma-peptide-web --help` for the existing UI. Configure provider/model settings in `configs/bioma.yaml` for real model calls. `BioMA(backend="llm", control_policy="adaptive_v3")` explicitly selects the existing evidence-driven scientific controller. Configure model and scientific job budgets separately; installing the package grants no production-MD permission.
+The Web uses the existing BioMA autonomous research loop: query → on-demand UniProt/PDB retrieval and method selection → independent validation → continuation or revision. `src/bioma/peptide` supplies domain contracts and controlled jobs, not another Agent loop.
+
+
+Example research request:
+
+> Assess the structural basis for targeting the extracellular region of human Nectin-4 with cyclic peptides. Retrieve UniProt/PDB records, check organism, domain coverage and complex components, and explain receptor selection. Deliver a structure preview, per-chain inventory chart and limitations. I have no candidate sequences yet: do not run docking or MD; identify the constraints needed before candidate design.
+
+For candidate comparisons, supply sequences or registered material IDs, cyclization chemistry, stereochemistry, comparison objective and an approved compute budget. Missing candidates require design constraints; proposed sequences are hypotheses, not validated drugs.
+
+The live file list labels hash-bound intermediate outputs as pending independent delivery review. Structural checks provide coordinates and chain inventory charts. Docking, MD and experimental plots require actual corresponding data.
+
+```bash
+bioma-peptide-web --config configs/peptide_web.yaml \
+  --env-file /path/to/private/runtime.env --host 127.0.0.1 --port 8015
+```
+
+For persistent scientific jobs, add `--peptide-registry REGISTRY --peptide-job-root JOB_ROOT`. Imported originals stay in ignored `.local-data/nectin4` and are accessible through hash-checked material IDs. See [Web research setup and limits](docs/peptide/WEB_RESEARCH.md). A target name starts research; missing peptide inputs, scientific approvals and production budgets remain explicit prerequisites.
 
 ## Implemented versus pending
 
 | Capability | Evidence / status |
 |---|---|
-| Native `bioma.peptide`, ten-tool contracts, persistent jobs, external references and basic data semantics | Implemented; 35 peptide tests and 31 decision/revision tests passed in this revision |
+| Native `bioma.peptide`, ten-tool contracts, persistent jobs, external references and basic data semantics | Implemented; 212 tests and 5 subtests passed across Web, domain contracts, budgets, report delivery and autonomous revision |
+| Web discovery, structural inventory, independent review and revision | A scoped first-stage request passed: autonomous selection of 4GJT, structural inventory/charts and independent delivery review. Broad drug-design requests ask for design constraints; multi-structure reports still have failed revision cases |
+| Live Web files, structures and charts | Browser test observed file count update from 1 to 6 during execution; NGL and SVG previews work, with provisional outputs labeled pending review |
+| Methionine-scaffold single-mutant triage | Registered on-demand enumeration with fixed-anchor and single-substitution validation, linear-sequence descriptors, CSV and chart; no cyclic-product affinity or ADMET prediction |
 | Later domain increments and two core skills | Migrated with original/migrated source hashes |
 | Real scientific tool invocation | Migrated RDKit glycine topology ran through the broker and passed execution, artifact and independent graph validation; limited coverage |
 | Real GPU engine | Two-particle synthetic OpenMM CUDA startup, checkpoint restore and controlled child cancellation passed; not a peptide or persistent GPU broker qualification |
-| Real OpenHands model invocation | Historical private-adapter short task verified; the public project retains its own research controller |
 | Complete Nectin-4 workflow | Not passed: conflicting review records and a stereochemical mismatch in one of three candidates |
 | New production MD / full GPU broker qualification | Pending / not admitted; no new production trajectory started |
 | Scientific validators for every stage / uniform Agent exposure for all added methods | Incomplete; current independent graph checks cannot approve docking or MD |

@@ -143,6 +143,11 @@ class LLMQueryInterpreter(QueryInterpreter):
                 "evidence obligations or attest missing resources. Preserve quoted user requirements "
                 "verbatim and cite supporting fragment indexes for every item. Uncertain missing "
                 "inputs are questions for subsequent observation, not entry vetoes. "
+                "recent_context is background only, not a citable source. On follow-up turns, "
+                "record only the current query_fragments in explicit fields; never copy prior "
+                "user or assistant statements into those fields. The research worker receives "
+                "session history separately. Copy complete source fragments when exact wording "
+                "is difficult; do not paraphrase chemical names or mathematical notation. "
                 "Return exact schema JSON."
             ),
         }, {
@@ -170,7 +175,8 @@ class LLMQueryInterpreter(QueryInterpreter):
                 error = exc
                 if attempt + 1 < self.max_attempts:
                     messages.append({"role": "user", "content": json.dumps({
-                        "repair_request": "The previous JSON was schema-invalid.",
+                        "repair_request": "The previous JSON was schema-invalid. Repair the object below using only query_fragments, not recent_context.",
+                        "rejected_response": response,
                         "validation_error": str(exc),
                         "query_fragments": [{"index": i, "text": row.text}
                                             for i, row in enumerate(fragments)],
@@ -268,3 +274,12 @@ def interpret_query(objective: str, scope: Any, inputs: dict[str, Any]) -> Query
     del scope
     return DeterministicQueryInterpreter().interpret(objective, inputs=inputs,
         capabilities=(), session_context=[])
+
+
+def user_request_history(session_context):
+    """User-authored context only; no evidence, filesystem or execution grants."""
+    return [{"role": "user", "content": row["content"],
+             "run_id": row.get("run_id")}
+            for row in session_context
+            if isinstance(row, dict) and row.get("role") == "user"
+            and isinstance(row.get("content"), str) and row["content"].strip()]

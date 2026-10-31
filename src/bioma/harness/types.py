@@ -91,6 +91,38 @@ class HarnessContext:
             item["execution_package"] = observation.execution_package
         self.observations.append(item)
         self.state["harness_observations"] = list(self.observations)
+        # Preview only hash-bound files from the current observation, not a
+        # directory scan. Publication here is not independent scientific approval.
+        import hashlib
+        from bioma.peptide.contracts import sha256
+        from bioma.runtime.telemetry import emit
+        package = observation.execution_package or {}
+        fingerprints = package.get("metrics", {}).get("sha256", {})
+        if not fingerprints:
+            fingerprints = observation.metrics.get("sha256", {})
+        if not isinstance(fingerprints, dict):
+            fingerprints = {}
+        previews_manifest = observation.metrics.get("preview_sha256", {})
+        if not isinstance(previews_manifest, dict):
+            previews_manifest = {}
+        fingerprints = {**previews_manifest, **fingerprints}
+        previews = []
+        for filename, digest in fingerprints.items():
+            path = Path(filename).resolve()
+            try:
+                if (not path.is_relative_to(self.base_dir.resolve()) or
+                        not path.is_file() or path.stat().st_size > 32 * 1024**2 or
+                        sha256(path) != digest):
+                    continue
+            except OSError:
+                continue
+            previews.append({"id": "preview-" + hashlib.sha256((str(path) + "\0" + digest).encode()).hexdigest(),
+                "kind": "execution-preview", "uri": str(path),
+                "source": observation.tool_name,
+                "metadata": {"sha256": digest, "delivery_review": "pending"}})
+        if previews:
+            emit("artifacts.available", artifacts=previews)
+
 
 
 @dataclass
