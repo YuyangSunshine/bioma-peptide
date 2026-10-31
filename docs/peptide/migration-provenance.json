@@ -5,22 +5,22 @@
     {
       "path": "tools/our_tools/_crosslinked_impl/peptide_structure.py",
       "source_sha256": "5be198098a5a99d50af477211fa0714756bcac77b479947eddf84afd1ddedb07",
-      "migrated_sha256": "5be198098a5a99d50af477211fa0714756bcac77b479947eddf84afd1ddedb07"
+      "migrated_sha256": "d36d4f167c5b9ec2d24dfae82d925ede4e3f90cd4604dd986f9b9b40d0000d18"
     },
     {
       "path": "tools/our_tools/_crosslinked_impl/small_molecule.py",
       "source_sha256": "47b69c4b4a2ef722fb3d15ec5a84091e885374d5317503cc968137d294d35a8d",
-      "migrated_sha256": "47b69c4b4a2ef722fb3d15ec5a84091e885374d5317503cc968137d294d35a8d"
+      "migrated_sha256": "21c871f666fed4d816b509ab26e30cbf2b1343a81e2227935ad398536ab708ff"
     },
     {
       "path": "tools/our_tools/_crosslinked_impl/boltz_structure.py",
       "source_sha256": "c0f5349e54f6377e1ed5cd98b71327e333195a7c2172ba2e92499f829072656c",
-      "migrated_sha256": "c0f5349e54f6377e1ed5cd98b71327e333195a7c2172ba2e92499f829072656c"
+      "migrated_sha256": "8875c1748b2fe1f890ba4b215b2d13eabadbdbb44e1684d6fc1736ee26eb73c0"
     },
     {
       "path": "tools/our_tools/_crosslinked_impl/structure_export.py",
       "source_sha256": "a31548fe4dd293047706aafdb893476bab2f9484ab123244895c07be91d8e40b",
-      "migrated_sha256": "a31548fe4dd293047706aafdb893476bab2f9484ab123244895c07be91d8e40b"
+      "migrated_sha256": "b04c495ff0ea170618e31dd52b9a697dbb342945d11c302df65cba24291daf6e"
     },
     {
       "path": "tools/our_tools/_crosslinked_impl/ensemble_contract.py",
@@ -30,7 +30,7 @@
     {
       "path": "tools/our_tools/tbmb_bicyclic_docking.py",
       "source_sha256": "4c41813b9958d9fabfacf862082604f10975d3d2833657252ead76a7ad624888",
-      "migrated_sha256": "08b3ed1f02fd4dc69eb36757d39970f34ede5e00062b91f1354d479e6dd8cd4a"
+      "migrated_sha256": "b1f1a449a51acf85cc5773c57b7b2e6fb330453a2d7964f4bf9d902cc1aa2884"
     },
     {
       "path": "tools/our_tools/tbmb_parameter_source.py",
@@ -77,6 +77,7 @@
   "adaptations": [
     "Remove private case sequence default; require explicit sequence",
     "Replace machine-specific paths with project placeholder",
-    "External docking commands use argv with shell=False; shell pipelines require a reviewed fixed wrapper"
+    "External docking commands use argv with shell=False; shell pipelines require a reviewed fixed wrapper",
+    "Native bioma.peptide integration; ten domain decorators declare their result contracts directly"
   ]
 }

@@ -97,7 +97,7 @@ def supervise(folder):
                     python = interpreter['path']
                     if sha256(python) != interpreter['sha256']:
                         raise ValueError('worker_interpreter_identity_mismatch')
-                proc = subprocess.Popen([python, '-m', 'bioma_peptide_bridge.worker', str(folder), '--child'],
+                proc = subprocess.Popen([python, '-m', 'bioma.peptide.worker', str(folder), '--child'],
                                         cwd=folder, stdin=subprocess.DEVNULL, stdout=log, stderr=log,
                                         env=env, start_new_session=True, preexec_fn=limits, shell=False)
                 state.update(child_pid=proc.pid, child_start=process_identity(proc.pid))

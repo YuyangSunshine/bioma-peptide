@@ -13,9 +13,9 @@ class DomainRegistration(unittest.TestCase):
         script = '''
 import json,os
 from pathlib import Path
-from bioma_peptide_bridge.catalog import catalog, source_files
-from bioma_peptide_bridge.contracts import sha256
-from bioma_peptide_bridge.domain import load_tools
+from bioma.peptide.catalog import catalog, source_files
+from bioma.peptide.contracts import sha256
+from bioma.peptide.domain import load_tools
 root=Path(os.environ['PEPTIDE_SOURCE_ROOT']); rows=catalog(root)
 files=source_files(root)
 tools,_=load_tools(root,{p:sha256(root/p) for p in files})

@@ -8,6 +8,7 @@ validation and xTB workflow.
 
 from __future__ import annotations
 
+from bioma.peptide.contracts import result_validator as peptide_result_validator
 import hashlib
 import json
 import math
@@ -450,7 +451,7 @@ def _ensemble_hash(molecules: list[Any]) -> str:
     args_schema=BoltzConformerEnsembleInput,
     tags=["boltz", "crosslinked-peptide", "conformer", "ensemble", "3d"],
     requires_network=True,
-)
+ result_kind="computed_prediction", result_validator=peptide_result_validator)
 def generate_boltz_conformer_ensemble(topology_manifest_path: str, target_ensemble_size: int, output_dir: str, boltz_options_json: str = "{}") -> str:
     contract = require_final_target(target_ensemble_size, stage="boltz_raw")
     Chem, AllChem, rd_base, np = _rdkit()

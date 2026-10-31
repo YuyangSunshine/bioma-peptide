@@ -1,9 +1,8 @@
-"""Reuse installed source files in an isolated child, without importing BioMA.run.
+"""Execute hash-pinned domain methods from the native BioMA package.
 
 Only trusted, hash-pinned profiles are accepted. This is not a generic Python or
 shell executor. The minimal module namespace is private to the child process.
 """
-import dataclasses
 import importlib.util
 import json
 from pathlib import Path
@@ -11,7 +10,6 @@ import shlex
 import subprocess
 import sys
 import shutil
-import types
 from .contracts import TOOLS, sha256, result_validator
 
 
@@ -41,24 +39,24 @@ def load_tools(repo, source_hashes):
     for relative in required:
         if sha256(repo / relative) != source_hashes[relative]:
             raise ValueError('domain_source_changed')
-    if 'bioma' in sys.modules:
-        raise RuntimeError('domain_loader_requires_isolated_process')
-    for name in ['bioma', 'bioma.tools']:
-        package = types.ModuleType(name); package.__path__ = []
-        sys.modules[name] = package
-    base = load_module('bioma.tools.base', repo / 'src/bioma/tools/base.py')
-    load_module('bioma.tools.errors', repo / 'src/bioma/tools/errors.py')
+    # Use the real project namespace; do not synthesize bioma modules or install
+    # a second distribution. Domain source and the native package must agree.
+    import bioma.tools.base as base
+    if sha256(base.__file__) != source_hashes['src/bioma/tools/base.py']:
+        raise ValueError('domain_package_source_mismatch')
+    if str(repo) not in sys.path:
+        sys.path.insert(0, str(repo))
     if contract in required:
-        for name, relative in [('tools','tools'), ('tools.our_tools','tools/our_tools'),
-                               ('tools.our_tools._crosslinked_impl','tools/our_tools/_crosslinked_impl')]:
-            package=types.ModuleType(name);package.__path__=[str(repo/relative)];sys.modules[name]=package
-        load_module('tools.our_tools._crosslinked_impl.ensemble_contract', repo / contract)
+        import importlib
+        module = importlib.import_module('tools.our_tools._crosslinked_impl.ensemble_contract')
+        if sha256(module.__file__) != source_hashes[contract]:
+            raise ValueError('domain_contract_source_mismatch')
     cross = load_module('peptide_domain_cross', repo / 'tools/our_tools/crosslinked_peptide_structure.py')
     docking = load_module('peptide_domain_docking', repo / 'tools/our_tools/tbmb_bicyclic_docking.py')
     tools = {}
     for name in TOOLS:
         fn = getattr(cross if hasattr(cross, name) else docking, name)
-        tools[name] = dataclasses.replace(fn._bioma_tool, result_kind='computed_prediction', result_validator=result_validator)
+        tools[name] = fn._bioma_tool
     return tools, docking
 
 

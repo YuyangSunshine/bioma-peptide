@@ -7,6 +7,7 @@ target chain, force-field setup, external executable, or output directory.
 """
 from __future__ import annotations
 
+from bioma.peptide.contracts import result_validator as peptide_result_validator
 import argparse
 import csv
 import hashlib
@@ -1657,7 +1658,7 @@ def _vina(cfg: dict[str, Any], base: Path) -> dict[str, Any]:
     }
 
 
-@bioma_tool(name="prepare_receptor", description="Select receptor polymer chains, remove all unrelated entities, repair with PDBFixer, and write an audit.", category="structure", version="1.0.0", author="BioMA", args_schema=DockingQueryInput, tags=["receptor", "PDBFixer", "TBMB"])
+@bioma_tool(name="prepare_receptor", description="Select receptor polymer chains, remove all unrelated entities, repair with PDBFixer, and write an audit.", category="structure", version="1.0.0", author="BioMA", args_schema=DockingQueryInput, tags=["receptor", "PDBFixer", "TBMB"], result_kind="computed_prediction", result_validator=peptide_result_validator)
 def prepare_receptor(query_path: str) -> str:
     cfg, base = _load(query_path); return _json_result("prepare_receptor", **_prepare(cfg, base))
 
@@ -1667,12 +1668,12 @@ def parameterize_tbmb_scaffold(query_path: str) -> str:
     cfg, base = _load(query_path); return _json_result("parameterize_tbmb_scaffold", **_parameterize(cfg, base))
 
 
-@bioma_tool(name="detect_pockets", description="Run P2Rank on the repaired receptor and retain up to five candidate pockets without inventing missing pockets.", category="prediction", version="1.0.0", author="BioMA", args_schema=DockingQueryInput, tags=["P2Rank", "pocket", "TBMB"])
+@bioma_tool(name="detect_pockets", description="Run P2Rank on the repaired receptor and retain up to five candidate pockets without inventing missing pockets.", category="prediction", version="1.0.0", author="BioMA", args_schema=DockingQueryInput, tags=["P2Rank", "pocket", "TBMB"], result_kind="computed_prediction", result_validator=peptide_result_validator)
 def detect_pockets(query_path: str) -> str:
     cfg, base = _load(query_path); return _json_result("detect_pockets", **_detect(cfg, base))
 
 
-@bioma_tool(name="diffdock_screen", description="Globally dock an authoritative TBMB SDF ensemble with DiffDock and retain chemically valid poses for physical relaxation without rejecting repairable interface clashes.", category="prediction", version="2.0.0", author="BioMA", args_schema=DockingQueryInput, tags=["DiffDock", "TBMB", "bicyclic-peptide"])
+@bioma_tool(name="diffdock_screen", description="Globally dock an authoritative TBMB SDF ensemble with DiffDock and retain chemically valid poses for physical relaxation without rejecting repairable interface clashes.", category="prediction", version="2.0.0", author="BioMA", args_schema=DockingQueryInput, tags=["DiffDock", "TBMB", "bicyclic-peptide"], result_kind="computed_prediction", result_validator=peptide_result_validator)
 def diffdock_screen(query_path: str) -> str:
     cfg, base = _load(query_path); return _json_result("diffdock_screen", **_screen(cfg, base))
 
@@ -1682,7 +1683,7 @@ def relax_complexes(query_path: str) -> str:
     cfg, base = _load(query_path); return _json_result("relax_complexes", **_relax(cfg, base))
 
 
-@bioma_tool(name="vina_refine", description="Use candidate-specific relaxed receptors for Vina score-only and local-only rescoring, then retain up to three auditable TBMB complexes.", category="prediction", version="2.0.0", author="BioMA", args_schema=DockingQueryInput, tags=["Vina", "Meeko", "TBMB"])
+@bioma_tool(name="vina_refine", description="Use candidate-specific relaxed receptors for Vina score-only and local-only rescoring, then retain up to three auditable TBMB complexes.", category="prediction", version="2.0.0", author="BioMA", args_schema=DockingQueryInput, tags=["Vina", "Meeko", "TBMB"], result_kind="computed_prediction", result_validator=peptide_result_validator)
 def vina_refine(query_path: str) -> str:
     cfg, base = _load(query_path); return _json_result("vina_refine", **_vina(cfg, base))
 

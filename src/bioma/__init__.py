@@ -1,41 +1,23 @@
-"""BioMA-Peptide: evidence-grounded execution for dry-lab peptide research."""
+"""BioMA peptide research API, with lazy imports for lightweight scientific workers."""
+from importlib import import_module
 
-from bioma.api import BioMA
-from bioma.core.models import (
-    CapabilitySpec,
-    Commitment,
-    ScientificState,
-    ScientificTask,
-    TaskOffer,
-    TaskRequest,
-)
-from bioma.core.external_tasks import (
-    ArtifactObligation,
-    CoverageDecision,
-    CoverageSufficiency,
-    DeliveryState,
-    DeliveryStatus,
-    ExternalTaskContract,
-)
-from bioma.artifact_generation import ArtifactGenerationPolicy
-from bioma.execution_context import ExecutionResult, TaskExecutionContext, execute_python
+_EXPORTS = {
+    "BioMA": "bioma.api",
+    **{name: "bioma.core.models" for name in ["CapabilitySpec", "Commitment", "ScientificState", "ScientificTask", "TaskOffer", "TaskRequest"]},
+    **{name: "bioma.core.external_tasks" for name in ["ArtifactObligation", "CoverageDecision", "CoverageSufficiency", "DeliveryState", "DeliveryStatus", "ExternalTaskContract"]},
+    "ArtifactGenerationPolicy": "bioma.artifact_generation",
+    **{name: "bioma.execution_context" for name in ["ExecutionResult", "TaskExecutionContext", "execute_python"]},
+}
+__all__ = list(_EXPORTS)
 
-__all__ = [
-    "BioMA",
-    "CapabilitySpec",
-    "Commitment",
-    "ScientificState",
-    "ScientificTask",
-    "TaskOffer",
-    "TaskRequest",
-    "ArtifactObligation",
-    "CoverageDecision",
-    "CoverageSufficiency",
-    "DeliveryState",
-    "DeliveryStatus",
-    "ExternalTaskContract",
-    "ArtifactGenerationPolicy",
-    "ExecutionResult",
-    "TaskExecutionContext",
-    "execute_python",
-]
+
+def __getattr__(name):
+    if name not in _EXPORTS:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    value = getattr(import_module(_EXPORTS[name]), name)
+    globals()[name] = value
+    return value
+
+
+def __dir__():
+    return sorted(set(globals()) | set(__all__))

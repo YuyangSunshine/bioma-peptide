@@ -1,50 +1,71 @@
 # BioMA-Peptide
 
-**面向多肽计算的领域工具、受控作业执行与可追溯结果汇聚。**
+**面向多肽、环肽与双环肽研究的自主科学智能体：用领域约束选择行动，用独立证据校验结论。**
 
-[English](README.md) · [桥接接口](bridge/README.md) · [迁移验证](bridge/MIGRATION_VALIDATION.md)
+[English](README.md) · [原生计算接口](docs/peptide/README.md) · [迁移验证](docs/peptide/MIGRATION_VALIDATION.md)
 
-> 当前状态：多肽领域增量与独立 bridge 已实现，工程回归和有限真实计算已验证；完整 Nectin-4 科学流程与生产 MD 尚未验收通过。代码合并、工具返回成功、科学验证通过是不同事件。
+> 当前状态：多肽计算已整合到 BioMA 主包，自主研究与独立校验能力保留，工程回归和有限真实计算已验证；完整 Nectin-4 科学流程与生产 MD 尚未验收通过。代码合并、工具返回成功、科学验证通过是不同事件。
 
-## Motivation：为什么做这个项目
+## 科学背景与研究动机
 
-多肽计算需要跨越化学身份、构象搜索、结构预测、对接、参数化和分子动力学。单次模型回答或一次工具调用无法证明：后续计算使用的是同一化学状态，参数适用于当前体系，或者输出真的经过了检查。长计算也不应随聊天超时丢失身份或重复启动。
+### 科学智能体缺少的，不只是更多工具
 
-BioMA-Peptide 将这些问题变成明确的工程接口：输入和制品绑定哈希，科学方法通过登记 profile 调用，长任务具有持久 job ID，计算分数与实验测量分别汇聚。目标是让多肽研究过程可执行、可核查、可恢复，而不是用 Agent 的文字声明代替科学证据。
+能写出脚本、调用结构预测器或完成一次对接，并不等于能够回答一个科学问题。ScienceAgentBench 将程序执行与科学任务结果分别评价，显示现有语言智能体距离端到端科研自动化仍有明显差距。它不是多肽基准，但提示了本项目要检验的关键区别：**完成动作，是否真的消除了研究中的不确定性？** [ScienceAgentBench](https://arxiv.org/abs/2410.05080)
 
-## 设计背景与主要贡献
+在多肽研究中，智能体需要判断下一步应扩大构象搜索、修补受体、检查参数，还是停止一个不可信候选；也需要在证据冲突时回退，而不是把每个程序“成功退出”连成一个看似完整的结论。BioMA-Peptide 的研究目标，是在 BioMA 自主研究与证据校验能力上，让这些决策具有明确的多肽化学语义。我们尚未证明它优于所有通用 scientific agents；这是一项需通过领域任务检验的目标，而非已完成的 benchmark 结论。
 
-项目从 BioMA 的通用执行环境收敛到多肽领域。已有交联肽工具继续复用，真实后续的复合物松弛、参数来源和 MD 阶段实现按来源哈希迁入；不重写已经可用的科学方法。新增桥接包采用 `bioma_peptide_bridge` 命名空间，避免两份 `src/bioma` 在同一环境中相互覆盖。
+### 为什么是多肽、环肽和双环肽
 
-主要贡献与特色：
+多肽为识别蛋白表面和调节蛋白相互作用提供了不同于传统小分子的设计空间，但亲和力、选择性、稳定性和可开发性必须共同考虑。环化可以约束构象，却不会自动解决吸收、稳定性和靶点识别之间的取舍；已有研究需要联合筛选活性、稳定性和通透性来得到可口服候选。[Merz et al., Nature Chemical Biology](https://www.nature.com/articles/s41589-023-01496-y)
 
-- **化学身份贯穿各阶段**：保留序列、交联图、电荷、立体状态、构象与参数身份，不能从 PDB/PDBQT 近似重建权威配体图后当作原输入。
-- **三层结果状态**：分别记录 `execution_status`、`artifact_validation_status`、`scientific_validation_status`。JSON 字符串中的失败、未知状态和中断不会自动变成成功；部分成功只交付独立验证的候选子集。
-- **持久作业生命周期**：`submit/status/collect/cancel/resume/reattach`，SQLite 与文件锁保护幂等提交；取消作用于受控进程组，恢复需匹配输入与配置身份。
-- **受限执行接口**：Agent 只提交登记的方法、输入引用和预算；可信 profile 固定源码、解释器及可执行文件，使用结构化参数和 `shell=False`。
-- **大制品留在存储层**：用 URI、大小、SHA256、版本、producer job、身份和保留策略引用输出，分块计算哈希，不将轨迹转成 base64 放入上下文。
-- **实验与计算分开**：Kd、功能测量、筛选富集、模型评分、对接评分和 MD 指标分别存储；“/”“-”、未检测、低于检测限和有效阴性不自动等价于零。
+环肽也不能简单当作“首尾相连的小蛋白”。预测方法需要显式处理环状拓扑；针对 cyclic peptides 的 AlphaFold2 改造研究说明，蛋白预测能力不能不经适配就视为环肽设计能力。[Cyclic peptide structure prediction and design](https://www.nature.com/articles/s41467-025-59940-7)
 
-这些贡献是执行与证据管理能力，不是新的亲和力预测算法，也不是对现有科学引擎精度的保证。
+双环肽进一步引入多个环的耦合约束和交联化学。在本项目的 TBMB 体系中，序列之外还必须保留交联位点、共价连接、电荷与立体状态。我们据此将领域难点归纳为：搜索哪类构象、哪些结构在化学上有效、哪种受体状态适合检验结合假设，以及现有参数是否适用于该体系。这些判断不应被一次对接分数替代，也不能由固定阶段顺序自动回答。
 
-## 框架结构
+### 靶点难度：以当前可核验的 Nectin-4 案例为起点
+
+Nectin-4 的结构材料不能直接当作已准备好的多肽受体。9KKJ 来源于 Nectin-4 与抗体的复合物研究，而不是本项目双环肽的实验结合结构；选择结构域、处理复合物成分并提出多肽结合假设，是不同的科学步骤。[9KKJ 原始结构研究](https://www.jbc.org/article/S0021-9258%2825%2902668-7/fulltext)
+
+本地案例还存在受体缺失区修补、构建体范围、参数用途和候选立体状态的一致性问题。它们构成了比“让工具运行起来”更实质的验收难点：一个候选结构与参考化学状态不一致时，智能体应定位冲突并停止相应结论传播，而不是继续运行 MD 来掩盖上游问题。目前 README 只将 Nectin-4 列为已取得真实材料的案例；其他靶点需有可核验材料后再逐项说明，不从靶点名称推断已完成验证。
+
+## 设计与主要贡献
+
+**自主选择研究动作，独立检查动作产生的证据。** 两者缺一不可。项目保留 BioMA 的研究任务解释、候选行动生成、科学控制、修订与交付审核；多肽模块为这些决策提供领域方法、化学身份和长计算能力，不另建一个替代研究智能体的固定 pipeline。
+
+- **以问题和证据驱动行动**：`BioMA` 研究入口、`scientific_control` 的候选行动/修订和 `harness` 的工具循环共同支撑自主研究。具体策略取决于配置，`adaptive_v3` 是显式可选策略，并非默认自动启用。
+- **化学约束参与校验**：在序列、交联图、电荷、立体状态与参数身份之间保持一致；失败或未知状态不能借由文字总结获得科学信用。
+- **验证与生成分离**：工程制品检查、固定科学 validator 和研究交付审核有不同职责。Agent 的解释不能代替结构或参数的独立检查。
+- **长计算成为可管理的研究动作**：持久 job ID、取消、续跑、资源预算和外部制品引用保留在主包内，支持研究循环查询和处理结果，而不规定下一步必须做哪项计算。
+- **实验和模型证据分层汇聚**：筛选富集、实验 Kd、功能测量、结构预测、对接和 MD 分列保存。对接分数不是实验亲和力，缺失观测不是有效阴性。
+
+这是研究能力与领域约束的结合，不是新的对接或力场算法。完整自主肽设计效果、跨靶点泛化和相对基线收益仍需进一步实测。
+
+## 整体框架：自主研究闭环，而非固定流水线
 
 ```mermaid
 flowchart TD
-    A[研究者 / Agent 控制器] --> B[登记的 method、profile、输入与预算]
-    B --> C[bioma_peptide_bridge / 持久 Broker]
-    C --> D[受控科学 Worker / 独立科学环境]
-    D --> E[交联肽工具、对接与 MD 阶段实现]
-    E --> F[阶段清单、外部制品与精确哈希]
-    F --> G[工程校验与独立科学 Validator]
-    G --> H[候选子集、计算证据与结果汇聚]
+    Q[科学问题 / 靶点 / 实验与结构材料] --> S[研究合同与当前科学状态]
+    S --> A[自主提出和选择下一步行动]
+    A --> T[领域工具与受控计算]
+    T --> E[观测、候选、失败和不确定性]
+    E --> V[独立校验与证据资格判断]
+    V --> S
+    V --> R[修订假设 / 变更方法 / 回退 / 停止]
+    R --> A
+    V --> D[满足证据义务后交付]
+    T --> J[原生多肽作业服务]
+    J --> T
 ```
 
-公开仓库包含 `bridge/`、领域工具、skills，以及保留的旧 `src/bioma` runtime/Web。已验证的 OpenHands 单 Conversation 控制器位于独立私有 BioMA 工作树，**不包含在本公开仓库中**；其真实模型短任务结果不能当作公开包开箱即用的 OpenHands 功能。旧 `BioMA.run/query` 和 Web 入口不会因安装 bridge 自动切换为 OpenHands，也没有可宣称已完成的 `agent_engine=openhands` 开关。
+执行层可以有先后依赖，例如 MD 需要合格拓扑与参数；**依赖关系不等于固定研究决策**。Agent 可以先核对实验材料、选择不同构象方法、放弃失败候选或返回受体准备阶段。当前决策与修订的回归测试使用受控测试案例，不应宣传为已经完成所有真实靶点的自主发现。
 
-生产 MD 的代码存在不等于准入。固定用途审核和外部 worker 资格记录必须绑定具体输入、参数、引擎、候选范围和资源；Agent 自己写“通过”不授予权限。CPU/RSS/GPU 的部分限制为周期采样，GPU lease 仅协调同一 broker，不是硬 cgroup/VRAM 隔离或多租户调度系统。
+### 为什么移除 bridge
 
-## 多肽计算阶段与计算方法
+原 `bridge/` 是迁移期间避免两份 `bioma` 包冲突的独立发行包。如今相关领域代码已进入本仓库，继续保留第二套安装和假模块加载没有必要。其功能已收回 `src/bioma/peptide/`，使用同一发行包与 CLI；测试移至 `tests/peptide/`，执行协议文档移至 `docs/peptide/`。`bioma` 顶层采用惰性导入，使计算 worker 不必启动模型或完整研究运行时。后台进程隔离仍保留，因为长计算的生命周期与 Agent 会话不同；这是执行边界，不是另一层桥接产品。
+
+公开仓库的 `BioMA.run/query` 仍使用已有研究控制器。此前验证的 OpenHands 控制器属于独立私有项目，不在这里伪称已集成，也不另套一个 OpenHands 与旧循环相互驱动的双重决策环。所有新增 MD 方法的统一 Agent 暴露和完整科学 validator 仍未完成。资源的部分限制为周期采样，GPU lease 仅协调同一作业服务，不是硬 VRAM 分区或通用集群调度器。
+
+## 可选计算阶段与方法依赖
 
 | 阶段 | 如何计算 | 主要输出与约束 |
 |---|---|---|
@@ -66,7 +87,7 @@ flowchart TD
 - [crosslinked-peptide-structure](skills/model_capabilities/our-skills/sk.8c792d469d40b961/crosslinked-peptide-structure/SKILL.md)：化学 spec、交联拓扑、构象生成、xTB、验证选择与导出；随附化学 schema、停止规则和阶段制品合同。
 - [tbmb-bicyclic-peptide-docking](skills/model_capabilities/our-skills/sk.4fbe227040e54d55/tbmb-bicyclic-peptide-docking/SKILL.md)：参数封装、受体准备、P2Rank、DiffDock、OpenMM 松弛和 Vina 局部复评分；该 skill 明确止于 MD 之前，现有 +5/TBMB 假设仅适用于相符 profile。
 
-Skill 是流程指导，不是执行许可或科学 validator。bridge 当前显式适配十个原工具：六个结构工具与 `prepare_receptor`、`detect_pockets`、`diffdock_screen`、`vina_refine`。新增 `parameterize_tbmb_scaffold`、`relax_complexes` 的源码与 skill 已存在，但不是自动加入这十项 broker 授权清单。MD 的 `tbmb_md_production` 是单独受准入控制的接口；其余 MD 模块的存在不代表已拥有统一 Agent 工具注册。
+Skill 是流程指导，不是执行许可或科学 validator。原生多肽模块当前显式登记十个原工具：六个结构工具与 `prepare_receptor`、`detect_pockets`、`diffdock_screen`、`vina_refine`。新增 `parameterize_tbmb_scaffold`、`relax_complexes` 的源码与 skill 已存在，但不是自动加入这十项 作业授权清单。MD 的 `tbmb_md_production` 是单独受准入控制的接口；其余 MD 模块的存在不代表已拥有统一 Agent 工具注册。
 
 ## 目录结构
 
@@ -74,53 +95,54 @@ Skill 是流程指导，不是执行许可或科学 validator。bridge 当前显
 
 ```text
 bioma-peptide/
-├── bridge/                         # Standalone bioma_peptide_bridge distribution
-│   ├── pyproject.toml
-│   ├── src/bioma_peptide_bridge/
-│   │   ├── cli.py                  # catalog, ingest, job lifecycle commands
-│   │   ├── broker.py               # SQLite registry, idempotency, reconnect
-│   │   ├── worker.py               # Detached supervisor and process budgets
-│   │   ├── domain.py               # Pinned source / executable adapters
-│   │   ├── contracts.py            # Result states and artifact identity
+├── src/bioma/
+│   ├── api.py                      # BioMA: research task and query entry
+│   ├── scientific_control/         # Evidence-driven options, selection, revision
+│   ├── harness/                    # Autonomous tool loop and delivery review
+│   ├── core/                       # Scientific state, evidence, verification
+│   ├── runtime/                    # Admission, ledger, budgets and provenance
+│   ├── peptide/                    # Native peptide computation services
+│   │   ├── broker.py / worker.py    # Persistent controlled jobs
+│   │   ├── domain.py / catalog.py   # Pinned domain execution / tool inventory
+│   │   ├── contracts.py            # Result identity and separate status layers
 │   │   ├── admission.py            # Production-use admission
-│   │   ├── validators.py           # Independent chemical graph checks
-│   │   └── data.py                 # Measurement semantics and split guards
-│   ├── tests/legacy/               # Migrated scientific-stage regressions
-│   ├── MIGRATION_VALIDATION.md
-│   └── migration-provenance.json
+│   │   ├── validators.py / data.py  # Chemical checks and measurement semantics
+│   │   └── cli.py                  # Native bioma-peptide CLI
+│   └── web.py                      # Existing research UI
 ├── tools/our_tools/
 │   ├── crosslinked_peptide_structure.py
 │   ├── _crosslinked_impl/          # Topology, conformers, xTB, export
-│   ├── tbmb_bicyclic_docking.py     # Receptor, pockets, docking, relaxation
-│   ├── tbmb_parameter_source.py    # Parameter-source workflow
-│   └── tbmb_md_*.py                # Stage A, build, minimize, equilibrate, production
+│   ├── tbmb_bicyclic_docking.py
+│   ├── tbmb_parameter_source.py
+│   └── tbmb_md_*.py                # Preparation, build, minimization, MD
 ├── skills/model_capabilities/our-skills/
 │   ├── sk.8c792d469d40b961/crosslinked-peptide-structure/
 │   └── sk.4fbe227040e54d55/tbmb-bicyclic-peptide-docking/
-├── skills/_meta/                  # Stable skill IDs and location registry
-├── src/bioma/                     # Legacy runtime, tools, evidence and Web UI
-├── configs/                       # Existing runtime configurations
-├── examples/                      # Existing examples
-├── scripts/                       # Development / maintenance utilities
-├── tests/                         # Legacy application tests
-├── devices/                       # Existing execution-device integration
-├── pyproject.toml                 # Legacy bioma-peptide distribution
+├── skills/_meta/                  # Stable skill registry
+├── tests/peptide/                 # Domain/job tests and stage regressions
+├── tests/test_scientific_*.py      # Research decision and revision tests
+├── docs/peptide/                  # Execution contract and migration provenance
+├── configs/                       # Model, research and tool configuration
+├── examples/
+├── scripts/
+├── devices/
+├── pyproject.toml                 # One distribution: bioma-peptide
 ├── README.md
 └── README_zh.md
 ```
 
 ## 开发与验证快速启动
 
-### 1. 仅安装独立 bridge
+### 1. 安装单一主项目
 
-需要 Linux、Python ≥3.11、可用 `/proc`、POSIX 文件锁和本地 SQLite。核心包无第三方运行依赖；构建需要 setuptools。不要在一个 venv 同时安装两份提供 `bioma` 的发行包。
+需要 Linux、Python ≥3.11、可用 `/proc`、POSIX 文件锁和本地 SQLite。主包依赖由根目录 `pyproject.toml` 管理；不再单独安装 bridge。不要在同一环境同时安装另一个提供 `bioma` 的 BioMA 仓库。
 
 ```bash
 git clone https://github.com/YuyangSunshine/bioma-peptide.git
 cd bioma-peptide
-python3.11 -m venv .venv-bridge
-source .venv-bridge/bin/activate
-python -m pip install -e ./bridge
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e .
 bioma-peptide --help
 bioma-peptide catalog --source-root "$PWD"
 ```
@@ -131,12 +153,13 @@ bioma-peptide catalog --source-root "$PWD"
 
 ```bash
 python -m pip install pytest pydantic PyYAML rdkit
-export PYTHONPATH="$PWD/bridge/src"
+export PYTHONPATH="$PWD/src"
 export PEPTIDE_SOURCE_ROOT="$PWD"
-python -m pytest bridge/tests -q -p no:cacheprovider
+python -m pytest tests/peptide -q -p no:cacheprovider
+python -m pytest tests/test_evidence_driven_control_integration.py tests/test_scientific_option_generation_revision.py -q
 ```
 
-该命令覆盖 bridge 与迁入阶段回归，不是对旧应用 `tests/` 全部测试的通过声明。验证环境使用 Python 3.11.16、RDKit 2026.3.1、OpenMM 8.6.1；独立图 checker 实跑使用 RDKit 2025.09.6。上面的开发安装命令不锁定科学软件版本，正式复现必须记录实际版本并在 profile 中固定 checker/输入/源码/引擎身份。
+该命令覆盖原生多肽服务与迁入阶段回归，不是对旧应用 `tests/` 全部测试的通过声明。验证环境使用 Python 3.11.16、RDKit 2026.3.1、OpenMM 8.6.1；独立图 checker 实跑使用 RDKit 2025.09.6。上面的开发安装命令不锁定科学软件版本，正式复现必须记录实际版本并在 profile 中固定 checker/输入/源码/引擎身份。
 
 ### 3. 不调用模型的持久作业 smoke test
 
@@ -146,8 +169,8 @@ python -m pytest bridge/tests -q -p no:cacheprovider
 python - <<'PYCODE'
 import json, tempfile, time
 from pathlib import Path
-from bioma_peptide_bridge.broker import Broker
-from bioma_peptide_bridge.contracts import sha256
+from bioma.peptide.broker import Broker
+from bioma.peptide.contracts import sha256
 
 root = Path(tempfile.mkdtemp(prefix="peptide-canary-"))
 inputs = root / "inputs"
@@ -185,22 +208,22 @@ assert not result["deliverable"], result
 PYCODE
 ```
 
-真实工具需要另行配置操作者维护的 registry、登记输入和科学环境。使用 `bioma-peptide submit --root JOB_ROOT --registry REGISTRY --request REQUEST` 提交；后续 `status/collect/cancel/resume/reattach` 使用相同 root/registry 与 `--job-id`。完整字段和预算约束见 [bridge/README.md](bridge/README.md)。
+真实工具需要另行配置操作者维护的 registry、登记输入和科学环境。使用 `bioma-peptide submit --root JOB_ROOT --registry REGISTRY --request REQUEST` 提交；后续 `status/collect/cancel/resume/reattach` 使用相同 root/registry 与 `--job-id`。完整字段和预算约束见 [docs/peptide/README.md](docs/peptide/README.md)。
 
-旧 Web/runtime 可在另一个环境安装仓库根包后使用 `bioma-peptide-web --help`；它不是上述多肽 bridge 的 Web 前端，也不是本次验证的主要入口。
+研究入口可用 `from bioma import BioMA`，Web 入口可用 `bioma-peptide-web --help`。真实模型服务需要配置 `configs/bioma.yaml` 中的 provider/model。`BioMA(backend="llm", control_policy="adaptive_v3")` 显式启用已有的证据驱动科学控制；其模型费用与科研作业预算需分别配置。仅安装包不会自动授权生产 MD。
 
 ## 实现与验证状态
 
 | 能力 | 当前状态 |
 |---|---|
-| 独立命名空间、十工具合同、持久 jobs、大文件引用、基础数据语义 | 已实现；34 项针对性回归通过 |
+| 原生 `bioma.peptide`、十工具合同、持久 jobs、大文件引用、基础数据语义 | 已实现；本次 35 项多肽测试及 31 项决策/修订测试通过 |
 | 新增领域源码和两个核心 skills | 已迁入；来源/迁入哈希见 provenance |
 | 实际科学工具执行 | 迁入 RDKit 甘氨酸拓扑经过 broker 实跑，执行/制品/独立图验证通过；覆盖范围有限 |
 | 实际 GPU 引擎 | 两粒子合成 OpenMM CUDA 启动、checkpoint 恢复、受控子进程取消通过；不是肽体系或持久 GPU broker 验收 |
-| OpenHands 模型调用 | 私有适配器真实短任务已验证；该控制器不随公开仓库发布 |
+| OpenHands 模型调用 | 历史私有适配器短任务已验证；公开主项目保留自己的自主研究控制器 |
 | 真实 Nectin-4 全链 | 未通过；审核记录冲突，三条候选中一条立体状态不匹配 |
 | 新生产 MD、GPU broker 完整资格试验 | 未完成/未准入；未启动新的生产轨迹 |
 | 全阶段科学 validator、全部新增方法的统一 Agent 暴露 | 尚不完整；当前独立图 checker 不能批准对接或 MD |
 | 湿实验/NGS 数据集迁入、亲和力预测准确性验证、MM/GBSA 全链 | 本迁移未完成，不作能力或结果保证 |
 
-本地真实证据、序列、参数包和运行制品不随公开代码发布。现有旧轨迹也不构成新入口的生产验收。详细范围见 [迁移验证记录](bridge/MIGRATION_VALIDATION.md) 和 [源码来源清单](bridge/migration-provenance.json)。
+本地真实证据、序列、参数包和运行制品不随公开代码发布。现有旧轨迹也不构成新入口的生产验收。详细范围见 [迁移验证记录](docs/peptide/MIGRATION_VALIDATION.md) 和 [源码来源清单](docs/peptide/migration-provenance.json)。

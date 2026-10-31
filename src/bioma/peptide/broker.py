@@ -154,10 +154,10 @@ class Broker:
 
     def _dispatch(self, folder):
         env = {'PATH': '/usr/local/bin:/usr/bin:/bin', 'HOME': str(folder),
-               'PYTHONPATH': str(Path(__file__).resolve().parents[1]),
+               'PYTHONPATH': str(Path(__file__).resolve().parents[2]),
                'PYTHONDONTWRITEBYTECODE': '1', 'CUDA_VISIBLE_DEVICES': ''}
         with (folder / 'supervisor.log').open('ab') as log:
-            proc = subprocess.Popen([sys.executable, '-m', 'bioma_peptide_bridge.worker', str(folder)],
+            proc = subprocess.Popen([sys.executable, '-m', 'bioma.peptide.worker', str(folder)],
                              stdin=subprocess.DEVNULL, stdout=log, stderr=log, env=env,
                              start_new_session=True, close_fds=True)
             threading.Thread(target=proc.wait, daemon=True).start()

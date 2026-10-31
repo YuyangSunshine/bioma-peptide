@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "bioma-peptide"
 version = "0.1.0"
 description = "Evidence-grounded autonomous execution for dry-lab peptide research"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
   "openai>=1.0",
   "httpx[socks]>=0.23,<1",
@@ -19,10 +19,12 @@ dependencies = [
 ]
 
 [project.scripts]
+bioma-peptide = "bioma.peptide.cli:main"
 bioma-peptide-web = "bioma.web:main"
 bioma-peptide-node = "bioma.node:main"
 
 [project.optional-dependencies]
+peptide = ["rdkit>=2025.9", "numpy>=1.26"]
 mini-swe = [
   "mini-swe-agent==2.4.6",
 ]

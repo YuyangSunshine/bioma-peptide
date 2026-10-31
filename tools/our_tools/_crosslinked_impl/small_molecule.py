@@ -4,6 +4,7 @@ Small molecule tools: RDKit-based property calculation, similarity, substructure
 
 from __future__ import annotations
 
+from bioma.peptide.contracts import result_validator as peptide_result_validator
 import hashlib
 import json
 import math
@@ -284,7 +285,7 @@ def _ensemble_calculated_raw_count(
     author="BioMA",
     args_schema=RDKitConformerEnsembleInput,
     tags=["rdkit", "etkdg", "conformer", "ensemble", "3d"],
-)
+ result_kind="computed_prediction", result_validator=peptide_result_validator)
 def generate_rdkit_conformer_ensemble(
     topology_manifest_path: str,
     target_ensemble_size: int,
@@ -758,7 +759,7 @@ def _xtb_run_one(
     author="BioMA",
     args_schema=XTBConformerEnsembleInput,
     tags=["xtb", "optimization", "parallel", "conformer", "checkpoint"],
-)
+ result_kind="computed_prediction", result_validator=peptide_result_validator)
 def optimize_conformer_ensemble_with_xtb(
     input_manifest_path: str,
     optimization_level: Literal["normal", "tight"],
