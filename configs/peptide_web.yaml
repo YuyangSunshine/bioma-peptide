@@ -14,14 +14,17 @@ compute_services:
     agent_engine: bioma
     llm: &id001
       backend: openai
-      model: anthropic/claude-sonnet-4.6
-      api_base: https://openrouter.ai/api/v1
-      api_key_env: OPENROUTERAI_API_KEY
+      model: deepseek-v4-1-flash-261017
+      api_base: https://ark.cn-beijing.volces.com/api/v3
+      api_key_env: HUOSHYAN_API_KEY
       max_output_parameter: max_tokens
       max_output_tokens: 6000
       timeout_seconds: 180.0
       thinking_mode: disabled
-    delivery_review_llm: *id001
+    delivery_review_llm:
+      <<: *id001
+      thinking_mode: enabled
+      max_output_tokens: 16384
     max_llm_calls: 24
     max_tool_calls: 32
     max_retry_per_step: 3
