@@ -79,7 +79,7 @@ address-space allowance (separate from sampled resident memory), and device-memo
 budget. It uses a cooperative project lease and samples process-specific GPU
 memory; this is not a hardware VRAM partition or a cross-project scheduler.
 
-The `tbmb_md_production` method binds the existing private OpenMM engine and its
+The `tbmb_md_production` method binds the migrated OpenMM stage implementation and its
 hash-checked segment checkpoints. It accepts only registered Stage-4 input bundles
 and a fixed profile configuration. `staged_path` preserves the registered bundle
 layout, and `$bundle:relative-directory` refers to that layout. No production
