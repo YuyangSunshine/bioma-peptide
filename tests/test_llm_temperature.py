@@ -101,3 +101,17 @@ def test_gateway_does_not_retry_or_reclassify_provider_failures(error):
             'Calculate', inputs={}, capabilities=(), session_context=[])
     assert caught.value is error
     assert len(calls) == 1
+
+
+def test_explicit_review_tool_choice_reaches_provider():
+    captured=[]
+    provider=object.__new__(OpenAICompatibleProvider)
+    provider.config=LLMConfig(model='test')
+    def request(**kwargs):
+        captured.append(kwargs)
+        return SimpleNamespace(choices=[SimpleNamespace(finish_reason='stop',
+            message=SimpleNamespace(content='',tool_calls=[]))])
+    provider._request=request
+    choice={'type':'function','function':{'name':'finish_investigation'}}
+    provider.chat_with_tools([], [{'type':'function','function':{'name':'finish_investigation'}}],tool_choice=choice)
+    assert captured[0]['tool_choice']==choice

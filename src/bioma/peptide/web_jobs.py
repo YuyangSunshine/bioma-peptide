@@ -28,6 +28,19 @@ def validate_profiles(result,args):
     except (ValueError,OSError):return False
 
 
+def collection_files(b, job, data):
+    """Admit bounded small outputs for downstream analysis; keep trajectories external."""
+    folder=b.directory(job);report=folder/'web_collection.json'
+    files={str(report):sha256(report)};total=report.stat().st_size
+    for ref in data.get('artifacts',[]):
+        path=folder/ref['relative_path']
+        if (path.suffix.lower() not in {'.json','.sdf','.pdb','.cif','.csv','.tsv','.txt'}
+                or ref['size']>2*1024**2 or total+ref['size']>32*1024**2 or len(files)>=16):
+            continue
+        files[str(path)]=ref['sha256'];total+=ref['size']
+    return files
+
+
 def operate(arguments):
     b=broker();a=dict(arguments);op=a['operation']
     if op not in {'submit','status','collect','cancel','resume','reattach'}:raise ValueError('unsupported_job_operation')
@@ -43,8 +56,9 @@ def operate(arguments):
             'qualification':'A job operation receipt is not scientific evidence'}
     if op=='collect' and data.get('deliverable'):
         folder=b.directory(result['job_id']);report=folder/'web_collection.json';write_json(report,data)
-        # Only the small report is admitted to the conversation; artifacts remain references.
-        result['files']={str(report):sha256(report)};result['analysis_inputs']=[str(report)]
+        # Raw small structures are actual admitted INPUT_FILES, not unrestricted host paths.
+        result['files']=collection_files(b,result['job_id'],data)
+        result['analysis_inputs']=list(result['files'])
     result['arguments_sha256']=digest(a)
     receipt=b.root/'web-receipts'/ (uuid.uuid4().hex+'.json')
     receipt.parent.mkdir(exist_ok=True)
@@ -63,8 +77,13 @@ def validate_operation(result,args):
         if args['operation']=='collect':
             actual=b.collect(job)
             if result['data']!=actual:return False
-            for p,h in result.get('files',{}).items():
-                if Path(p).resolve()!=b.directory(job)/'web_collection.json' or sha256(p)!=h or json.loads(Path(p).read_text())!=actual:return False
+            if actual.get('deliverable'):
+                report=b.directory(job)/'web_collection.json'
+                if json.loads(report.read_text())!=actual:return False
+                expected=collection_files(b,job,actual)
+                if result.get('files')!=expected or result.get('analysis_inputs')!=list(expected):return False
+                if any(sha256(p)!=h for p,h in expected.items()):return False
+            elif result.get('files') or result.get('analysis_inputs'):return False
         elif args['operation']=='submit':
             request=json.loads((b.directory(job)/'request.json').read_text())
             if request['profile_id']!=args['profile_id'] or sorted(request['inputs'])!=sorted(args['input_refs']) or request['resources']!=args['resources']:return False

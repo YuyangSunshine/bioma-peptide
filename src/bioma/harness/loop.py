@@ -393,7 +393,14 @@ class DataAnalysisLoop:
                             },
                             'message_bytes':len(json.dumps(model_messages,ensure_ascii=False).encode()),
                             'accounting_unit':'UTF-8 bytes, not tokens'}, default=str)+'\n')
-                response = llm.chat_with_tools(model_messages, decision_tools)
+                decision_map = {definition['function']['name']: tool_map[definition['function']['name']]
+                    for definition in decision_tools if definition['function']['name'] in tool_map}
+                call_options = {}
+                if (len(decision_tools) == 1 and 'finish_investigation' in decision_map
+                        and getattr(llm, 'supports_forced_tool_choice', False)):
+                    call_options['tool_choice'] = {'type':'function',
+                        'function':{'name':'finish_investigation'}}
+                response = llm.chat_with_tools(model_messages, decision_tools, **call_options)
                 if context.state.get('continuous_investigation'):
                     with (context.artifact_dir('model_calls') / 'responses.jsonl').open('a') as archive:
                         archive.write(json.dumps({'request': budget.telemetry.llm_calls, 'response': response.assistant_message(), 'usage': {
@@ -435,7 +442,7 @@ class DataAnalysisLoop:
                     previous_stage = context.state.get('code_validation_stage', 0)
                     review_status_before = _review_status(context)
                     observation_text, args = self._call_tool(
-                        tool_call.name, tool_call.arguments, tool_map, context, budget, review_llm, checkpoint
+                        tool_call.name, tool_call.arguments, decision_map, context, budget, review_llm, checkpoint
                     )
                     observed = json.loads(observation_text)
                     if context.state.get('delivery_complete'):

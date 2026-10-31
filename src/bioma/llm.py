@@ -76,7 +76,7 @@ class ChatProvider(ABC):
         self,
         messages: list[dict[str, Any]],
         tools: list[dict[str, Any]],
-        *, json_mode: bool = False,
+        *, json_mode: bool = False, tool_choice: dict[str, Any] | str | None = None,
     ) -> ChatResponse:
         raise NotImplementedError
 
@@ -193,6 +193,7 @@ def _settle_model(reservation, usage):
 
 
 class OpenAICompatibleProvider(ChatProvider):
+    supports_forced_tool_choice = True
     """One transport with trusted per-instance visibility and observation hooks.
 
     Preparation runs after context augmentation and before budget reservation;
@@ -307,7 +308,7 @@ class OpenAICompatibleProvider(ChatProvider):
         self,
         messages: list[dict[str, Any]],
         tools: list[dict[str, Any]],
-        *, json_mode: bool = False,
+        *, json_mode: bool = False, tool_choice: dict[str, Any] | str | None = None,
     ) -> ChatResponse:
         kwargs: dict[str, Any] = {
             "model": self.config.model,
@@ -318,7 +319,7 @@ class OpenAICompatibleProvider(ChatProvider):
             kwargs.update(
                 {
                     "tools": tools,
-                    "tool_choice": "auto",
+                    "tool_choice": tool_choice if tool_choice is not None else "auto",
                     "parallel_tool_calls": False,
                 }
             )

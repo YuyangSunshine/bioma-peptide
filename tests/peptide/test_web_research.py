@@ -160,3 +160,52 @@ def test_review_json_fence_is_only_transport_envelope():
     for text in ['approved '+raw, '```json\n'+raw, '```json\n'+raw+'\n```\nextra',
                  '```json\n'+raw+'\n```\n```json\n'+raw+'\n```', '{"issues": [']:
         with pytest.raises(ValueError):_parse_review_response(text)
+
+
+def test_collection_admits_small_structures_not_large_trajectories(tmp_path):
+    from bioma.peptide.web_jobs import collection_files
+    report=tmp_path/'web_collection.json';report.write_text('{}')
+    small=tmp_path/'topology.sdf';small.write_text('registered structure')
+    trajectory=tmp_path/'trajectory.dcd'
+    with trajectory.open('wb') as f:f.truncate(33*1024**2)
+    data={'artifacts':[{'relative_path':p.name,'size':p.stat().st_size,'sha256':sha256(p)} for p in [small,trajectory]]}
+    class Registered:
+        def directory(self,job):return tmp_path
+    files=collection_files(Registered(),'registered',data)
+    assert str(small) in files and str(report) in files and str(trajectory) not in files
+
+
+def test_unadvertised_action_is_not_dispatched(tmp_path,monkeypatch):
+    from bioma.harness import loop
+    from bioma.harness.budget import HarnessBudget, HarnessBudgetConfig
+    from bioma.harness.types import HarnessContext, HarnessTool
+    from bioma.config import ScientificInvestigationConfig, LLMConfig
+    from bioma.llm import ChatResponse, ToolCall
+    dispatched=[]
+    tools=[HarnessTool(name=n,description=n,handler=lambda c,a:dispatched.append(True))
+           for n in ['hidden','finish_investigation']]
+    monkeypatch.setattr(loop,'investigation_delivery_readiness',lambda context:{
+        'ready_for_review':True,'reviewable_support':[{'receipt_ref':'one'},{'receipt_ref':'two'}]})
+    class StaleModel:
+        def chat_with_tools(self,messages,definitions):
+            assert [d['function']['name'] for d in definitions]==['finish_investigation']
+            return ChatResponse(content='',tool_calls=(ToolCall(id='stale',name='hidden',arguments='{}'),))
+    config=ScientificInvestigationConfig(llm=LLMConfig(model='unused'),max_llm_calls=2)
+    context=HarnessContext({'continuous_investigation':True},tmp_path)
+    result=loop.DataAnalysisLoop(config,provider_factory=lambda config:StaleModel()).run(
+        query='test',context=context,tools=tools,
+        budget=HarnessBudget(HarnessBudgetConfig(max_llm_calls=2,max_tool_calls=3)))
+    assert result.exit_reason=='computed_pending_review' and not dispatched
+    assert context.observations[-1]['status']=='error'
+
+
+def test_error_feedback_preserves_selected_input_mapping(tmp_path):
+    from bioma.harness.action_executor import call_harness_tool
+    from bioma.harness.budget import HarnessBudget, HarnessBudgetConfig
+    from bioma.harness.types import HarnessContext
+    context=HarnessContext({'raw_data_sources':['request.json','data.json']},tmp_path)
+    context.analysis_draft={'code':'pass','output_files':[],'input_indices':[1]}
+    text,_=call_harness_tool('unknown','{}',{},context,
+        HarnessBudget(HarnessBudgetConfig(max_llm_calls=2,max_tool_calls=2)),None,None)
+    mapping=json.loads(text)['analysis_draft']['execution_input_map']
+    assert mapping==[{'python_index':0,'r_index':1,'catalog_index':1,'path':'data.json'}]
