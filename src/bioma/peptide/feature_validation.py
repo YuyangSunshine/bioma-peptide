@@ -6,6 +6,27 @@ import re
 VERSION = 'uniprot-feature-location/1.0'
 
 
+def validate_feature_delivery(inputs, artifacts):
+    """Run the fixed check independently of whether a model spots the defect."""
+    sources = [(name, text) for name, text in inputs.items()
+               if isinstance(text, str) and text.startswith('ID   ')]
+    if len(sources) != 1:
+        return []  # Do not infer which source an ambiguous multi-record table uses.
+    source_name, source = sources[0]
+    checks = []
+    for name, table in artifacts.items():
+        if not name.lower().endswith('.csv'):
+            continue
+        violation, reason = uncertain_feature_coordinates(source, table)
+        if violation:
+            raise ValueError(f'{reason}; source={source_name}, artifact={name}. '
+                             'Preserve the non-exact endpoint; do not infer a closed range or overwrite source evidence.')
+        if violation is False:
+            checks.append({'method':VERSION, 'source':source_name, 'path':name,
+                           'passed':True, 'scope':reason + '; endpoint uncertainty only, not biological or numerical-property validation'})
+    return checks
+
+
 def uncertain_feature_coordinates(source, table):
     """Detect asserted exact CSV endpoints for source endpoints that are not exact.
 

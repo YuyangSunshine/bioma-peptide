@@ -1,4 +1,5 @@
-from bioma.peptide.feature_validation import uncertain_feature_coordinates
+import pytest
+from bioma.peptide.feature_validation import uncertain_feature_coordinates, validate_feature_delivery
 from bioma.harness.delivery_review import ReviewIssue, _verified_violation
 
 SOURCE = '''ID   TEST_HUMAN              Reviewed;         4 AA.
@@ -36,3 +37,11 @@ def test_review_requires_original_source_and_independently_parses_full_documents
     assert _verified_violation(issue,payload)[0] is True
     issue.basis_kind='requirement'
     assert _verified_violation(issue,payload)[0] is None
+
+
+def test_feature_delivery_rejects_without_a_model_finding():
+    with pytest.raises(ValueError, match='non-exact source end'):
+        validate_feature_delivery({'source.txt':SOURCE}, {'regions.csv':TABLE})
+    checks=validate_feature_delivery({'source.txt':SOURCE}, {'regions.csv':TABLE.replace('2,2,','2,?,')})
+    assert checks[0]['passed'] is True
+    assert validate_feature_delivery({'one.txt':SOURCE, 'two.txt':SOURCE}, {'regions.csv':TABLE}) == []

@@ -661,6 +661,8 @@ def review_delivery(context, observation, llm, budget, *, on_request=None, revie
     # study request: they can legitimately prescribe a different correction.
     method_claims = payload['request'] + '\n' + '\n'.join(programs.values())
     deterministic_checks = validate_statistical_delivery(method_claims, artifacts)
+    from bioma.peptide.feature_validation import validate_feature_delivery
+    deterministic_checks.extend(validate_feature_delivery(inputs, artifacts))
     payload['deterministic_checks'] = deterministic_checks
     review_version={'policy_sha256':review_policy_sha256(),
                     'material_sha256':hashlib.sha256(json.dumps(payload,sort_keys=True,ensure_ascii=False).encode()).hexdigest(),
