@@ -33,3 +33,6 @@ config/check_storage.sh
 qualified_environment_snapshot.tar.gz
 /runtime/artifacts/
 /release/
+
+# Local-only scientific evidence and qualification outputs
+.local-evidence/

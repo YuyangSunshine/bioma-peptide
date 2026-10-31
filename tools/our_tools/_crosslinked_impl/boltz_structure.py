@@ -28,6 +28,10 @@ from pydantic import Field
 
 from bioma.tools.base import ToolInput, bioma_tool
 from bioma.tools.errors import ToolError
+from tools.our_tools._crosslinked_impl.ensemble_contract import (
+    contract_hash,
+    require_final_target,
+)
 
 
 _STABLE_ID = "_BioMAStableAtomId"
@@ -308,6 +312,75 @@ def _completion_template(Chem: Any, AllChem: Any, topology: Any, seed: int) -> A
     return template
 
 
+def _rigid_transform(np: Any, source: Any, target: Any) -> tuple[Any, Any, Any]:
+    source_center = source.mean(axis=0)
+    target_center = target.mean(axis=0)
+    left, _, right_t = np.linalg.svd((source - source_center).T @ (target - target_center))
+    rotation = left @ right_t
+    if np.linalg.det(rotation) < 0:
+        left[:, -1] *= -1
+        rotation = left @ right_t
+    return source_center, rotation, target_center
+
+
+def _refit_terminal_caps(np: Any, molecule: Any, template: Any, targets: dict[int, tuple[float, float, float]]) -> None:
+    """Place unmapped terminal caps in the local frame of their projected peptide end.
+
+    Boltz receives the peptide sequence, not BioMA's acetyl and primary-amide
+    cap atoms.  A global completion-template transform therefore leaves those
+    cap fragments disconnected after a non-rigid peptide prediction.  Refit
+    each cap rigidly from its adjacent N--CA--C backbone frame instead.
+    """
+    template_conf = template.GetConformer()
+    conformer = molecule.GetConformer()
+    stable_to_index = {
+        atom.GetProp(_STABLE_ID): atom.GetIdx()
+        for atom in molecule.GetAtoms()
+        if atom.HasProp(_STABLE_ID)
+    }
+    residue_indices = sorted(
+        {
+            int(stable_id.split(":")[1])
+            for stable_id in stable_to_index
+            if stable_id.startswith("PEP:")
+            and len(stable_id.split(":")) == 3
+            and stable_id.split(":")[1].isdigit()
+        }
+    )
+    if not residue_indices:
+        return
+    first_residue, last_residue = residue_indices[0], residue_indices[-1]
+    terminal_specs = (
+        ("CAP:N:", tuple(f"PEP:{first_residue}:{atom_name}" for atom_name in ("N", "CA", "C"))),
+        ("CAP:C:", tuple(f"PEP:{last_residue}:{atom_name}" for atom_name in ("N", "CA", "C"))),
+    )
+    for cap_prefix, anchor_ids in terminal_specs:
+        anchor_indices = [stable_to_index.get(stable_id) for stable_id in anchor_ids]
+        if any(index is None or index not in targets for index in anchor_indices):
+            continue
+        indices = [int(index) for index in anchor_indices]
+        source = np.asarray(
+            [
+                [
+                    template_conf.GetAtomPosition(index).x,
+                    template_conf.GetAtomPosition(index).y,
+                    template_conf.GetAtomPosition(index).z,
+                ]
+                for index in indices
+            ]
+        )
+        target = np.asarray([targets[index] for index in indices])
+        source_center, rotation, target_center = _rigid_transform(np, source, target)
+        for atom in molecule.GetAtoms():
+            if not atom.HasProp(_STABLE_ID) or not atom.GetProp(_STABLE_ID).startswith(cap_prefix):
+                continue
+            point = template_conf.GetAtomPosition(atom.GetIdx())
+            xyz = (
+                np.asarray([point.x, point.y, point.z]) - source_center
+            ) @ rotation + target_center
+            conformer.SetAtomPosition(atom.GetIdx(), xyz.tolist())
+
+
 def _project(Chem: Any, np: Any, template: Any, targets: dict[int, tuple[float, float, float]]) -> Any:
     if len(targets) < 3:
         raise RuntimeError("Boltz supplied fewer than three mapped heavy atoms.")
@@ -316,18 +389,14 @@ def _project(Chem: Any, np: Any, template: Any, targets: dict[int, tuple[float, 
     indices = sorted(targets)
     source = np.asarray([[conformer.GetAtomPosition(i).x, conformer.GetAtomPosition(i).y, conformer.GetAtomPosition(i).z] for i in indices])
     target = np.asarray([targets[i] for i in indices])
-    source_center, target_center = source.mean(axis=0), target.mean(axis=0)
-    left, _, right_t = np.linalg.svd((source - source_center).T @ (target - target_center))
-    rotation = left @ right_t
-    if np.linalg.det(rotation) < 0:
-        left[:, -1] *= -1
-        rotation = left @ right_t
+    source_center, rotation, target_center = _rigid_transform(np, source, target)
     for index in range(molecule.GetNumAtoms()):
         point = conformer.GetAtomPosition(index)
         xyz = (np.asarray([point.x, point.y, point.z]) - source_center) @ rotation + target_center
         conformer.SetAtomPosition(index, xyz.tolist())
     for index, xyz in targets.items():
         conformer.SetAtomPosition(index, xyz)
+    _refit_terminal_caps(np, molecule, template, targets)
     return Chem.AddHs(molecule, addCoords=True)
 
 
@@ -383,6 +452,7 @@ def _ensemble_hash(molecules: list[Any]) -> str:
     requires_network=True,
 )
 def generate_boltz_conformer_ensemble(topology_manifest_path: str, target_ensemble_size: int, output_dir: str, boltz_options_json: str = "{}") -> str:
+    contract = require_final_target(target_ensemble_size, stage="boltz_raw")
     Chem, AllChem, rd_base, np = _rdkit()
     options = _json_object(boltz_options_json, "boltz_options_json")
     manifest_file = Path(topology_manifest_path).expanduser().resolve()
@@ -508,6 +578,6 @@ def generate_boltz_conformer_ensemble(topology_manifest_path: str, target_ensemb
         artifacts["boltz_input_yaml"] = str(input_path)
     if sdf_path.is_file():
         artifacts["conformers_sdf"] = str(sdf_path)
-    manifest = {"contract_version": "1.0", "tool_name": "generate_boltz_conformer_ensemble", "tool_version": "1.0.0", "stage": "boltz_raw", "status": status, "chemical_hash": topology_manifest["chemical_hash"], "input_hash": topology_manifest["config_hash"], "config_hash": _hash({"input": topology_manifest["config_hash"], "sampling": sampling, "rdkit": rd_base.rdkitVersion}), "result_hash": result_hash, "parent_manifest": str(manifest_file), "parent_manifests": [str(manifest_file)], "topology_manifest": str(manifest_file), "target_ensemble_size": target_ensemble_size, "candidate_count": len(candidates), "candidate_ids": [mol.GetProp("candidate_id") for mol in candidates], "sampling": sampling, "source_backend": "boltz", "artifacts": artifacts, "artifact_hashes": {"ensemble_scientific_sha256": ensemble_hash}, "warnings": warnings, "recommended_action": "continue_with_rdkit_only" if status == "failed" else "validate_available_boltz_results" if status == "partial_success" else None, "implementation": {"rdkit_version": rd_base.rdkitVersion}}
+    manifest = {"contract_version": "1.0", "tool_name": "generate_boltz_conformer_ensemble", "tool_version": "1.0.0", "stage": "boltz_raw", "status": status, "chemical_hash": topology_manifest["chemical_hash"], "input_hash": topology_manifest["config_hash"], "config_hash": _hash({"input": topology_manifest["config_hash"], "sampling": sampling, "rdkit": rd_base.rdkitVersion, "ensemble_contract": contract_hash(contract)}), "result_hash": result_hash, "parent_manifest": str(manifest_file), "parent_manifests": [str(manifest_file)], "topology_manifest": str(manifest_file), "target_ensemble_size": target_ensemble_size, "ensemble_contract_hash": contract_hash(contract), "candidate_count": len(candidates), "candidate_ids": [mol.GetProp("candidate_id") for mol in candidates], "sampling": sampling, "source_backend": "boltz", "artifacts": artifacts, "artifact_hashes": {"ensemble_scientific_sha256": ensemble_hash}, "warnings": warnings, "recommended_action": "continue_with_rdkit_only" if status == "failed" else "validate_available_boltz_results" if status == "partial_success" else None, "implementation": {"rdkit_version": rd_base.rdkitVersion}}
     _write_json(manifest_path, manifest)
     return json.dumps({"status": status, "manifest_path": str(manifest_path), "conformers_sdf": str(sdf_path) if sdf_path.is_file() else None, "requested_count": raw_candidates, "pdb_count": len(pdb_paths), "projected_count": len(candidates), "seed_count": seed_count, "diffusion_samples": diffusion_samples, "config_hash": manifest["config_hash"], "result_hash": result_hash, "recommended_action": manifest["recommended_action"]}, ensure_ascii=False, indent=2)

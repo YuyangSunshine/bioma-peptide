@@ -18,6 +18,11 @@ from pydantic import Field
 
 from bioma.tools.base import ToolInput, bioma_tool
 from bioma.tools.errors import ToolError
+from tools.our_tools._crosslinked_impl.ensemble_contract import (
+    contract_hash,
+    internal_pool,
+    require_final_target,
+)
 
 # ---------------------------------------------------------------------------
 # Generic crosslinked-peptide topology and conformer-selection tools
@@ -1091,7 +1096,7 @@ def _cp_cluster(
         "convergence and energy, then select core-heavy-atom-diverse structures."
     ),
     category="analysis",
-    version="1.2.0",
+    version="1.4.0",
     author="BioMA",
     args_schema=ConformerSelectionInput,
     tags=["conformer", "validation", "rmsd", "clustering", "selection"],
@@ -1106,6 +1111,7 @@ def validate_cluster_select_conformers(
     prior_selection_manifest_path: str | None = None,
 ) -> str:
     Chem, AllChem, rd_base, _ = _cp_rdkit()
+    contract = require_final_target(target_ensemble_size, stage=purpose)
     options = _cp_json_object(selection_options_json, "selection_options_json")
     try:
         additional_values = json.loads(additional_input_manifest_paths_json)
@@ -1356,7 +1362,12 @@ def validate_cluster_select_conformers(
             valid_indices.append(index)
 
     relief_records: list[dict[str, Any]] = []
-    if purpose == "select_for_normal" and options.get("mmff_collision_relief", True):
+    # Candidates already passing the full geometry contract must not be
+    # perturbed by a generic MMFF relaxation.  This is particularly important
+    # for projected Boltz macrocycles and charged sulfonium products, whose
+    # coordinates are valid but may not converge under RDKit's force field.
+    # A caller may opt in for a deliberately prepared low-quality input pool.
+    if purpose == "select_for_normal" and options.get("mmff_collision_relief", False):
         relieved: list[int] = []
         for index in valid_indices:
             mol = molecules[index]
@@ -1439,14 +1450,13 @@ def validate_cluster_select_conformers(
             else:
                 duplicate_of[index] = match
         default_normal_multiplier = 6 if len(input_manifests) > 1 else 3
-        cumulative_selection_target = int(
-            options.get(
-                "normal_target",
-                math.ceil(
-                    max(default_normal_multiplier * target_ensemble_size, 16) / 8
-                )
-                * 8,
-            )
+        default_normal_target = math.ceil(
+            max(default_normal_multiplier * target_ensemble_size, 16) / 8
+        ) * 8
+        if contract is not None and "normal_target" in options:
+            raise ToolError("normal_target is controlled by the trusted ensemble contract.", error_type="invalid_input", retriable=False, backend="RDKit")
+        cumulative_selection_target = internal_pool(
+            contract, key="normal_optimization_pool_size", fallback=int(options.get("normal_target", default_normal_target))
         )
         if cumulative_selection_target < len(prior_candidate_ids):
             raise ToolError(
@@ -1517,7 +1527,10 @@ def validate_cluster_select_conformers(
         clusters = _cp_cluster(finite_valid, matrix, energies, cluster_rmsd)
         representatives = [cluster[0] for cluster in clusters]
         if purpose == "select_for_tight":
-            target = int(options.get("tight_target", math.ceil(max(3 * target_ensemble_size, 16) / 8) * 8))
+            default_tight_target = math.ceil(max(3 * target_ensemble_size, 16) / 8) * 8
+            if contract is not None and "tight_target" in options:
+                raise ToolError("tight_target is controlled by the trusted ensemble contract.", error_type="invalid_input", retriable=False, backend="RDKit")
+            target = internal_pool(contract, key="tight_optimization_pool_size", fallback=int(options.get("tight_target", default_tight_target)))
             quota = min(int(options.get("energy_quota", math.ceil(target / 2))), len(representatives))
             energy_selected = sorted(representatives, key=lambda item: (energies[item], item))[:quota]
             remaining = [item for item in representatives if item not in energy_selected]
@@ -1653,12 +1666,13 @@ def validate_cluster_select_conformers(
             "recommended_action": recommended_action,
             "validation_failure_summary": validation_failure_summary,
             "ensemble_hash": ensemble_hash,
+            "ensemble_contract": contract_hash(contract),
         }
     )
     manifest = {
         "contract_version": "1.0",
         "tool_name": "validate_cluster_select_conformers",
-        "tool_version": "1.2.0",
+        "tool_version": "1.4.0",
         "stage": purpose,
         "status": status,
         "chemical_hash": topology_manifest["chemical_hash"],
@@ -1680,6 +1694,7 @@ def validate_cluster_select_conformers(
                     prior_selection.get("config_hash") if prior_selection else None
                 ),
                 "rdkit": rd_base.rdkitVersion,
+                "ensemble_contract": contract_hash(contract),
             }
         ),
         "result_hash": result_hash,
@@ -1690,6 +1705,8 @@ def validate_cluster_select_conformers(
         ],
         "topology_manifest": str(topology_manifest_file),
         "target_ensemble_size": target_ensemble_size,
+        "ensemble_contract_hash": contract_hash(contract),
+        "internal_pool_size": target if purpose != "select_for_final" else target_ensemble_size,
         "selection_target": target,
         "cumulative_selection_target": cumulative_selection_target,
         "candidate_count": len(selected_indices),
@@ -1769,4 +1786,3 @@ def validate_cluster_select_conformers(
         ensure_ascii=False,
         indent=2,
     )
-

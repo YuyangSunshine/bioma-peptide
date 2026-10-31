@@ -22,6 +22,10 @@ from pydantic import Field
 
 from bioma.tools.base import ToolInput, bioma_tool
 from bioma.tools.errors import ToolError
+from tools.our_tools._crosslinked_impl.ensemble_contract import (
+    contract_hash,
+    require_final_target,
+)
 
 # ---------------------------------------------------------------------------
 # Generic RDKit conformer generation and xTB ensemble optimization
@@ -287,6 +291,7 @@ def generate_rdkit_conformer_ensemble(
     output_dir: str,
     sampling_options_json: str = "{}",
 ) -> str:
+    contract = require_final_target(target_ensemble_size, stage="rdkit_raw")
     Chem, AllChem, rd_base = _ensemble_rdkit()
     options = _ensemble_json_object(sampling_options_json, "sampling_options_json")
     manifest_file = Path(topology_manifest_path).expanduser().resolve()
@@ -413,6 +418,7 @@ def generate_rdkit_conformer_ensemble(
             "candidate_count": len(molecules),
             "candidate_ids": [record["candidate_id"] for record in records],
             "ensemble_hash": ensemble_hash,
+            "ensemble_contract": contract_hash(contract),
         }
     )
     manifest = {
@@ -424,13 +430,14 @@ def generate_rdkit_conformer_ensemble(
         "chemical_hash": topology_manifest["chemical_hash"],
         "input_hash": topology_manifest["config_hash"],
         "config_hash": _ensemble_hash(
-            {"input": topology_manifest["config_hash"], "sampling": sampling_config, "rdkit": rd_base.rdkitVersion}
+            {"input": topology_manifest["config_hash"], "sampling": sampling_config, "rdkit": rd_base.rdkitVersion, "ensemble_contract": contract_hash(contract)}
         ),
         "result_hash": result_hash,
         "parent_manifest": str(manifest_file),
         "parent_manifests": [str(manifest_file)],
         "topology_manifest": str(manifest_file),
         "target_ensemble_size": target_ensemble_size,
+        "ensemble_contract_hash": contract_hash(contract),
         "candidate_count": len(molecules),
         "candidate_ids": [record["candidate_id"] for record in records],
         "sampling": sampling_config,
@@ -761,6 +768,12 @@ def optimize_conformer_ensemble_with_xtb(
     output_dir: str = "",
     xtb_options_json: str = "{}",
 ) -> str:
+    # xTB has no target-size argument, so verify the authoritative target that
+    # travelled in the selected-manifest provenance before allocating scratch.
+    contract = require_final_target(
+        int(_ensemble_load_json(Path(input_manifest_path).expanduser().resolve()).get("target_ensemble_size", -1)),
+        stage=f"xtb_{optimization_level}",
+    )
     Chem, _, rd_base = _ensemble_rdkit()
     options = _ensemble_json_object(xtb_options_json, "xtb_options_json")
     manifest_file = Path(input_manifest_path).expanduser().resolve()
@@ -826,6 +839,7 @@ def optimize_conformer_ensemble_with_xtb(
     uhf = int(topology_manifest["uhf"])
     config = {
         "input_manifest_hash": input_manifest["config_hash"],
+        "ensemble_contract": contract_hash(contract),
         "chemical_hash": topology_manifest["chemical_hash"],
         "optimization_level": optimization_level,
         "method": method,
@@ -974,6 +988,7 @@ def optimize_conformer_ensemble_with_xtb(
             "parent_manifests": [str(manifest_file)],
             "topology_manifest": str(topology_manifest_file),
             "target_ensemble_size": input_manifest.get("target_ensemble_size"),
+            "ensemble_contract_hash": contract_hash(contract),
             "candidate_count": len(successful),
             "candidate_ids": [
                 molecule.GetProp("candidate_id") for molecule in successful
@@ -1088,4 +1103,3 @@ def optimize_conformer_ensemble_with_xtb(
         ensure_ascii=False,
         indent=2,
     )
-

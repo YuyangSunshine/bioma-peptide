@@ -1,0 +1,82 @@
+{
+  "source_head": "ad6fe19811f62b20fb96679dba61d57c5a7ff382",
+  "source_dirty": true,
+  "files": [
+    {
+      "path": "tools/our_tools/_crosslinked_impl/peptide_structure.py",
+      "source_sha256": "5be198098a5a99d50af477211fa0714756bcac77b479947eddf84afd1ddedb07",
+      "migrated_sha256": "5be198098a5a99d50af477211fa0714756bcac77b479947eddf84afd1ddedb07"
+    },
+    {
+      "path": "tools/our_tools/_crosslinked_impl/small_molecule.py",
+      "source_sha256": "47b69c4b4a2ef722fb3d15ec5a84091e885374d5317503cc968137d294d35a8d",
+      "migrated_sha256": "47b69c4b4a2ef722fb3d15ec5a84091e885374d5317503cc968137d294d35a8d"
+    },
+    {
+      "path": "tools/our_tools/_crosslinked_impl/boltz_structure.py",
+      "source_sha256": "c0f5349e54f6377e1ed5cd98b71327e333195a7c2172ba2e92499f829072656c",
+      "migrated_sha256": "c0f5349e54f6377e1ed5cd98b71327e333195a7c2172ba2e92499f829072656c"
+    },
+    {
+      "path": "tools/our_tools/_crosslinked_impl/structure_export.py",
+      "source_sha256": "a31548fe4dd293047706aafdb893476bab2f9484ab123244895c07be91d8e40b",
+      "migrated_sha256": "a31548fe4dd293047706aafdb893476bab2f9484ab123244895c07be91d8e40b"
+    },
+    {
+      "path": "tools/our_tools/_crosslinked_impl/ensemble_contract.py",
+      "source_sha256": "629c01e5842d5ed721db4878cadf28a484c724478f857bee8b2e5c1f7a1ab61e",
+      "migrated_sha256": "629c01e5842d5ed721db4878cadf28a484c724478f857bee8b2e5c1f7a1ab61e"
+    },
+    {
+      "path": "tools/our_tools/tbmb_bicyclic_docking.py",
+      "source_sha256": "4c41813b9958d9fabfacf862082604f10975d3d2833657252ead76a7ad624888",
+      "migrated_sha256": "08b3ed1f02fd4dc69eb36757d39970f34ede5e00062b91f1354d479e6dd8cd4a"
+    },
+    {
+      "path": "tools/our_tools/tbmb_parameter_source.py",
+      "source_sha256": "78f30596522aea9d42585a41f01c7085829d84e693b84b85b9e7438d668dc002",
+      "migrated_sha256": "611e20246cdbf0a3904ba757bd87656df992d0d37f5cd644122be003449d021e"
+    },
+    {
+      "path": "tools/our_tools/tbmb_md_stage_a.py",
+      "source_sha256": "cf0c4524df2148b5abdad90414868f947ac28ba1b7e6d9ca71516afa12f2144e",
+      "migrated_sha256": "b69f66effddf0f257cd3a1408dc1d86b88e1d5a5bc064e46a44015afc0bc2afc"
+    },
+    {
+      "path": "tools/our_tools/tbmb_md_build.py",
+      "source_sha256": "dc1690bcf0e5290ae7e635a38e587c74c60b45e583feabdd04ca097329fd8cb2",
+      "migrated_sha256": "dc1690bcf0e5290ae7e635a38e587c74c60b45e583feabdd04ca097329fd8cb2"
+    },
+    {
+      "path": "tools/our_tools/tbmb_md_minimize.py",
+      "source_sha256": "558b5131ac5d5be77fd74da26afd49bee3ed6f145c505c5778a7e2a4e7d82f5f",
+      "migrated_sha256": "558b5131ac5d5be77fd74da26afd49bee3ed6f145c505c5778a7e2a4e7d82f5f"
+    },
+    {
+      "path": "tools/our_tools/tbmb_md_equilibrate.py",
+      "source_sha256": "14e49b3e85dbed0dc712cdcaf8ff1e9d5a96e81b81727c6feff7861fa7f2a2c5",
+      "migrated_sha256": "14e49b3e85dbed0dc712cdcaf8ff1e9d5a96e81b81727c6feff7861fa7f2a2c5"
+    },
+    {
+      "path": "tools/our_tools/tbmb_md_production.py",
+      "source_sha256": "42bec4ad64e61d854350d46e52859a6b4a2a7cdec10aba355a6e1da87ad63753",
+      "migrated_sha256": "42bec4ad64e61d854350d46e52859a6b4a2a7cdec10aba355a6e1da87ad63753"
+    },
+    {
+      "path": "skills/model_capabilities/our-skills/sk.8c792d469d40b961/crosslinked-peptide-structure/SKILL.md",
+      "source_sha256": "f81e8d871bd7810b3dc51b8dd7e01f5e9436909c0efd5919119f4a380131fbe4",
+      "migrated_sha256": "f81e8d871bd7810b3dc51b8dd7e01f5e9436909c0efd5919119f4a380131fbe4"
+    },
+    {
+      "path": "skills/model_capabilities/our-skills/sk.4fbe227040e54d55/tbmb-bicyclic-peptide-docking/SKILL.md",
+      "source_sha256": "8c0ca555dab1aee79f4890bfbae30fab4aef0b11fb0bf971d810be6605613828",
+      "migrated_sha256": "8c0ca555dab1aee79f4890bfbae30fab4aef0b11fb0bf971d810be6605613828"
+    }
+  ],
+  "scope": "Domain increments explicitly requested for migration; no private runtime or case data.",
+  "adaptations": [
+    "Remove private case sequence default; require explicit sequence",
+    "Replace machine-specific paths with project placeholder",
+    "External docking commands use argv with shell=False; shell pipelines require a reviewed fixed wrapper"
+  ]
+}
