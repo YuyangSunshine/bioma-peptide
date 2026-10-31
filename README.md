@@ -230,9 +230,10 @@ For persistent scientific jobs, add `--peptide-registry REGISTRY --peptide-job-r
 
 | Capability | Evidence / status |
 |---|---|
-| Native `bioma.peptide`, ten-tool contracts, persistent jobs, external references and basic data semantics | Implemented; 207 tests and 5 subtests passed across Web, domain contracts, budgets, report delivery and autonomous revision |
+| Native `bioma.peptide`, ten-tool contracts, persistent jobs, external references and basic data semantics | Implemented; 212 tests and 5 subtests passed across Web, domain contracts, budgets, report delivery and autonomous revision |
 | Web discovery, structural inventory, independent review and revision | A scoped first-stage request passed: autonomous selection of 4GJT, structural inventory/charts and independent delivery review. Broad drug-design requests ask for design constraints; multi-structure reports still have failed revision cases |
 | Live Web files, structures and charts | Browser test observed file count update from 1 to 6 during execution; NGL and SVG previews work, with provisional outputs labeled pending review |
+| Methionine-scaffold single-mutant triage | Registered on-demand enumeration with fixed-anchor and single-substitution validation, linear-sequence descriptors, CSV and chart; no cyclic-product affinity or ADMET prediction |
 | Later domain increments and two core skills | Migrated with original/migrated source hashes |
 | Real scientific tool invocation | Migrated RDKit glycine topology ran through the broker and passed execution, artifact and independent graph validation; limited coverage |
 | Real GPU engine | Two-particle synthetic OpenMM CUDA startup, checkpoint restore and controlled child cancellation passed; not a peptide or persistent GPU broker qualification |

@@ -128,3 +128,26 @@ def test_identical_copies_have_distinct_preview_ids(tmp_path):
         HarnessContext({}, tmp_path).record_observation(ToolObservation('assess', 'ok', '',
             metrics={'preview_sha256': {str(p): sha256(p) for p in files}}))
     assert len({a['id'] for a in events[0]['artifacts']}) == 2
+
+
+def test_design_quote_ignores_line_wrapping_but_not_changed_facts(tmp_path):
+    import pytest
+    from bioma.backends.investigation import request_clarification
+    context = HarnessContext({'original_user_request': 'Target T.\nKd is 4.64.\nOptimize peptides.',
+        'harness_observations': [{'tool_name': 'inspect_inputs', 'status': 'ok', 'metrics': {}}]}, tmp_path)
+    args = dict(kind='design_constraint', field='measurement_context',
+        request_quote='Target T.Kd is 4.64.', question='Which Kd unit?',
+        reason='The unit is absent', alternatives=[])
+    assert request_clarification(context, args).patch['need_clarification']
+    with pytest.raises(ValueError, match='request_quote'):
+        request_clarification(context, {**args, 'request_quote': 'Kd is 4.64 nM.'})
+    with pytest.raises(ValueError, match='Unsupported'):
+        request_clarification(context, {**args, 'field': 'production_approval'})
+
+
+def test_clarification_does_not_promote_unverified_completion_claim():
+    text = _run_response({'status': 'blocked', 'status_reason': {
+        'code': 'clarification_required', 'question': 'Which Kd unit?',
+        'reason': 'All candidates have passed MD'}})
+    assert 'All candidates have passed MD' not in text
+    assert 'Which Kd unit?' in text

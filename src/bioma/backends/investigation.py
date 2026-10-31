@@ -63,7 +63,7 @@ class ClarificationRequest(HarnessToolInput):
     kind: Literal['semantic_choice', 'design_constraint', 'input_unavailable', 'tool_unavailable'] = 'semantic_choice'
     request_quote: str = Field(default='', description='For design_constraint, quote the actual user request verbatim; this asks for design preferences, never parameter approval or missing-resource permission.')
     alternatives: list[str] = Field(default_factory=list, description='For a material scientific choice, at least two concrete alternatives supported by observed inputs/resources. A request for an example dataset authorizes choosing a suitable public example.')
-    field: str = Field(min_length=1)
+    field: str = Field(min_length=1, description='For kind=design_constraint use candidate_source, cyclization_chemistry, stereochemistry, design_objective, compute_scope, target_identity, measurement_context or evaluation_criteria. These are field values, not kind values.')
     question: str = Field(min_length=1)
     reason: str = Field(min_length=1)
 
@@ -156,13 +156,21 @@ def request_clarification(context, args):
     design_choice = args.get('kind') == 'design_constraint'
     if design_choice:
         allowed = {'candidate_source', 'cyclization_chemistry', 'stereochemistry',
-                   'design_objective', 'compute_scope'}
+                   'design_objective', 'compute_scope', 'target_identity',
+                   'measurement_context', 'evaluation_criteria'}
         quote = args.get('request_quote', '').strip()
         request = str(context.state.get('original_user_request') or
                       context.state.get('current_user_request') or '')
-        if args.get('field') not in allowed or not quote or quote not in request:
-            raise ValueError('Design clarification requires a quoted user request and a field in: '
-                             + ', '.join(sorted(allowed)))
+        if args.get('field') not in allowed:
+            raise ValueError('Unsupported design clarification field: ' + str(args.get('field'))
+                             + '. Allowed fields: ' + ', '.join(sorted(allowed)))
+        # Line wrapping is presentation, not a change to the quoted request.
+        # No punctuation, words, numbers or case are repaired or inferred.
+        import re
+        unwrapped = lambda text: re.sub(r'\s+', '', text)
+        if not quote or unwrapped(quote) not in unwrapped(request):
+            raise ValueError('request_quote does not match the user request (whitespace ignored). '
+                             'Copy a short exact phrase from original_user_request; do not paraphrase.')
     if context.state.get('public_resource_discovery') and not design_choice:
         observations = context.state.get('harness_observations', [])
         resource_attempts = [row for row in observations if row.get('tool_name') == 'read_public_resource'

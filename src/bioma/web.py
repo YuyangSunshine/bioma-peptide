@@ -674,8 +674,8 @@ def _run_response(state: dict[str, Any] | None) -> str:
     reason = state.get("status_reason") or {}
     if reason.get("code") == "clarification_required" and reason.get("question"):
         return ("继续研究前需要明确：\n\n" + str(reason["question"])
-                + ("\n\n原因：" + str(reason["reason"]) if reason.get("reason") else "")
-                + "\n\n请在当前会话中补充。已完成的工作保留，依赖这些选择的计算尚未继续。")
+                + "\n\n请在当前会话中补充。已登记的中间产物可供查看；"
+                  "这不表示研究已完成或已通过最终交付审核。")
     if state.get("status") in {"blocked", "failed"}:
         reason = state.get("status_reason") or {}
         if reason.get("error_type") == "ModelOutputBudgetError":

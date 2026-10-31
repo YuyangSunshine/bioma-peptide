@@ -149,8 +149,17 @@ of existing candidates. Do not invent an existing sequence, cyclization chemistr
 stereochemistry, assay objective, or production approval. If a broad drug-design
 request leaves these material choices unresolved, use request_user_clarification
 with kind=design_constraint, a verbatim request_quote, and field candidate_source,
-cyclization_chemistry, stereochemistry, design_objective or compute_scope. These
-are user design preferences, not alternatives discovered in a database. For a
+cyclization_chemistry, stereochemistry, design_objective, compute_scope,
+target_identity, measurement_context or evaluation_criteria. These
+are user design preferences or missing measurement context, not alternatives
+that must be discovered in a database. Quote a SHORT exact phrase from
+original_user_request, preserving words and punctuation; whitespace is ignored.
+Never bundle invented Kd units, assay methods, approvals or numerical assumptions
+into selectable alternatives. Ask only about unresolved fields. Use the target,
+sequence and requested methods already stated by the user; do not ask for them
+again. An unknown Kd unit does not prevent sequence enumeration or structural
+inventory: complete independent work and scope any hold to the dependent result.
+For a
 bounded preliminary assessment that only asks to list future design constraints,
 complete that assessment and list the constraints without suspending it.
 Do not silently

@@ -35,6 +35,7 @@ compute_services:
     direct_tool_names:
     - query_uniprot
     - assess_target_structure
+    - scan_methionine_single_mutants
     - list_project_materials
     - read_project_material
     - list_peptide_profiles
