@@ -80,7 +80,11 @@ confirmed, suspected, suggestion, or withdrawn. Only confirmed findings can reje
 Use category format, numeric, or scientific_support. Available bounded checks are
 single_numeric_value, decimal_places (explicit numeric precision clause),
 receipt_value_equality (same named quantity in receipt summary and output), and
-collection_count_equality (the integer count field for a named source collection).
+collection_count_equality (the integer count field for a named source collection), and
+uniprot_feature_location (a CSV with type/start/end/annotation columns must not assert
+an exact endpoint for a uniquely matched non-exact Swiss-Prot feature endpoint).
+For uniprot_feature_location cite the complete original Swiss-Prot text document and
+the CSV document; the checker parses both independently, matching feature type and note.
 For collection_count_equality, cite the complete collection at its JSON pointer and
 the scalar output count; the Runtime verifies both values and their field names. Other
 scientific concerns must state the specific support_gap and remain suspected
@@ -118,7 +122,7 @@ class ReviewIssue(BaseModel):
     disposition: Literal['confirmed', 'suspected', 'suggestion', 'withdrawn'] = 'suspected'
     category: Literal['format', 'numeric', 'scientific_support'] | None = None
     check: Literal['single_numeric_value', 'decimal_places', 'receipt_value_equality',
-                   'collection_count_equality'] | None = None
+                   'collection_count_equality', 'uniprot_feature_location'] | None = None
     support_gap: str | None = None
     basis_kind: Literal['requirement', 'source', 'consistency'] | None = None
     basis: ReviewCitation | None = None
@@ -217,6 +221,12 @@ def _verified_violation(issue, payload):
     """Bounded checks only. A real citation is not proof of its interpretation."""
     basis = _citation_value(issue.basis, payload)
     observed = _citation_value(issue.observation, payload)
+    if issue.check == 'uniprot_feature_location':
+        if (issue.basis_kind != 'source' or not issue.basis.pointer.startswith('/original_inputs/')
+                or not issue.observation.pointer.startswith('/artifacts/')):
+            return None, 'feature check requires original source and output artifact'
+        from bioma.peptide.feature_validation import uncertain_feature_coordinates
+        return uncertain_feature_coordinates(basis, observed)
     if issue.category in {'format', 'numeric'} and issue.check == 'collection_count_equality':
         basis_parts = issue.basis.pointer.split('/')
         observed_parts = issue.observation.pointer.split('/')
