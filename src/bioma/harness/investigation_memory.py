@@ -103,6 +103,7 @@ def working_memory(context, recent_messages):
     memory = {'operational_phase': phase, 'phase_is_scientific_validation': False,
         'delivery_readiness': readiness,
         'original_request': state.get('original_user_request') or state.get('current_user_request'),
+        "user_request_history": state.get("user_request_history", []),
         'required_deliverables': state.get('desired_deliverables', []),
         'execution_requirements': state.get('execution_requirements', {}),
         'research_assignment': state.get('research_assignment', {}),

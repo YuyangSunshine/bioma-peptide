@@ -25,6 +25,18 @@ bioma-peptide-web --config configs/peptide_web.yaml \
 
 Use a scientific Python environment containing the registered engines. No arbitrary host command, path or approval is accepted from the model. A registry profile binds the method, inputs, identity, validator and resource caps. Missing registry configuration blocks job submission, without preventing public target research. An unapproved production profile remains blocked.
 
+## Follow-up questions
+
+A follow-up retains the session's user-authored requests in the research work package,
+worker memory and independent delivery review. Current-turn contract quotations still
+bind exactly to the current message; historical requirements are separately attributed.
+Assistant answers and prior state claims are not imported as user requirements or
+scientific evidence. This context does not grant file access, approve parameters or
+resume a job automatically; existing jobs must be queried through their registered IDs.
+The worker should complete independent research before asking about a condition that
+blocks only one calculation, and should not re-open already specified chemistry or ask
+permission for public structure retrieval implied by the task.
+
 ## Available actions
 
 | Action | Authority and limits |

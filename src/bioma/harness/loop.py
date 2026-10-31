@@ -153,11 +153,23 @@ cyclization_chemistry, stereochemistry, design_objective, compute_scope,
 target_identity, measurement_context or evaluation_criteria. These
 are user design preferences or missing measurement context, not alternatives
 that must be discovered in a database. Quote a SHORT exact phrase from
-original_user_request, preserving words and punctuation; whitespace is ignored.
+original_user_request or user_request_history, preserving words and punctuation; whitespace is ignored.
 Never bundle invented Kd units, assay methods, approvals or numerical assumptions
 into selectable alternatives. Ask only about unresolved fields. Use the target,
 sequence and requested methods already stated by the user; do not ask for them
-again. An unknown Kd unit does not prevent sequence enumeration or structural
+again. Treat follow-up user messages as amendments to the existing research goal;
+preserve earlier user-provided facts, distinguishing them from assistant suggestions.
+Before asking a question, identify exactly which next calculation it prevents.
+Complete available independent research first: inspect registered project materials,
+retrieve target structures, and use registered sequence-analysis tools as appropriate.
+Do not request permission for public structure retrieval or routine report formats
+already implied by the research request. Do not offer a different cyclization reagent
+or a linear-only task as a substitute for the user's specified chemistry. Consult
+registered domain tools/skills and evidence to resolve technical uncertainty before
+asking the user to adjudicate a speculative chemical explanation. A proposed force
+field/parameterization strategy is not proof of an approved parameter package;
+verify actual registered evidence before launching dependent production calculations.
+An unknown Kd unit does not prevent sequence enumeration or structural
 inventory: complete independent work and scope any hold to the dependent result.
 For a
 bounded preliminary assessment that only asks to list future design constraints,
@@ -702,6 +714,7 @@ def _summarize_state(state: dict) -> dict:
     return {
         "task_id": state.get("task_id"),
         "original_user_request": state.get("original_user_request"),
+        "user_request_history": state.get("user_request_history", []),
         "desired_deliverables": state.get("desired_deliverables") or [],
         "analysis_work":state.get("analysis_work"),
         "query_input_questions": state.get("query_input_questions") or [],

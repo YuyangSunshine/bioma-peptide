@@ -654,6 +654,7 @@ def review_delivery(context, observation, llm, budget, *, on_request=None, revie
         'selected_kinds':observation.metrics.get('selected_support_kinds', []),
         'execution_requirements':context.state.get('execution_requirements', {})}
     payload['research_intake'] = context.state.get('research_intake', {})
+    payload['user_request_history'] = context.state.get('user_request_history', [])
     from bioma.backends.analysis.services.statistical_checks import validate_statistical_delivery
     # The bounded acceptance may omit a method named by the executed program.
     # A program's method claim triggers verification; it is never proof that the

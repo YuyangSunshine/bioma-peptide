@@ -29,6 +29,7 @@ class InvestigationWorkPackage(HarnessToolInput):
     workspace_scope: str
     objective: str
     original_request: str = ""
+    user_request_history: list[dict] = Field(default_factory=list)
     execution_requirements: dict = Field(default_factory=dict)
     input_manifest: dict[str, str]
     deliverables: list[str]
@@ -168,7 +169,10 @@ def request_clarification(context, args):
         # No punctuation, words, numbers or case are repaired or inferred.
         import re
         unwrapped = lambda text: re.sub(r'\s+', '', text)
-        if not quote or unwrapped(quote) not in unwrapped(request):
+        from bioma.gateway import user_request_history
+        sources = [request] + [row['content'] for row in
+            user_request_history(context.state.get('user_request_history', []))]
+        if not quote or not any(unwrapped(quote) in unwrapped(source) for source in sources):
             raise ValueError('request_quote does not match the user request (whitespace ignored). '
                              'Copy a short exact phrase from original_user_request; do not paraphrase.')
     if context.state.get('public_resource_discovery') and not design_choice:
@@ -689,6 +693,7 @@ def investigation_backend(config, base_dir, *, provider_factory=None, skill_regi
         package = InvestigationWorkPackage(task_id=state.task_id, workspace_scope=scope,
             objective=message.payload.get('assignment_objective') or state.objective,
             original_request=state.objective,
+            user_request_history=inputs.get("_user_request_history", []),
             execution_requirements=message.payload.get('execution_requirements') or {},
             input_manifest={path: hashlib.sha256(Path(path).read_bytes()).hexdigest() for path in files},
             query_input_questions=questions,
@@ -743,6 +748,7 @@ def investigation_backend(config, base_dir, *, provider_factory=None, skill_regi
             result = runner.run({'task_id': state.task_id, 'artifact_scope_id': scope,
                 'current_user_request': message.payload.get('assignment_objective') or state.objective,
                 'original_user_request': state.objective,
+                'user_request_history': package.user_request_history,
                 'research_assignment': assignment, 'desired_deliverables': outputs,
                 'analysis_work':inputs.get('analysis_work'), 'query_input_questions':questions,
                 'research_intake':intake,
