@@ -23,8 +23,8 @@ compute_services:
       thinking_mode: disabled
     delivery_review_llm:
       <<: *id001
-      thinking_mode: enabled
-      max_output_tokens: 16384
+      thinking_mode: disabled
+      max_output_tokens: 6000
     max_llm_calls: 24
     max_tool_calls: 32
     max_retry_per_step: 3

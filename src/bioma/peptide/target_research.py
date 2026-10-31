@@ -18,7 +18,7 @@ def fetch(url, *, limit=32*1024**2):
     if urlsplit(url).hostname not in {'rest.uniprot.org','files.rcsb.org'}:
         raise ValueError('unregistered_target_service')
     folder=DATA/uuid.uuid4().hex;folder.mkdir(parents=True)
-    path=folder/('source.cif' if url.endswith('.cif') else 'source.json')
+    path=folder/(urlsplit(url).path.rsplit('/', 1)[-1] if url.endswith('.cif') else 'source.json')
     left=remaining();timeout=min(30,left) if left is not None else 30
     size=0
     # Retry only transient transport/server failures, within the enclosing deadline.
@@ -111,26 +111,48 @@ def structure_metrics(path):
             'limitations':['No receptor repair or chain removal performed','No peptide-binding, force-field or production-MD qualification']}
 
 
+def structure_chart(metrics):
+    """Deterministic inventory chart, not a binding or structure-quality score."""
+    from html import escape
+    rows = list(metrics['chains'].items())
+    maximum = max((v['polymer_residues'] for _, v in rows), default=1) or 1
+    height = 100 + 28 * len(rows)
+    parts = [f'<svg xmlns="http://www.w3.org/2000/svg" width="760" height="{height}" viewBox="0 0 760 {height}">',
+             '<rect width="100%" height="100%" fill="white"/>',
+             f'<text x="20" y="25" font-size="18">{escape(metrics["entry_id"])}: observed polymer residues per chain</text>',
+             '<text x="20" y="48" font-size="12">Coordinate inventory only; not binding affinity or receptor qualification.</text>']
+    for i, (chain, values) in enumerate(rows):
+        y = 70 + i * 28
+        count = values['polymer_residues']
+        parts += [f'<text x="20" y="{y+15}" font-size="12">{escape(chain)}</text>',
+                  f'<rect x="100" y="{y}" width="{500*count/maximum:.2f}" height="20" fill="#287a91"/>',
+                  f'<text x="620" y="{y+15}" font-size="12">{count}</text>']
+    return ''.join(parts) + '</svg>'
+
+
 def assess(pdb_id):
     pdb_id=pdb_id.strip().upper()
     if not re.fullmatch(r'[0-9][A-Z0-9]{3}',pdb_id):raise ValueError('invalid_pdb_id')
     url=f'https://files.rcsb.org/download/{pdb_id}.cif';source=fetch(url)
     metrics=structure_metrics(source)
     if metrics['entry_id']!=pdb_id:raise ValueError('pdb_identity_mismatch')
-    report=source.parent/'structure_assessment.json';report.write_text(json.dumps(metrics,indent=2))
+    report=source.parent/f'{pdb_id}_structure_assessment.json';report.write_text(json.dumps(metrics,indent=2))
+    chart=source.parent/f'{pdb_id}_structure_inventory.svg';chart.write_text(structure_chart(metrics))
     return {'status':'ok','pdb_id':pdb_id,'source_url':url,'metrics':metrics,
-            'files':{str(source):sha256(source),str(report):sha256(report)},
-            'analysis_inputs':[str(report)],'execution_status':'ok',
+            'files':{str(source):sha256(source),str(report):sha256(report),str(chart):sha256(chart)},
+            'analysis_inputs':[str(report),str(chart)],'execution_status':'ok',
             'scientific_validation_scope':'mmCIF identity, coordinate finiteness and structural inventory only'}
 
 
 def validate_assessment(result,args):
     try:
         files=result['files'];source=next(Path(x) for x in files if x.endswith('.cif'))
-        if result['pdb_id']!=args['pdb_id'].strip().upper() or len(files)!=2:return False
+        if result['pdb_id']!=args['pdb_id'].strip().upper() or len(files)!=3:return False
         for name,digest in files.items():
             p=Path(name).resolve()
             if not p.is_relative_to(DATA.resolve()) or p.stat().st_size>32*1024**2 or sha256(p)!=digest:return False
         expected=structure_metrics(source)
+        chart=next(Path(x) for x in files if x.endswith('.svg'))
+        if chart.read_text()!=structure_chart(expected):return False
         return expected['entry_id']==result['pdb_id'] and expected==result['metrics'] and all(json.loads(Path(x).read_text())==expected for x in files if x.endswith('.json'))
     except (OSError,ValueError,KeyError,TypeError,StopIteration,IndexError):return False

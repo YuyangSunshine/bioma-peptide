@@ -258,3 +258,16 @@ def test_review_time_reserve_is_explicit_and_bounded(monkeypatch):
     for left, reserve, expected in [(None, 120, False), (90, 0, False), (121, 120, False), (120, 120, True), (30, 120, True)]:
         monkeypatch.setattr(deadline, 'remaining', lambda left=left:left)
         assert _review_time_reserved(reserve) is expected
+
+
+def test_structure_chart_is_independently_bound(tmp_path, monkeypatch):
+    monkeypatch.setattr(tr, 'DATA', tmp_path)
+    source = tmp_path / 'source.cif'; source.write_text(CIF)
+    monkeypatch.setattr(tr, 'fetch', lambda url: source)
+    result = tr.assess('1ABC')
+    chart = next(Path(p) for p in result['files'] if p.endswith('.svg'))
+    assert 'observed polymer residues' in chart.read_text()
+    assert str(chart) in result['analysis_inputs']
+    chart.write_text(chart.read_text().replace('>1</text>', '>999</text>'))
+    result['files'][str(chart)] = sha256(chart)
+    assert not tr.validate_assessment(result, {'pdb_id': '1ABC'})

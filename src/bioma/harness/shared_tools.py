@@ -305,6 +305,10 @@ def shared_tools(registry):
                          "Shared scientific Tool result failed its registered validator; raw result retained."
                          if validation_failed else "Configured scientific tool returned a recorded result."),
                 metrics={"result": result, "receipt_path": str(receipt), "result_kind": tool.result_kind,
+                         "delivery_package": {"receipt_ref": package.metrics["receipt_path"],
+                             "artifact_paths": package.artifacts,
+                             "status": "pending_independent_review"} if package else None,
+                         "preview_sha256": dict(result.get("files") or {}) if result_validated and not failed and isinstance(result, dict) else {},
                          **({"diagnostic_context": failure_diagnostic} if failure_diagnostic else {})},
                 warnings=["TOOL_EXECUTION_FAILED"] if execution_error else [],
                 execution_package=asdict(package) if package else None,

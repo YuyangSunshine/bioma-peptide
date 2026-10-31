@@ -88,7 +88,12 @@ class WebRun:
     live_phase: dict[str, Any] | None = None
     created_at: str = field(default_factory=lambda: utc_now().isoformat())
 
+    preview_artifacts: dict[str, dict[str, Any]] = field(default_factory=dict)
+
     def receive(self, event: dict[str, Any]) -> None:
+        if event.get("type") == "artifacts.available":
+            for artifact in event.get("artifacts", []):
+                self.preview_artifacts[artifact["uri"]] = artifact
         if event.get("type") == "gateway.interpretation.started":
             # A pre-runtime phase: retain it for the live UI without changing the
             # durable runtime event sequence or its protocol ordering.
@@ -168,6 +173,11 @@ class WebRun:
         self.error = _public_failure_message(exc)
 
     def payload(self, backend: str) -> dict[str, Any]:
+        display_state = dict(self.state or {})
+        committed = display_state.get("artifacts") or []
+        committed_paths = {a["uri"] for a in committed}
+        display_state["artifacts"] = [*committed, *[
+            a for uri, a in self.preview_artifacts.items() if uri not in committed_paths]]
         predictions = (self.state or {}).get("predictions") or []
         evidence = (self.state or {}).get("evidence") or []
         return {
@@ -180,7 +190,7 @@ class WebRun:
             "status": self.status,
             "active_agent": self.active_agent,
             "message": self.message,
-            "state": self.state,
+            "state": display_state,
             "events": self.events,
             "prediction": predictions[-1].get("design") if predictions else None,
             "conclusion": evidence[-1].get("claim") if evidence else None,
@@ -609,6 +619,21 @@ class QueryHandler(BaseHTTPRequestHandler):
         if not target.is_file():
             self.send_error(404)
             return
+        limit = 32 * 1024**2
+        if target.stat().st_size > limit:
+            self.send_error(413, "Use the registered external reference for large artifacts")
+            return
+        with target.open("rb") as source:
+            content = source.read(limit + 1)
+        if len(content) > limit:
+            self.send_error(413, "Artifact exceeds preview limit")
+            return
+        digest = (artifact.get("metadata") or {}).get("sha256")
+        if digest:
+            import hashlib
+            if hashlib.sha256(content).hexdigest() != digest:
+                self.send_error(409, "Artifact identity changed")
+                return
         content_type = (
             mimetypes.guess_type(target.name)[0] or "application/octet-stream"
         )
@@ -618,7 +643,7 @@ class QueryHandler(BaseHTTPRequestHandler):
             content_type = "chemical/x-pdb"
         elif target.suffix.casefold() in {".cif", ".mmcif"}:
             content_type = "chemical/x-cif"
-        self._send(200, target.read_bytes(), content_type)
+        self._send(200, content, content_type)
 
     def _send(self, status: int, content: bytes, content_type: str) -> None:
         self.send_response(status)
@@ -646,8 +671,17 @@ def create_server(
 
 def _run_response(state: dict[str, Any] | None) -> str:
     state = state or {}
+    reason = state.get("status_reason") or {}
+    if reason.get("code") == "clarification_required" and reason.get("question"):
+        return ("继续研究前需要明确：\n\n" + str(reason["question"])
+                + ("\n\n原因：" + str(reason["reason"]) if reason.get("reason") else "")
+                + "\n\n请在当前会话中补充。已完成的工作保留，依赖这些选择的计算尚未继续。")
     if state.get("status") in {"blocked", "failed"}:
         reason = state.get("status_reason") or {}
+        if reason.get("error_type") == "ModelOutputBudgetError":
+            return ("模型在输出限额内未返回完整答复，本轮已停止；残缺工具指令未执行。"
+                    "已登记的中间产物仍可查看，但不代表已通过独立交付审核。"
+                    "请检查模型推理模式与输出预算，再从已保存的任务证据继续。")
         return "执行已停止：" + (json.dumps(reason, ensure_ascii=False) if reason else state["status"])
     predictions = state.get("predictions") or []
     evidence = state.get("evidence") or []

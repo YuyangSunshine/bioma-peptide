@@ -60,7 +60,8 @@ class WorkingNotes(HarnessToolInput):
 
 
 class ClarificationRequest(HarnessToolInput):
-    kind: Literal['semantic_choice', 'input_unavailable', 'tool_unavailable'] = 'semantic_choice'
+    kind: Literal['semantic_choice', 'design_constraint', 'input_unavailable', 'tool_unavailable'] = 'semantic_choice'
+    request_quote: str = Field(default='', description='For design_constraint, quote the actual user request verbatim; this asks for design preferences, never parameter approval or missing-resource permission.')
     alternatives: list[str] = Field(default_factory=list, description='For a material scientific choice, at least two concrete alternatives supported by observed inputs/resources. A request for an example dataset authorizes choosing a suitable public example.')
     field: str = Field(min_length=1)
     question: str = Field(min_length=1)
@@ -152,7 +153,17 @@ def request_clarification(context, args):
             'Clarification requires a successful scoped input inspection first. '
             'An unobserved Query hypothesis is not a verified ambiguity.'
         )
-    if context.state.get('public_resource_discovery'):
+    design_choice = args.get('kind') == 'design_constraint'
+    if design_choice:
+        allowed = {'candidate_source', 'cyclization_chemistry', 'stereochemistry',
+                   'design_objective', 'compute_scope'}
+        quote = args.get('request_quote', '').strip()
+        request = str(context.state.get('original_user_request') or
+                      context.state.get('current_user_request') or '')
+        if args.get('field') not in allowed or not quote or quote not in request:
+            raise ValueError('Design clarification requires a quoted user request and a field in: '
+                             + ', '.join(sorted(allowed)))
+    if context.state.get('public_resource_discovery') and not design_choice:
         observations = context.state.get('harness_observations', [])
         resource_attempts = [row for row in observations if row.get('tool_name') == 'read_public_resource'
                              or row.get('metrics', {}).get('requested_tool') == 'read_public_resource'
@@ -365,7 +376,9 @@ def finish(context, args):
     requested = args.get('artifact_paths') or [p for item in observations for p in item.artifacts]
     known = {p for item in observations for p in item.artifacts}
     if len(set(requested)) != len(requested) or set(requested)-known:
-        raise ValueError('Selected artifacts must be unique outputs of selected receipts')
+        raise ValueError('Selected artifacts must be unique outputs of selected receipts. '
+                         'Use these packaged output paths (original retrieval files remain previews): '
+                         + json.dumps(sorted(known)))
     from bioma.harness.checkpoint import selected_review_receipt
     checkpoint = getattr(context, 'investigation_checkpoint', None)
     reused_package = False
