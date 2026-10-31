@@ -75,11 +75,11 @@ class Advice(HarnessToolInput):
 class Finish(HarnessToolInput):
     reason: str
     receipt_refs: list[str] = Field(default_factory=list)
-    artifact_paths: list[str] = Field(default_factory=list)
+    artifact_paths: list[str] = Field(default_factory=list, description='Optional exact output paths inside the selected delivery packages. Prefer [] to derive files from receipt_refs. Do not pass INPUT_FILES, original job paths or external artifact URIs.')
     answer_candidate_ref: str | None = None
     answer_text: str | None = None
-    assumptions: list[str] = Field(default_factory=list)
-    unresolved_requirements: list[str] = Field(default_factory=list)
+    assumptions: list[str] = Field(default_factory=list, description='Interpretation assumptions and scientific scope limits; these do not add new user obligations.')
+    unresolved_requirements: list[str] = Field(default_factory=list, description='Only unmet requirements of this request. A nonempty list blocks delivery. Out-of-scope future research and method limitations belong in answer_text/assumptions, not here.')
 
 
 class ExecutionViewQuery(HarnessToolInput):
@@ -155,7 +155,8 @@ def request_clarification(context, args):
     if context.state.get('public_resource_discovery'):
         observations = context.state.get('harness_observations', [])
         resource_attempts = [row for row in observations if row.get('tool_name') == 'read_public_resource'
-                             or row.get('metrics', {}).get('requested_tool') == 'read_public_resource']
+                             or row.get('metrics', {}).get('requested_tool') == 'read_public_resource'
+                             or row.get('metrics', {}).get('result_kind') == 'retrieved_fact']
         resource_observed = bool(resource_attempts)
         if not resource_observed:
             raise ValueError('Inspect the requested public resource or an example-data source first with '

@@ -58,7 +58,8 @@ def analysis_environment():
     packages = {}
     modules = {'numpy': 'numpy', 'pandas': 'pandas', 'scipy': 'scipy',
                'matplotlib': 'matplotlib', 'biopython': 'Bio',
-               'statsmodels': 'statsmodels', 'openpyxl': 'openpyxl'}
+               'statsmodels': 'statsmodels', 'openpyxl': 'openpyxl',
+               'rdkit': 'rdkit', 'openmm': 'openmm'}
     for name, module_name in modules.items():
         try:
             module = import_module(module_name)

@@ -209,3 +209,26 @@ def test_error_feedback_preserves_selected_input_mapping(tmp_path):
         HarnessBudget(HarnessBudgetConfig(max_llm_calls=2,max_tool_calls=2)),None,None)
     mapping=json.loads(text)['analysis_draft']['execution_input_map']
     assert mapping==[{'python_index':0,'r_index':1,'catalog_index':1,'path':'data.json'}]
+
+
+def test_structure_text_is_bounded_observation(tmp_path):
+    from bioma.harness.input_inspection import inspect_input_data
+    from bioma.harness.types import HarnessContext
+    source=tmp_path/'structure.sdf';source.write_text('title\nheader\ncounts\nM END\n$$$$\n')
+    context=HarnessContext({'raw_data_sources':[str(source)]},tmp_path)
+    result=inspect_input_data(context,dict(input_index=0,path=[],offset=1,limit=2))
+    assert result.metrics['content']==['header','counts']
+    assert result.metrics['authority']=='input_preview_only'
+
+
+def test_retrieved_target_alternatives_can_support_clarification(tmp_path):
+    from bioma.backends.investigation import request_clarification
+    from bioma.harness.types import HarnessContext
+    context=HarnessContext({'public_resource_discovery':True,'harness_observations':[
+        {'tool_name':'inspect_inputs','status':'ok','metrics':{}},
+        {'tool_name':'query_uniprot','status':'ok','metrics':{
+            'result_kind':'retrieved_fact','result':{'organisms':['Homo sapiens','Mus musculus']}}}]},tmp_path)
+    result=request_clarification(context,dict(kind='semantic_choice',field='organism',
+        question='Which observed organism?',reason='Multiple source records',
+        alternatives=['Homo sapiens','Mus musculus']))
+    assert result.patch['need_clarification']

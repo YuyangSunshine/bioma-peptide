@@ -278,10 +278,10 @@ def inspect_input_data(context, args):
         rows = list(csv.reader(io.StringIO(raw.decode('utf-8-sig')),
                                delimiter='\t' if path.suffix.lower() == '.tsv' else ','))
         value = {'header': rows[0] if rows else [], 'rows': rows[1:]}
-    elif path.suffix.lower() in {'.txt', '.py', '.r', '.fa', '.fasta', '.faa'}:
+    elif path.suffix.lower() in {'.txt', '.py', '.r', '.fa', '.fasta', '.faa', '.sdf', '.pdb', '.cif', '.mol', '.mol2'}:
         value = raw.decode('utf-8-sig').splitlines()
     else:
-        raise ValueError('Input inspection supports JSON, CSV, TSV, FASTA, text and Python/R source (read-only)')
+        raise ValueError('Input inspection supports JSON, CSV, TSV, FASTA, SDF/PDB/mmCIF/MOL text and Python/R source (read-only); structure text uses path=[] and offset/limit in lines')
     for segment in args['path']:
         if isinstance(value, dict) and segment in value:
             value = value[segment]

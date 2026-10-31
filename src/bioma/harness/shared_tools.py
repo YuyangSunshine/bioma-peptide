@@ -304,7 +304,7 @@ def shared_tools(registry):
                          if execution_error else
                          "Shared scientific Tool result failed its registered validator; raw result retained."
                          if validation_failed else "Configured scientific tool returned a recorded result."),
-                metrics={"result": result, "receipt_path": str(receipt),
+                metrics={"result": result, "receipt_path": str(receipt), "result_kind": tool.result_kind,
                          **({"diagnostic_context": failure_diagnostic} if failure_diagnostic else {})},
                 warnings=["TOOL_EXECUTION_FAILED"] if execution_error else [],
                 execution_package=asdict(package) if package else None,
