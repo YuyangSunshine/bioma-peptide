@@ -232,3 +232,14 @@ def test_retrieved_target_alternatives_can_support_clarification(tmp_path):
         question='Which observed organism?',reason='Multiple source records',
         alternatives=['Homo sapiens','Mus musculus']))
     assert result.patch['need_clarification']
+
+
+def test_written_report_can_be_reviewed_without_forcing_a_file():
+    from bioma.core.reporting import validate_written_delivery
+    validate_written_delivery({'current_user_request':'交付带来源的科学报告'},[], 'A draft report requiring independent review')
+    with pytest.raises(ValueError,match='written report'):
+        validate_written_delivery({'current_user_request':'交付带来源的科学报告'},[], '')
+    with pytest.raises(ValueError,match='PDF'):
+        validate_written_delivery({'current_user_request':'生成 PDF 报告'},[], 'Text is not a PDF')
+    with pytest.raises(ValueError,match='PDF'):
+        validate_written_delivery({'desired_deliverables':['report.pdf']},['report.md'], 'Text is not the requested file')

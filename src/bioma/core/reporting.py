@@ -56,3 +56,19 @@ def assignment_needs_pdf(state) -> bool:
     if re.search(r'(?:不要|无需|不需要|不用|不必).{0,12}pdf|(?:no|without)\s+(?:a\s+)?pdf|do not.{0,20}pdf', text):
         return False
     return bool(re.search(r'(?:生成|输出|提供|导出|交付|制作)[^。！？\n]{0,25}pdf|\b(?:write|generate|produce|provide|deliver|create|export|prepare)\s+(?:(?:a|an|the|one|final|analysis|scientific|complete|new|updated|summary|report|in|as)\s+){0,6}pdf\b', text))
+
+
+def validate_written_delivery(state, artifacts, answer_text=None):
+    """Check requested presentation form, never scientific sufficiency.
+
+    A generic written report may be the version-bound answer proposal. Explicit
+    PDF and named-file duties remain mandatory; finish() checks named outputs
+    separately before independent review of the answer and source receipts.
+    """
+    from pathlib import Path
+    suffixes={Path(path).suffix.lower() for path in artifacts}
+    if assignment_needs_pdf(state) and '.pdf' not in suffixes:
+        raise ValueError('The original task explicitly requires a PDF; text alone is incomplete.')
+    if (assignment_needs_report(state) and not suffixes.intersection({'.md','.pdf'})
+            and not (isinstance(answer_text,str) and answer_text.strip())):
+        raise ValueError('The original task requires a written report; submit a report artifact or an evidence-grounded answer_text for independent review.')

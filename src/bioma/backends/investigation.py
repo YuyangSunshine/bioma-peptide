@@ -74,7 +74,7 @@ class Advice(HarnessToolInput):
 
 class Finish(HarnessToolInput):
     reason: str
-    receipt_refs: list[str] = Field(default_factory=list)
+    receipt_refs: list[str] = Field(default_factory=list, description='Select exact receipt_ref values from delivery_readiness.reviewable_support. Inspection/probe receipts and unpublished intermediate executions are not final results.')
     artifact_paths: list[str] = Field(default_factory=list, description='Optional exact output paths inside the selected delivery packages. Prefer [] to derive files from receipt_refs. Do not pass INPUT_FILES, original job paths or external artifact URIs.')
     answer_candidate_ref: str | None = None
     answer_text: str | None = None
@@ -442,11 +442,8 @@ def finish(context, args):
     observation.patch['delivery_output_names'] = output_names
     if not expected <= actual:
         raise ValueError('Missing final deliverables: ' + ', '.join(sorted(expected - actual)))
-    from bioma.core.reporting import assignment_needs_report, assignment_needs_pdf
-    if assignment_needs_pdf(context.state) and not any(Path(path).suffix.lower()=='.pdf' for path in observation.artifacts):
-        raise ValueError('The original task explicitly requires a PDF; Markdown alone is incomplete.')
-    if assignment_needs_report(context.state) and not any(Path(path).suffix.lower() in {'.md', '.pdf'} for path in observation.artifacts):
-        raise ValueError('The original task requires a report; intermediate computation is incomplete.')
+    from bioma.core.reporting import validate_written_delivery
+    validate_written_delivery(context.state, observation.artifacts, args.get('answer_text'))
     # Do not allow a changed artifact to inherit the execution provenance.
     for path, digest in {**observation.metrics['sha256'], **observation.metrics.get('execution_sha256', {})}.items():
         if hashlib.sha256(Path(path).read_bytes()).hexdigest() != digest:

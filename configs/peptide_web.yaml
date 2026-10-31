@@ -1,5 +1,5 @@
 gateway:
-  llm: &id001
+  llm: &id002
     backend: openai
     model: deepseek-v4-1-flash-261017
     api_base: https://ark.cn-beijing.volces.com/api/v3
@@ -12,7 +12,15 @@ compute_services:
   worker:
     harness_mode: governed
     agent_engine: bioma
-    llm: *id001
+    llm: &id001
+      backend: openai
+      model: deepseek-v4-1-flash-261017
+      api_base: https://ark.cn-beijing.volces.com/api/v3
+      api_key_env: HUOSHYAN_API_KEY
+      max_output_parameter: max_tokens
+      max_output_tokens: 16384
+      timeout_seconds: 180.0
+      thinking_mode: enabled
     delivery_review_llm: *id001
     max_llm_calls: 24
     max_tool_calls: 32
@@ -25,8 +33,8 @@ compute_services:
     - read_project_material
     - list_peptide_profiles
     - manage_peptide_job
-  proposal_llm: *id001
-  assessment_llm: *id001
+  proposal_llm: *id002
+  assessment_llm: *id002
   reference_models: []
   skill_roots:
   - skills
@@ -34,7 +42,7 @@ compute_services:
   - tools/our_tools
   - tools/stella
 proagent:
-  llm: *id001
+  llm: *id002
 operagent:
-  llm: *id001
+  llm: *id002
 continuous_investigation: true
