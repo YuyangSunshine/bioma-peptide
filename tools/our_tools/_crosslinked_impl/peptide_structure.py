@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from bioma.peptide.contracts import result_validator as peptide_result_validator
 import json
 import csv
 import hashlib
@@ -435,7 +436,7 @@ def _cp_create_atom_property_list(Chem: Any, mol: Any) -> None:
     author="BioMA",
     args_schema=CrosslinkedPeptideTopologyInput,
     tags=["peptide", "crosslink", "topology", "rdkit", "protonation"],
-)
+ result_kind="computed_prediction", result_validator=peptide_result_validator)
 def build_crosslinked_peptide_topology(
     chemical_spec_json: str,
     output_dir: str,
@@ -1100,7 +1101,7 @@ def _cp_cluster(
     author="BioMA",
     args_schema=ConformerSelectionInput,
     tags=["conformer", "validation", "rmsd", "clustering", "selection"],
-)
+ result_kind="computed_prediction", result_validator=peptide_result_validator)
 def validate_cluster_select_conformers(
     input_manifest_path: str,
     purpose: Literal["select_for_normal", "select_for_tight", "select_for_final"],

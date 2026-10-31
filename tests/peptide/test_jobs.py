@@ -5,9 +5,9 @@ from pathlib import Path
 import tempfile
 import time
 import unittest
-from bioma_peptide_bridge.broker import Broker, process_identity
-from bioma_peptide_bridge.contracts import artifact_reference, normalize, sha256, verify_reference, result_validator
-from bioma_peptide_bridge.data import measurement, check_split
+from bioma.peptide.broker import Broker, process_identity
+from bioma.peptide.contracts import artifact_reference, normalize, sha256, verify_reference, result_validator
+from bioma.peptide.data import measurement, check_split
 
 
 class Contracts(unittest.TestCase):

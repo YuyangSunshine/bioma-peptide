@@ -1,6 +1,8 @@
+> Historical migration acceptance record. Code is now native under `src/bioma/peptide`; the separate bridge package has been removed. Historical test results do not replace validation of the current revision.
+
 # Domain increment migration and acceptance
 
-The feature branch contains the existing standalone bridge plus later domain increments:
+The feature branch contains the native peptide job services plus later domain increments:
 ensemble contracts, parameter-source tooling, complex relaxation, receptor preparation,
 MD system build, minimization, equilibration and restartable production implementation.
 The two peptide skills update their existing catalog paths; no duplicate runtime skill
@@ -43,10 +45,10 @@ that the full scientific workflow pass first.
 From the repository root, using a scientific Python with RDKit, PyYAML, pydantic and pytest:
 
 ```bash
-export PYTHONPATH="$PWD/bridge/src"
+export PYTHONPATH="$PWD/src"
 export PEPTIDE_SOURCE_ROOT="$PWD"
-python -m pytest bridge/tests -q -p no:cacheprovider
-python -m bioma_peptide_bridge.cli catalog --source-root "$PWD"
+python -m pytest tests/peptide -q -p no:cacheprovider
+python -m bioma.peptide.cli catalog --source-root "$PWD"
 ```
 
 The process lifecycle tests require a host that permits detached controlled subprocesses.

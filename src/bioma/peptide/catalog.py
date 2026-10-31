@@ -18,7 +18,7 @@ def catalog(repo):
                      "version": ast.literal_eval(next(k.value for k in deco.keywords if k.arg == "version")),
                      "legacy_args_schema": meta.get("args_schema"),
                      "parameters": ast.unparse(fn.args), "result_kind": "computed_prediction",
-                     "result_validator": "bioma_peptide_bridge.contracts.result_validator",
+                     "result_validator": "bioma.peptide.contracts.result_validator",
                      "authorization": "registered_profile_only", "legacy_metadata": meta})
     return rows
 

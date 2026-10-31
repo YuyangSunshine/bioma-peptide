@@ -2,8 +2,8 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
-from bioma_peptide_bridge.admission import production_gate
-from bioma_peptide_bridge.contracts import digest,sha256
+from bioma.peptide.admission import production_gate
+from bioma.peptide.contracts import digest,sha256
 
 
 class AdmissionTests(unittest.TestCase):

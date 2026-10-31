@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from bioma.peptide.contracts import result_validator as peptide_result_validator
 import csv
 import hashlib
 import json
@@ -220,7 +221,7 @@ def _pdb_remarks(
     author="BioMA",
     args_schema=StructureEnsembleExportInput,
     tags=["structure", "export", "pdb", "sdf", "ensemble"],
-)
+ result_kind="computed_prediction", result_validator=peptide_result_validator)
 def export_structure_ensemble(
     final_selection_manifest_path: str,
     output_dir: str,
