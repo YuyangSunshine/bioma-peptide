@@ -1,3 +1,4 @@
+import pytest
 import json
 
 from bioma.gateway import LLMQueryInterpreter
@@ -63,3 +64,19 @@ def test_clarification_can_cite_prior_user_but_not_assistant(tmp_path):
     assert request_clarification(context, args).patch['need_clarification']
     with pytest.raises(ValueError, match='request_quote'):
         request_clarification(context, {**args, 'request_quote': 'The assay is SPR.'})
+
+
+@pytest.mark.parametrize('suffix', ['.lib', '.off', '.frcmod', '.prmtop', '.inpcrd'])
+def test_amber_parameter_text_is_inspectable_without_execution(tmp_path, suffix):
+    import hashlib
+    from bioma.harness.input_inspection import inspect_input_data
+    from bioma.harness.types import HarnessContext
+    path = tmp_path / ('parameter' + suffix)
+    content = 'PARAMETERS\nS-C  200.0 1.8\n'
+    path.write_text(content)
+    context = HarnessContext({'raw_data_sources': [str(path)]}, tmp_path)
+    result = inspect_input_data(context, {'input_index': 0, 'path': [], 'offset': 0, 'limit': 10})
+    assert result.metrics['content'] == content.splitlines()
+    assert result.metrics['sha256'] == hashlib.sha256(content.encode()).hexdigest()
+    assert result.metrics['authority'] == 'input_preview_only'
+    assert not result.patch

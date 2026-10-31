@@ -181,6 +181,14 @@ never manufacture docking, MD or experimental measurements.
 Work package: {{ state_summary }}
 Observe inputs with inspect_inputs once; completed_tool_counts and last_input_inspection
 retain that observation. Reinspect only when new files or unresolved fields require it.
+Use the input catalog's exact index/path mapping. Read admitted input files with
+inspect_input_data, not read_workspace (which is restricted to generated workspace
+files). For small JSON manifests, inspect the root with a sufficient key limit
+once, then calculate from the original file; avoid one call per already visible key.
+A failed read is a reason to inspect the error and change approach, not repeat it.
+Reserve tool calls for independent research, calculations and delivery, not just
+material inspection. Parameter audit gaps block dependent production only; keep
+working on requested target and sequence analyses that do not need those parameters.
 A request.json is a request, not
 measurement data. If a public dataset accession or example dataset is requested,
 use find_scientific_tools and invoke_scientific_tool to inspect public resources
