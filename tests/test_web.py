@@ -598,3 +598,21 @@ def test_web_cli_rejects_unbounded_or_invalid_deadlines(monkeypatch, value):
     with pytest.raises(SystemExit) as error:
         web.main()
     assert error.value.code == 2
+
+
+def test_web_displays_only_bound_reviewed_answer_and_retains_review_notes():
+    from bioma.web import _run_response
+    payload = {'final_answer': 'Scoped report',
+               'accepted_answer_candidate': {'path': '/candidate', 'sha256': 'abc'},
+               'delivery_review': {'sha256': {'/candidate': 'abc'}, 'issues': [],
+                                   'dismissed_non_issues': [{'disposition': 'suggestion', 'message': '2D is not 3D'}]}}
+    state = {'status': 'completed', 'observations': [
+        {'kind': 'work_result', 'value': {'kind': 'InvestigationResult', 'authority': 'unqualified', 'payload': payload}}]}
+    assert 'Scoped report' in _run_response(state)
+    assert '2D is not 3D' in _run_response(state)
+    assert '不等同于已核验的科学证据' in _run_response(state)
+    payload['delivery_review']['issues'] = [{'message': 'unresolved'}]
+    assert 'Scoped report' not in _run_response(state)
+    payload['delivery_review']['issues'] = []
+    payload['accepted_answer_candidate']['sha256'] = 'tampered'
+    assert 'Scoped report' not in _run_response(state)

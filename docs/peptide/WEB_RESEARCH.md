@@ -52,3 +52,15 @@ python -m pytest tests/peptide tests/test_web.py tests/test_shared_capability_ne
 These test contract enforcement, bounded retrieval, source tampering, nested inspection, job idempotency, lifecycle receipts, production admission and external large-file references. Unit fixtures are not live model or scientific acceptance. Live run records and the private import manifest remain local; see the current workspace's `.local-evidence/web-research` for actual observations.
 
 A target name alone can start target research. It cannot supply missing peptide sequences, resolve stereochemical conflicts, approve parameter usage or define an unapproved production budget. Those prerequisites are reported as gaps rather than filled with invented scientific evidence.
+
+## Recorded live validation (2026-10-31)
+
+Actual Web runs, rather than mocked model replies, exercised the following paths:
+
+- A target-only query (`人源 Nectin-4`) autonomously retrieved UniProt, selected PDB 4FRW, downloaded and independently inventoried its coordinates, revised its delivery and passed independent delivery review. Other listed structures were explicitly distinguished from the structure actually checked.
+- A registered synthetic glycine topology job ran through the persistent broker. A subsequent Web session reattached to that same job, collected its files and independently recomputed graph/composition and file checks before passing delivery review. No second job was submitted. This is a small molecular-graph engineering test, not cyclic-peptide, binding or MD validation. The reviewer also flagged that 2D drawing distances cannot establish physical 3D bond-length validity; advisory review notes are shown alongside the report.
+- Unapproved production submission was rejected for a missing registered production review. Local real-case approval conflicts and a candidate stereochemical discrepancy remain unresolved.
+
+Successful delivery does not establish reliability for every query: earlier real runs failed on tool-budget exhaustion, report packaging, provider credits and transient source connections. Their failure records are retained. The current worker/reviewer configuration uses enabled reasoning; the target-only success above used the earlier disabled-reasoning configuration. An interrupted research action with an unresolved execution intent stops for reconciliation instead of being blindly replayed; durable scientific jobs remain independently addressable.
+
+OpenRouter reported at least 5.486811 in captured completed-call cost fields before the provider-credit rejection. This is incomplete event accounting, not a billing reconciliation. Volcengine reported token counts but no monetary cost; its cost is unknown, not zero. Private snapshots, versions, exact run IDs and receipts are in `.local-evidence/web-research/REPORT.md`; they are excluded from publication.

@@ -664,6 +664,21 @@ def _run_response(state: dict[str, Any] | None) -> str:
     if predictions:
         return str(predictions[-1].get("design") or "")
     observations = [o for o in state.get("observations", []) if o.get("kind") == "work_result"]
+    for observation in reversed(observations):
+        value = observation.get("value") or {}
+        payload = value.get("payload") or {}
+        review = payload.get("delivery_review") or {}
+        candidate = payload.get("accepted_answer_candidate") or {}
+        answer = payload.get("final_answer")
+        if (state.get("status") == "completed"
+                and isinstance(answer, str) and answer.strip()
+                and candidate.get("sha256")
+                and (review.get("sha256") or {}).get(candidate.get("path")) == candidate["sha256"]
+                and review.get("issues") == []):
+            qualification = "已通过独立交付审核；结论仅适用于报告所述方法和验证范围，工作结果不等同于已核验的科学证据。"
+            suggestions = [str(item["message"]) for item in review.get("dismissed_non_issues", [])
+                           if isinstance(item, dict) and item.get("disposition") == "suggestion" and item.get("message")]
+            return qualification + "\n\n" + answer + ("\n\n独立审核提示：\n\n" + "\n\n".join(suggestions) if suggestions else "")
     if observations:
         kinds = list(dict.fromkeys(o.get("value", {}).get("kind", "work_result") for o in observations))
         return ("已记录工作结果：" + "、".join(kinds) + "。可在中间产物和科学状态中查看；"
