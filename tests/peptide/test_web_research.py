@@ -151,3 +151,12 @@ def test_job_defaults_satisfy_actual_grant_schema():
                      {'operation':'submit','profile_id':'registered','idempotency_key':'stable'}]:
         actual=tool.args_schema(**supplied).model_dump()
         jsonschema.validate(actual,tool.parameters_schema())
+
+
+def test_review_json_fence_is_only_transport_envelope():
+    from bioma.harness.delivery_review import _parse_review_response
+    raw='{"issues": [], "source_support": null, "method_support": {}}'
+    assert _parse_review_response('```json\n'+raw+'\n```')==_parse_review_response(raw)
+    for text in ['approved '+raw, '```json\n'+raw, '```json\n'+raw+'\n```\nextra',
+                 '```json\n'+raw+'\n```\n```json\n'+raw+'\n```', '{"issues": [']:
+        with pytest.raises(ValueError):_parse_review_response(text)

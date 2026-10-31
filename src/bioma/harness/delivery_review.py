@@ -151,6 +151,18 @@ class DeliveryReview(BaseModel):
     method_support: dict[str, MethodContractCheck] | None = None
 
 
+def _parse_review_response(content):
+    # Some JSON-mode providers wrap the whole object in a Markdown fence.
+    # Strip only that exact envelope, never prose, partial JSON or multiple blocks.
+    text = content.strip()
+    if text.startswith('```'):
+        match = re.fullmatch(r'```(?:json)?[ \t]*\n(.*)\n```', text, re.DOTALL)
+        if match is None:
+            raise ValueError('Incomplete or ambiguous review JSON envelope')
+        text = match.group(1)
+    return DeliveryReview.model_validate(load_document(text.encode('utf-8')))
+
+
 class DeliveryReviewRejected(ValueError):
     """A completed computation has concrete review issues to repair."""
 
@@ -668,7 +680,7 @@ def review_delivery(context, observation, llm, budget, *, on_request=None, revie
         'review_version': review_version, 'finish_reason': response.finish_reason,
         'sha256': fingerprints, 'native_receipt_hashes':native_hashes, 'assessment_status': 'UNVALIDATED'},
         ensure_ascii=False, indent=2), encoding='utf-8')
-    review = DeliveryReview.model_validate(load_document(response.content.encode('utf-8')))
+    review = _parse_review_response(response.content)
     active, dismissed, unresolved = _classify_findings(review, payload)
     # Every selected native return needs an explicit, grounded parent-obligation
     # assessment. A successful child WP1 return alone is not parent acceptance.
