@@ -111,6 +111,11 @@ def working_memory(context, recent_messages):
         'unqualified_partial_execution_inputs': state.get('admitted_execution_inputs', {}),
         'same_query_recovery_computations':recovery,
         'inputs': [{'index': i, 'path': p} for i,p in enumerate(state.get('raw_data_sources', []))],
+        'recent_input_reads': [
+            {'summary': r.get('summary'), 'metrics_preview': bounded_text(
+                json.dumps(r.get('metrics', {}), ensure_ascii=False), 4000)}
+            for r in rows if r.get('tool_name') == 'inspect_input_data'
+            and r.get('status') == 'ok'][-4:],
         'completed_tool_counts': dict(Counter(r.get('tool_name') for r in rows if r.get('status') == 'ok')),
         'last_input_inspection': next(({'artifacts':r.get('artifacts', []),
             'preview':bounded_text(json.dumps(r.get('metrics', {}).get('input_previews', {}),ensure_ascii=False),3000),

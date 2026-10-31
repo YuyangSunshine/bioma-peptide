@@ -570,8 +570,9 @@ class ScientificInvestigationWorker(DataAnalysisRunner):
             for metadata in build_scoped_skill_tools(self.skill_view):
                 tools.append(HarnessTool(metadata.name, metadata.description,
                     handler=lambda context, args, metadata=metadata: _skill_observation(metadata, args), args_schema=metadata.args_schema))
-        if self.config.harness_mode == 'current':
-            tools.extend(tool for tool in self.external_tools if tool.name not in {t.name for t in tools})
+        tools.extend(tool for tool in self.external_tools
+                     if (self.config.harness_mode == 'current' or tool.name in self.config.direct_tool_names)
+                     and tool.name not in {t.name for t in tools})
         return tools
 
     def run(self, state):

@@ -60,7 +60,7 @@
     {
       "path": "tools/our_tools/tbmb_md_production.py",
       "source_sha256": "42bec4ad64e61d854350d46e52859a6b4a2a7cdec10aba355a6e1da87ad63753",
-      "migrated_sha256": "42bec4ad64e61d854350d46e52859a6b4a2a7cdec10aba355a6e1da87ad63753"
+      "migrated_sha256": "6d628c0f9d05ab6f3d5082e4779ba478c705942e809187f79d4b5c84282f7b6d"
     },
     {
       "path": "skills/model_capabilities/our-skills/sk.8c792d469d40b961/crosslinked-peptide-structure/SKILL.md",

@@ -71,6 +71,10 @@ class ScientificInvestigationConfig(ConfigModel):
     max_llm_calls: int = Field(default=24, ge=1)
     max_tool_calls: int = Field(default=32, ge=1)
     max_retry_per_step: int = Field(default=2, ge=0)
+    review_reserve_calls: int = Field(default=2, ge=2,
+        description="Remaining calls at which reviewable work is submitted, leaving room for review-driven revision.")
+    direct_tool_names: list[str] = Field(default_factory=list,
+        description="Expose selected already-authorized tools directly; grants no additional execution authority.")
 
 
 class ComAgentConfig(ScientificInvestigationConfig):

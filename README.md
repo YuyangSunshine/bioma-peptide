@@ -212,7 +212,14 @@ PYCODE
 
 Real methods require an operator-maintained registry, registered inputs and a scientific environment. Submit with `bioma-peptide submit --root JOB_ROOT --registry REGISTRY --request REQUEST`. Subsequent `status/collect/cancel/resume/reattach` use the same root/registry and `--job-id`. See [docs/peptide/README.md](docs/peptide/README.md) for fields and budgets.
 
-Use `from bioma import BioMA` for research and `bioma-peptide-web --help` for the existing UI. Configure provider/model settings in `configs/bioma.yaml` for real model calls. `BioMA(backend="llm", control_policy="adaptive_v3")` explicitly selects the existing evidence-driven scientific controller. Configure model and scientific job budgets separately; installing the package grants no production-MD permission.
+The Web uses the existing BioMA autonomous research loop: query → on-demand UniProt/PDB retrieval and method selection → independent validation → continuation or revision. `src/bioma/peptide` supplies domain contracts and controlled jobs, not another Agent loop.
+
+```bash
+bioma-peptide-web --config configs/peptide_web.yaml \
+  --env-file /path/to/private/runtime.env --host 127.0.0.1 --port 8015
+```
+
+For persistent scientific jobs, add `--peptide-registry REGISTRY --peptide-job-root JOB_ROOT`. Imported originals stay in ignored `.local-data/nectin4` and are accessible through hash-checked material IDs. See [Web research setup and limits](docs/peptide/WEB_RESEARCH.md). A target name starts research; missing peptide inputs, scientific approvals and production budgets remain explicit prerequisites.
 
 ## Implemented versus pending
 

@@ -563,7 +563,7 @@ def test_web_cli_passes_host_config_and_private_env(monkeypatch, tmp_path):
                                     '--task-deadline-seconds', '1200',
                                     '--query-deadline-seconds', '1800'])
     web.main()
-    assert calls['bioma'] == {'backend': 'llm', 'config_path': tmp_path/'config.yaml',
+    assert calls['bioma'] == {'backend': 'llm', 'config_path': tmp_path/'config.yaml', 'control_policy': 'legacy',
                               'task_deadline_seconds': 1200.0, 'query_deadline_seconds': 1800.0}
     assert calls['server']['host'] == '0.0.0.0'
     assert calls['server']['backend'] == 'llm'

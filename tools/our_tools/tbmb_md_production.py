@@ -30,15 +30,15 @@ if __package__:
         _write_amber_inpcrd,
     )
 else:
-    from tbmb_md_equilibrate import (  # type: ignore
-        _inpcrd_natom,
-        _minimum_solute_contact,
-        _monitored_bond_geometry,
-        _prmtop_natom,
-        _relative_structure_metrics,
-        _special_residue_counts,
-        _write_amber_inpcrd,
-    )
+    # Registry loads files by identity, outside a Python package. Load the sibling
+    # explicitly rather than relying on a user-modifiable sys.path search.
+    import importlib.util
+    _spec = importlib.util.spec_from_file_location("bioma_md_equilibration", Path(__file__).with_name("tbmb_md_equilibrate.py"))
+    _module = importlib.util.module_from_spec(_spec)
+    _spec.loader.exec_module(_module)
+    for _name in ("_inpcrd_natom", "_minimum_solute_contact", "_monitored_bond_geometry", "_prmtop_natom", "_relative_structure_metrics", "_special_residue_counts", "_write_amber_inpcrd"):
+        globals()[_name] = getattr(_module, _name)
+
 
 
 class MDProductionError(RuntimeError):

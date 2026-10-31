@@ -210,7 +210,16 @@ PYCODE
 
 真实工具需要另行配置操作者维护的 registry、登记输入和科学环境。使用 `bioma-peptide submit --root JOB_ROOT --registry REGISTRY --request REQUEST` 提交；后续 `status/collect/cancel/resume/reattach` 使用相同 root/registry 与 `--job-id`。完整字段和预算约束见 [docs/peptide/README.md](docs/peptide/README.md)。
 
-研究入口可用 `from bioma import BioMA`，Web 入口可用 `bioma-peptide-web --help`。真实模型服务需要配置 `configs/bioma.yaml` 中的 provider/model。`BioMA(backend="llm", control_policy="adaptive_v3")` 显式启用已有的证据驱动科学控制；其模型费用与科研作业预算需分别配置。仅安装包不会自动授权生产 MD。
+Web 直接进入 BioMA 自主研究循环：输入靶点 → 按需检索 UniProt/PDB → 模型选择结构和计算工具 → 独立校验 → 根据结果继续、修订或报告阻断。`src/bioma/peptide` 提供领域合同和受控科学作业，不替代这个循环，也不规定必须按固定阶段顺序执行。
+
+```bash
+bioma-peptide-web --config configs/peptide_web.yaml \
+  --env-file /path/to/private/runtime.env --host 127.0.0.1 --port 8015
+```
+
+配置使用实际的 `api_base`、`api_key_env: OPENROUTERAI_API_KEY` 等字段。长任务可追加 `--peptide-registry REGISTRY --peptide-job-root JOB_ROOT`，只能选择宿主登记的方法、输入和预算。导入的真实原件保存在 Git 忽略的 `.local-data/nectin4`，可通过材料检索工具按 ID 读取并校验哈希。
+
+默认使用现有 continuous investigation 自主循环及独立交付审核；`--control-policy adaptive_v3` 可显式选择既有的科学控制器。详细配置、工具权限和能力边界见 [Web 自主研究说明](docs/peptide/WEB_RESEARCH.md)。输入靶点并不意味着缺失的候选序列、参数审批和生产预算可以由 Agent 自行补造。
 
 ## 实现与验证状态
 

@@ -189,6 +189,16 @@ A successful tool call is not scientific support; preserve uncertainty and scope
 
 from bioma.harness.types import HarnessLoopResult
 
+def _avoid_stalled_reads(definitions, progress, readiness, *, revision_pending):
+    """Break an observed read loop without choosing a scientific method or verdict."""
+    readers = {'inspect_inputs', 'inspect_input_data', 'inspect_tabular_schema'}
+    if (progress.stalled_steps and progress.last_tool in readers
+            and readiness.get('ready_for_review') and not revision_pending):
+        return [item for item in definitions
+                if item.get('function', {}).get('name') not in readers]
+    return definitions
+
+
 class DataAnalysisLoop:
     """Small tool-calling loop for ComAgent."""
 
@@ -343,11 +353,19 @@ class DataAnalysisLoop:
                     from bioma.harness.investigation_memory import working_memory
                     model_messages.append({'role': 'user', 'content': 'Receipt-derived operational memory: ' +
                         json.dumps(working_memory(context, model_messages), ensure_ascii=False, default=str)})
-                decision_tools = tool_defs
+                decision_tools = _avoid_stalled_reads(tool_defs, progress, readiness,
+                    revision_pending=delivery_revision_pending(context))
+                if len(decision_tools) != len(tool_defs):
+                    model_messages.append({'role': 'user', 'content':
+                        'Repeated unchanged input inspections have stopped making progress. '
+                        'Read-only inspection tools are unavailable for this decision. '
+                        'Choose a new scientific action, submit the applicable receipts and '
+                        'your evidence-grounded answer for independent review, or explain '
+                        'the unresolved requirement. Review readiness is not scientific approval.'})
                 if (context.state.get('continuous_investigation')
                         and readiness['ready_for_review']
                         and not delivery_revision_pending(context)
-                        and available_before_call <= 2):
+                        and available_before_call <= self.config.review_reserve_calls):
                     # Once the execution contract is covered, exploration no
                     # longer competes with its reserved independent review.
                     decision_tools = [definition for definition in tool_defs

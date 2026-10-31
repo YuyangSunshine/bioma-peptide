@@ -719,6 +719,9 @@ def _validated_input_files(root: Path, values: list[str]) -> list[str]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the local BioMA web interface.")
+    parser.add_argument("--peptide-registry", type=Path, help="Host-maintained scientific profile/input registry")
+    parser.add_argument("--peptide-job-root", type=Path, help="Persistent host-owned job directory")
+    parser.add_argument("--control-policy", choices=["legacy", "adaptive_v3", "egvoi"], default="legacy", help="Research decision policy; independent of scientific method order")
     parser.add_argument("--toy", action="store_true", help="use deterministic backends")
     parser.add_argument("--host", default="127.0.0.1", help="listen address; use 0.0.0.0 for LAN access")
     parser.add_argument("--config", type=Path, help="BioMA YAML configuration path")
@@ -741,13 +744,18 @@ def main() -> None:
         parser.error("deadlines must be positive finite seconds")
     if args.env_file:
         os.environ["BIOMA_ENV_FILE"] = str(args.env_file.expanduser().resolve())
+    if bool(args.peptide_registry) != bool(args.peptide_job_root):
+        parser.error("--peptide-registry and --peptide-job-root must be provided together")
+    if args.peptide_registry:
+        os.environ["BIOMA_PEPTIDE_REGISTRY"] = str(args.peptide_registry.resolve(strict=True))
+        os.environ["BIOMA_PEPTIDE_JOB_ROOT"] = str(args.peptide_job_root.resolve())
     backend = "toy" if args.toy else "llm"
     print(f"Initializing BioMA ({backend})...", flush=True)
     history_path = args.history_path or (
         Path.cwd() / ".bioma" / "history.sqlite3"
     )
     server = create_server(
-        BioMA(backend=backend, config_path=args.config,
+        BioMA(backend=backend, config_path=args.config, control_policy=args.control_policy,
               query_deadline_seconds=args.query_deadline_seconds,
               task_deadline_seconds=args.task_deadline_seconds),
         backend=backend,

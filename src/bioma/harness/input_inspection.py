@@ -299,6 +299,11 @@ def inspect_input_data(context, args):
     data = {'input_index': index, 'path': args['path'], 'offset': offset,
             'total_items': len(value) if isinstance(value, (dict, list, str)) else 1,
             'sha256': hashlib.sha256(raw).hexdigest(), 'authority': 'input_preview_only'}
+    if isinstance(value, dict):
+        data['available_keys'] = list(value)[:100]
+        data['navigation'] = 'path selects a nested field; limit counts dictionary keys, not records. Append a needed key to path instead of repeating the same read.'
+    if isinstance(value, (dict, list, str)):
+        data['next_offset'] = offset + limit if offset + limit < len(value) else None
     if len(_encoded(selection)) <= MAX_PREVIEW_BYTES:
         data['content'] = selection
     else:

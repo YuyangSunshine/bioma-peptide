@@ -1,0 +1,38 @@
+gateway:
+  llm: &id001
+    backend: openai
+    model: anthropic/claude-sonnet-4.6
+    api_base: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTERAI_API_KEY
+    max_output_parameter: max_tokens
+    max_output_tokens: 6000
+    timeout_seconds: 90.0
+compute_services:
+  worker:
+    harness_mode: governed
+    agent_engine: bioma
+    llm: *id001
+    delivery_review_llm: *id001
+    max_llm_calls: 24
+    max_tool_calls: 32
+    review_reserve_calls: 6
+    direct_tool_names:
+    - query_uniprot
+    - assess_target_structure
+    - list_project_materials
+    - read_project_material
+    - list_peptide_profiles
+    - manage_peptide_job
+  proposal_llm: *id001
+  assessment_llm: *id001
+  reference_models: []
+  skill_roots:
+  - skills
+  tool_roots:
+  - tools/our_tools
+  - tools/stella
+proagent:
+  llm: *id001
+operagent:
+  llm: *id001
+continuous_investigation: true

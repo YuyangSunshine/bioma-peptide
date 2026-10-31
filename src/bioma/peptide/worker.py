@@ -56,6 +56,20 @@ def group_usage(pgid):
     return {'cpu_seconds': cpu, 'rss_bytes': rss, 'processes': processes, 'pids': pids}
 
 
+def storage_bytes(folder):
+    """Account live files while children atomically rename temporary outputs."""
+    total = 0
+    for path in folder.rglob('*'):
+        try:
+            if path.is_file():
+                total += path.stat().st_size
+        except FileNotFoundError:
+            # A temp file can disappear between directory iteration and stat.
+            # Other I/O failures remain failures; enforce the cap again next poll.
+            continue
+    return total
+
+
 def supervise(folder):
     with (folder / '.worker.lock').open('a') as lock:
         try:
@@ -124,7 +138,7 @@ def supervise(folder):
                             state.update(status='failed',reason='gpu_memory_budget');break
                     if usage['cpu_seconds'] > budget['cpu_seconds'] or usage['rss_bytes'] > budget['memory_bytes'] or usage['processes'] > 64:
                         state.update(status='failed', reason='aggregate_resource_budget'); break
-                    total = sum(p.stat().st_size for p in folder.rglob('*') if p.is_file())
+                    total = storage_bytes(folder)
                     if total > budget['output_bytes']:
                         state.update(status='failed', reason='storage_budget'); break
                     time.sleep(0.1)
