@@ -29,7 +29,7 @@ Use a scientific Python environment containing the registered engines. No arbitr
 
 | Action | Authority and limits |
 |---|---|
-| `query_uniprot` | Searches live UniProt, returns multiple organisms and PDB cross-references; no automatic first-hit selection. The validator recomputes the result from hash-bound source JSON. |
+| `query_uniprot` | Searches live UniProt, returns multiple organisms and PDB cross-references; no automatic first-hit selection. The source request explicitly selects identity, organism, sequence and PDB fields; the complete returned JSON is retained and hash-bound. The validator recomputes the result from that source. This discovery projection is not the full functional annotation. |
 | `assess_target_structure` | Downloads selected PDB mmCIF from RCSB; independently recomputes entry identity, chains, coordinates, residue and heteroatom counts. Does not certify receptor preparation, binding, force fields or MD suitability. |
 | `list_project_materials`, `read_project_material` | Search imported local originals and verify each selected file against the import manifest. Large files remain external references. Original unresolved approvals stay unresolved. |
 | `list_peptide_profiles`, `manage_peptide_job` | Discover registered computations; submit/status/collect/cancel/resume/reattach durable jobs. Counts against the existing research tool budget. A successful lifecycle action is not a successful scientific computation. Verified small structure/JSON outputs are admitted for further analysis; large trajectories remain external references. |

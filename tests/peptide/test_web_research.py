@@ -26,8 +26,15 @@ HETATM B O . 2 0 0
 def test_discovery_preserves_species_and_checks_original(tmp_path,monkeypatch):
     monkeypatch.setattr(tr,'DATA',tmp_path)
     source=tmp_path/'source.json';source.write_text(json.dumps({'results':[{'primaryAccession':'P00001','organism':{'scientificName':'species-a'}},{'primaryAccession':'P00002','organism':{'scientificName':'species-b'}}]}))
-    monkeypatch.setattr(tr,'fetch',lambda url:source)
+    urls=[]
+    monkeypatch.setattr(tr,'fetch',lambda url:urls.append(url) or source)
     result=tr.discover('target');assert len(result['targets'])==2
+    from urllib.parse import urlsplit, parse_qs
+    requested=parse_qs(urlsplit(urls[-1]).query)
+    assert requested['size']==['10']
+    assert requested['fields']==[','.join(result['source_fields'])]
+    tr.discover('P00001')
+    assert parse_qs(urlsplit(urls[-1]).query)['fields']==requested['fields']
     assert tr.validate_discovery(result,{'query':'target'})
     result['targets'][0]['organism']['scientificName']='invented'
     assert not tr.validate_discovery(result,{'query':'target'})

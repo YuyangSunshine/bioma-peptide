@@ -62,13 +62,17 @@ def target_rows(data):
 def discover(query):
     query=query.strip()
     if not query or len(query)>500:raise ValueError('bounded_uniprot_query_required')
+    # Ask the source for the discovery fields, rather than downloading unrelated
+    # annotations and then truncating the original evidence during review.
+    fields='accession,id,protein_name,organism_name,organism_id,length,sequence,xref_pdb'
     if re.fullmatch(r'[A-Z0-9]{6,10}',query) and any(c.isdigit() for c in query):
-        url=f'https://rest.uniprot.org/uniprotkb/{query}.json'
-    else:url='https://rest.uniprot.org/uniprotkb/search?'+urlencode({'query':query,'format':'json','size':10})
+        url=f'https://rest.uniprot.org/uniprotkb/{query}.json?'+urlencode({'fields':fields})
+    else:url='https://rest.uniprot.org/uniprotkb/search?'+urlencode({'query':query,'format':'json','size':10,'fields':fields})
     source=fetch(url);data=json.loads(source.read_text());rows=target_rows(data)
     return {'status':'ok','query':query,'source_url':url,'targets':rows,'returned_count':len(rows),
             'selection':'No target or structure selected by this tool; compare organism, construct, method and coverage.',
-            'files':{str(source):sha256(source)},'qualification':'Source retrieval, not binding evidence'}
+            'files':{str(source):sha256(source)},'source_fields':fields.split(','),
+            'qualification':'Selected source fields for target discovery, not complete functional annotation or binding evidence'}
 
 
 def validate_discovery(result,args):
