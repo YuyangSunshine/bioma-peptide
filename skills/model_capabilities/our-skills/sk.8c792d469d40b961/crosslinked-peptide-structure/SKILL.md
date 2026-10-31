@@ -3,7 +3,7 @@ name: crosslinked-peptide-structure
 description: Build a chemically specified cyclic or crosslinked peptide, generate initial coordinates through RDKit and Boltz, and produce a validated xTB-refined conformer ensemble with complete PDB, SDF, CSV, and JSON artifacts.
 metadata:
   short-description: Generate crosslinked-peptide conformer ensembles
-  version: "1.3.0"
+  version: "1.4.0"
   author: BioMA
 tools:
   - build_crosslinked_peptide_topology
@@ -17,6 +17,11 @@ tools:
 # Crosslinked Peptide Structure
 
 Use this workflow for peptide structures defined by a sequence, terminal caps, covalent connections, linker chemistry, pH, experimental conditions, and a requested final ensemble size. Execute the workflow through BioMA's query/tool-calling runtime. The standalone manual dual-route script is a developer smoke test, not the production execution interface.
+
+When a query runner supplies `BIOMA_CROSSLINKED_ENSEMBLE_CONTRACT`, its
+`final_ensemble_size` is authoritative. Every Tool validates its public
+`target_ensemble_size` against that value; normal and tight xTB pool sizes are
+derived inside the Tool from the contract and cannot be supplied by the Agent.
 
 ## Prepare the chemical state
 
@@ -35,11 +40,11 @@ Use one task directory with these stage folders:
 1. Call `build_crosslinked_peptide_topology` with the structured chemical specification and `01_topology`.
 2. Call `generate_rdkit_conformer_ensemble` with the topology manifest, the user's requested final ensemble size `K` unchanged, and `02_rdkit_raw`. The tool derives the larger raw count internally. For a request of 10 final PDB files, pass `target_ensemble_size=10`, which yields about 200 RDKit conformers for a 16-residue peptide.
 3. Call `generate_boltz_conformer_ensemble` with the same topology manifest, unchanged `target_ensemble_size=K`, and `03_boltz_raw`. Unless an explicit budget is supplied, use four seeds and four diffusion samples (at most 16 Boltz proposals). Boltz supplies coordinates only: the RDKit topology remains authoritative for atoms, bonds, caps, formal charges, and stereochemical record.
-4. Call `validate_cluster_select_conformers` with the RDKit manifest as `input_manifest_path`, the usable Boltz manifest in `additional_input_manifest_paths_json`, `purpose=select_for_normal`, and `04_select_normal`. This is an intermediate normal-xTB candidate pool, not the final requested ensemble; it is intentionally larger than `K`. Apply global geometry validation, core-heavy-atom RMSD de-duplication, and farthest-point diversity selection. Do not reserve source-specific slots: RDKit and Boltz candidates compete on the same criteria.
+4. Call `validate_cluster_select_conformers` with the RDKit manifest as `input_manifest_path`, the usable Boltz manifest in `additional_input_manifest_paths_json`, `purpose=select_for_normal`, `target_ensemble_size=K`, `selection_options_json={"mmff_collision_relief": false}`, and `04_select_normal`. This is an intermediate normal-xTB candidate pool, not the final requested ensemble; the tool derives its larger internal pool from `K`. Never substitute an intermediate count such as 32 for `target_ensemble_size`. Do not apply generic MMFF collision relief to candidates that already pass the geometry contract. Apply global geometry validation, core-heavy-atom RMSD de-duplication, and farthest-point diversity selection. Do not reserve source-specific slots: RDKit and Boltz candidates compete on the same criteria.
 5. Call `optimize_conformer_ensemble_with_xtb` with `optimization_level=normal`, the selected solvent settings, the solvent-selection reasoning in `xtb_options_json`, and `05_xtb_normal`.
-6. Call `validate_cluster_select_conformers` with `purpose=select_for_tight` and `06_select_tight`.
+6. Call `validate_cluster_select_conformers` with `purpose=select_for_tight`, `target_ensemble_size=K`, and `06_select_tight`; the tool derives the tight intermediate pool from `K`.
 7. Call `optimize_conformer_ensemble_with_xtb` with `optimization_level=tight`, the same chemical and solvent state, the same solvent-selection reasoning, and `07_xtb_tight`.
-8. Call `validate_cluster_select_conformers` with `purpose=select_for_final` and `08_select_final`.
+8. Call `validate_cluster_select_conformers` with `purpose=select_for_final`, `target_ensemble_size=K`, and `08_select_final`.
 9. Call `export_structure_ensemble` with the final selection manifest and `09_final`. Only this final selection must contain exactly `K` representatives when enough validated RMSD clusters exist.
 
 Read [stage-artifact-contracts.md](references/stage-artifact-contracts.md) when checking manifests or continuing an interrupted xTB stage. Read [decision-and-stopping-rules.md](references/decision-and-stopping-rules.md) when a selection stage requests additional sampling.

@@ -15,6 +15,10 @@ from pydantic import Field
 
 from bioma.tools.base import ToolInput, bioma_tool
 from bioma.tools.errors import ToolError
+from tools.our_tools._crosslinked_impl.ensemble_contract import (
+    contract_hash,
+    require_final_target,
+)
 
 
 _STABLE_ID = "_BioMAStableAtomId"
@@ -242,6 +246,7 @@ def export_structure_ensemble(
     source_path = Path(final_manifest["artifacts"]["selected_sdf"]).resolve()
     molecules = _read_sdf(Chem, source_path)
     target_count = int(final_manifest["target_ensemble_size"])
+    contract = require_final_target(target_count, stage="export")
     if len(molecules) != target_count:
         raise ToolError(
             f"Final selection contains {len(molecules)} structures; expected {target_count}.",
@@ -429,6 +434,7 @@ def export_structure_ensemble(
         "parent_manifests": [str(final_manifest_file)],
         "topology_manifest": str(topology_manifest_file),
         "target_ensemble_size": target_count,
+        "ensemble_contract_hash": contract_hash(contract),
         "candidate_count": len(export_molecules),
         "candidate_ids": labels,
         "artifacts": {
@@ -461,4 +467,3 @@ def export_structure_ensemble(
         ensure_ascii=False,
         indent=2,
     )
-
