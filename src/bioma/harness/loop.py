@@ -224,6 +224,7 @@ class DataAnalysisLoop:
         review_llm = self.provider_factory(self.config.delivery_review_llm) if self.config.delivery_review_llm else llm
         from bioma.harness.checkpoint import DeliveryCheckpoint
         context.state['review_history_mode'] = self.config.review_history_mode
+        context.state['investigate_review_gaps'] = self.config.investigate_review_gaps
         checkpoint = DeliveryCheckpoint(context, self.config)
         context.investigation_budget = budget
         context.investigation_checkpoint = checkpoint

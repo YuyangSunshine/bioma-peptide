@@ -31,6 +31,7 @@ compute_services:
     review_reserve_calls: 6
     review_reserve_seconds: 120
     review_history_mode: identity
+    investigate_review_gaps: true
     direct_tool_names:
     - query_uniprot
     - assess_target_structure

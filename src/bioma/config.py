@@ -77,6 +77,8 @@ class ScientificInvestigationConfig(ConfigModel):
         description="Optional wall-clock reserve for submitting reviewable work before the task deadline; zero disables it.")
     review_history_mode: Literal['full', 'identity'] = Field(default='full',
         description="Historical unselected files: full content or verified identity only. Selected support is always reviewed in full.")
+    investigate_review_gaps: bool = Field(default=False,
+        description="Return incomplete-review leads to the same bounded Agent loop for evidence gathering; never grants approval.")
     direct_tool_names: list[str] = Field(default_factory=list,
         description="Expose selected already-authorized tools directly; grants no additional execution authority.")
 
