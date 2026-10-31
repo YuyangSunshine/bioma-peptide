@@ -49,7 +49,7 @@ The later domain implementation and two core peptide skills were already migrate
 python -m pytest tests/peptide tests/test_web.py tests/test_shared_capability_negative_gates.py -q
 ```
 
-These test contract enforcement, bounded retrieval, source tampering, nested inspection, job idempotency, lifecycle receipts, production admission and external large-file references. Unit fixtures are not live model or scientific acceptance. Live run records and the private import manifest remain local; see the current workspace's `.local-evidence/web-research` for actual observations.
+These test contract enforcement, bounded retrieval, source tampering, nested inspection, job idempotency, lifecycle receipts, production admission and external large-file references. Unit fixtures are not live model or scientific acceptance. The observed native Python/scientific package versions and configuration hash are recorded in [TESTED_ENVIRONMENT.json](TESTED_ENVIRONMENT.json); this is a measured environment manifest, not a complete lockfile. Live run records and the private import manifest remain local; see the current workspace's `.local-evidence/web-research` for actual observations.
 
 A target name alone can start target research. It cannot supply missing peptide sequences, resolve stereochemical conflicts, approve parameter usage or define an unapproved production budget. Those prerequisites are reported as gaps rather than filled with invented scientific evidence.
 
@@ -74,3 +74,9 @@ The peptide configuration explicitly uses `review_history_mode: identity`: every
 For a single complete Swiss-Prot source and a supported output CSV, the uncertain-endpoint check also runs automatically before model review. It can reject a collapsed unknown coordinate even if the model misses the issue. It does not infer source identity across multiple possible records. Final combined regression after this automatic gate: 194 tests and 5 subtests passed.
 
 `investigate_review_gaps: true` returns hash-bound incomplete-review observations to the same Agent loop when budget remains. They are investigation leads, not facts or mandatory edits; the Agent may gather evidence or independently justify a revision. Unchanged submissions are not reviewed again, no approval is granted, and depleted budgets retain a durable pending checkpoint. Generic configuration defaults to the prior stop-on-incomplete behavior. Latest regression: 197 tests and 5 subtests passed.
+
+## Accepted final autonomous loop
+
+With the final provider split and review-gap continuation enabled, the literal query `人源 Nectin-4` completed a real Web run: UniProt retrieval → autonomous selection and download of 4JJH → independently recomputed structure inventory → first incomplete delivery assessment → Agent report revision → second independent assessment accepted. The HTTP response contains the hash-bound reviewed answer. No PDB ID or reference answer was supplied in the query. The run recorded nine completed model events and 188,780 total tokens; Volcengine did not report a monetary cost.
+
+This establishes one actual execution/review/revision path, alongside the earlier persistent-job test. It does not establish universal query reliability, cyclic-peptide binding accuracy, or real Nectin-4 production-MD qualification. Earlier unsuccessful runs remain in local evidence.

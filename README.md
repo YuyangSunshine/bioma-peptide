@@ -226,6 +226,7 @@ For persistent scientific jobs, add `--peptide-registry REGISTRY --peptide-job-r
 | Capability | Evidence / status |
 |---|---|
 | Native `bioma.peptide`, ten-tool contracts, persistent jobs, external references and basic data semantics | Implemented; 197 tests and 5 subtests passed across Web, domain contracts, budgets, report delivery and autonomous revision |
+| Web discovery, structural inventory, independent review and revision | Real target-only query passed: the Agent selected 4JJH, revised its report after incomplete review, and passed a second assessment in the same loop; not production-MD acceptance |
 | Later domain increments and two core skills | Migrated with original/migrated source hashes |
 | Real scientific tool invocation | Migrated RDKit glycine topology ran through the broker and passed execution, artifact and independent graph validation; limited coverage |
 | Real GPU engine | Two-particle synthetic OpenMM CUDA startup, checkpoint restore and controlled child cancellation passed; not a peptide or persistent GPU broker qualification |

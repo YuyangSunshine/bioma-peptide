@@ -226,6 +226,7 @@ bioma-peptide-web --config configs/peptide_web.yaml \
 | 能力 | 当前状态 |
 |---|---|
 | 原生 `bioma.peptide`、十工具合同、持久 jobs、大文件引用、基础数据语义 | 已实现；Web、领域合同、预算、报告交付和自主修订联合回归 197 项测试及 5 个子测试通过 |
+| Web 自主检索、结构检查、独立审核与修订 | 真实单靶点查询已通过：自主选择 4JJH，首次审核后在同一循环修订报告并获准交付；不是生产 MD 验收 |
 | 新增领域源码和两个核心 skills | 已迁入；来源/迁入哈希见 provenance |
 | 实际科学工具执行 | 迁入 RDKit 甘氨酸拓扑经过 broker 实跑，执行/制品/独立图验证通过；覆盖范围有限 |
 | 实际 GPU 引擎 | 两粒子合成 OpenMM CUDA 启动、checkpoint 恢复、受控子进程取消通过；不是肽体系或持久 GPU broker 验收 |
