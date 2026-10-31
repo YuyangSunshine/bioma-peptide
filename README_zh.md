@@ -217,7 +217,7 @@ bioma-peptide-web --config configs/peptide_web.yaml \
   --env-file /path/to/private/runtime.env --host 127.0.0.1 --port 8015
 ```
 
-配置使用实际的 `api_base`、`api_key_env: OPENROUTERAI_API_KEY` 等字段。长任务可追加 `--peptide-registry REGISTRY --peptide-job-root JOB_ROOT`，只能选择宿主登记的方法、输入和预算。导入的真实原件保存在 Git 忽略的 `.local-data/nectin4`，可通过材料检索工具按 ID 读取并校验哈希。
+配置使用实测可用的火山中转模型与实际的 `api_base`、`api_key_env: HUOSHYAN_API_KEY` 等字段。长任务可追加 `--peptide-registry REGISTRY --peptide-job-root JOB_ROOT`，只能选择宿主登记的方法、输入和预算。导入的真实原件保存在 Git 忽略的 `.local-data/nectin4`，可通过材料检索工具按 ID 读取并校验哈希。
 
 默认使用现有 continuous investigation 自主循环及独立交付审核；`--control-policy adaptive_v3` 可显式选择既有的科学控制器。详细配置、工具权限和能力边界见 [Web 自主研究说明](docs/peptide/WEB_RESEARCH.md)。输入靶点并不意味着缺失的候选序列、参数审批和生产预算可以由 Agent 自行补造。
 

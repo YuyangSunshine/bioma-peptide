@@ -1,12 +1,13 @@
 gateway:
   llm: &id001
     backend: openai
-    model: anthropic/claude-sonnet-4.6
-    api_base: https://openrouter.ai/api/v1
-    api_key_env: OPENROUTERAI_API_KEY
+    model: deepseek-v4-1-flash-261017
+    api_base: https://ark.cn-beijing.volces.com/api/v3
+    api_key_env: HUOSHYAN_API_KEY
     max_output_parameter: max_tokens
     max_output_tokens: 6000
     timeout_seconds: 90.0
+    thinking_mode: disabled
 compute_services:
   worker:
     harness_mode: governed
